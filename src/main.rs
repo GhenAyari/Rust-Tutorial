@@ -1,3 +1,4 @@
+
 fn main(){
     println!("Hello, world!");
 }
@@ -74,4 +75,21 @@ fn conversion_to_large(){
 
 }
 
+#[test]
+fn operators_numeric(){
+
+    let height = 3.0;
+
+    let a = 5.0;
+
+    let b = 8.0;
+
+    let l = 0.5;
+
+    let result = l * (a + b) * height;
+
+    println!("result = {}, ({} + {}), X {}, = {} ", l, a, b, height, result);
+
+
+}
 

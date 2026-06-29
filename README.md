@@ -335,6 +335,47 @@ number 64
 test conversion_to_large ... ok
 ```
 
+--- 
+
+Operators numeric
+
+![img_4.png](img_4.png)
+
+below for example operators numeric use case studies trapezoid area formula
+
+```
+#[test]
+fn operators_numeric(){
+
+    let height = 3.0;
+
+    let a = 5.0;
+
+    let b = 8.0;
+
+    let l = 0.5;
+
+    let result = l * (a + b) * height;
+
+    println!("result = {}, ({} + {}), X {}, = {} ", l, a, b, height, result);
+
+}
+```
+
+and the result is:
+
+```
+PS D:\Rust\basic_rust> cargo test operators_numeric -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.50s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+result = 0.5, (5 + 8), X 3, = 19.5 
+test operators_numeric ... ok
+```
+
+
 
 
 
