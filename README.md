@@ -73,9 +73,67 @@ fn testing(){
     println!(my name's ghen and i currently learn rust);
 }
 ```
+
 this is output, we can run with "cargo test name_test_function -- --exact" or can also "cargo test name_test_funciton -- --nocapture"
 <br> but, first step jus run all unit test and won't show the output. so i often use second step
+
 ![img_1.png](img_1.png)
+
 ---
 
 ### Variable
+A variable is used to store data values, to create or declare a variable in rust, we can use "let" keyword.
+examples of its usage is shown below:
+
+```
+#[test]
+fn variable(){
+    let my_name = "Ghendida";
+    println!("Hallo {} ", my_name);
+}
+```
+and the output:
+
+```
+PS D:\Rust\basic_rust> cargo test variable -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+Hallo Ghendida 
+test variable ... ok
+```
+
+---
+<b>In Rust, we cannot change a variable that has already been assigned, which is usually called immutable. However, 
+Rust allows us to create variables that can be changed, known as mutable, and the keyword is let mut. </b>
+
+<br>
+examples for mutable variable is showns below
+
+```
+#[test]
+fn variable_mutable(){
+    let mut age_in_2025: i8 = 18;
+    println!("my age in 2025 is {} ", age_in_2025);
+
+    age_in_2025 = 19;
+    println!("my age in 2026 is {} ", age_in_2025);
+}
+```
+
+and the output:
+
+```
+PS D:\Rust\basic_rust> cargo test variable_mutable -- --nocapture
+Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+Finished `test` profile [unoptimized + debuginfo] target(s) in 0.49s                                                                                                           
+Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+my age in 2025 is 18
+my age in 2026 is 19
+test variable_mutable ... ok
+```
+
