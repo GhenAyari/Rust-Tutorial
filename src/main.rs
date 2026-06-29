@@ -21,3 +21,4 @@ fn variable_mutable(){
     age_in_2025 = 19;
     println!("my age in 2026 is {} ", age_in_2025);
 }
+

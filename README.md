@@ -137,3 +137,43 @@ my age in 2026 is 19
 test variable_mutable ... ok
 ```
 
+---
+
+Rust is a statically typed language, meaning every time you create a variable with a specific data type, 
+its type can't be changed to another. 
+Unlike JavaScript and PHP, this is not possible for example, changing from a string to an integer will not work in Rust
+
+<br>
+example for can't change data type
+
+```
+#[test]
+fn static_type(){
+    let mut my_github = "GhenAyari";
+    println!("My github is {}", my_github);
+
+    my_github = 1;
+    println!("My github is {}", my_github);
+}
+```
+ 
+and the output will be
+
+```
+
+PS D:\Rust\basic_rust> cargo test static_type -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+error[E0308]: mismatched types                                                                                                                                                     
+  --> src\main.rs:30:17
+   |
+27 |     let mut my_github = "GhenAyari";
+   |                         ----------- expected due to this value
+...
+30 |     my_github = 1;
+   |                 ^ expected `&str`, found integer
+
+For more information about this error, try `rustc --explain E0308`.                                                                                                                
+error: could not compile `basic_rust` (bin "basic_rust" test) due to 1 previous error  
+
+```
+
