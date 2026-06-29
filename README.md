@@ -220,4 +220,42 @@ the previous variable will be shadowed and become inaccessible
 
 
 ---
+Every variable in Rust has a data type, grouped into two types: scalar and compound. a scalar type represents a single value, for example: strings, integers, floats, 
+booleans, and chars. meanwhile, compound types represent multiple values, which are tuples and arrays
+<br>
+In Rust, when creating a variable, there is no need to mention the data type explicitly because Rust will 
+automatically recognize the data type used. However, it is still possible if you want to mention the data type explicitly when creating a variable with the colon (:) keyword
+<br>
+
+example an explicit variable
+```
+#[test]
+fn explicit_variable(){
+    let age: i8 = 19;
+    println!("My age is {} ", age);
+
+    let weight: f32 = 51.5;
+    println!("my body weight is {} ", weight);
+}
+```
+
+output:
+
+```
+PS D:\Rust\basic_rust> cargo test explicit_variable -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+My age is 19 
+my body weight is 51.5 
+test explicit_variable ... ok
+```
+
+
+
+
+
+
 

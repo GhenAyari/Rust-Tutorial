@@ -22,6 +22,15 @@ fn variable_mutable(){
     println!("my age in 2026 is {} ", age_in_2025);
 }
 
+// #[test]
+// fn static_type(){
+//     let mut my_github = "GhenAyari";
+//     println!("My github is {}", my_github);
+//
+//     my_github = 1;
+//     println!("My github is {}", my_github);
+// }
+
 #[test]
 fn shadowing(){
     let name = "Ghendida";
@@ -32,4 +41,13 @@ fn shadowing(){
 
     let name = 2026;
     println!("this is {} year ", name);
+}
+
+#[test]
+fn explicit_variable(){
+    let age: i8 = 19;
+    println!("My age is {} ", age);
+
+    let weight: f32 = 51.5;
+    println!("my body weight is {} ", weight);
 }
