@@ -60,6 +60,7 @@ cargo run --release
 Most rust programmer i think, spend 90% of their time using cargo run, then switch to
 cargo build --release once the application is ready for development 
 or performance testing
+
 ---
 ### Unit test
 In Rust one project only can use one main function. i gonna use alternative methods is that "unit test"
