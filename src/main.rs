@@ -51,3 +51,27 @@ fn explicit_variable(){
     let weight: f32 = 51.5;
     println!("my body weight is {} ", weight);
 }
+
+#[test]
+fn conversion(){
+    let a: i8 = 19;
+    println!("my number {} ", a);
+
+    let b: i16 = a as i16;
+    println!("his number is {} ", b);
+
+    let c : i32 = a as i32;
+    println!("my number {} ", c);
+}
+
+#[test]
+fn conversion_to_large(){
+    let a: i64 = 1000000;
+    println!("number {} ", a);
+
+    let b: i8 = a as i8;
+    println!("number {} ", b);
+
+}
+
+

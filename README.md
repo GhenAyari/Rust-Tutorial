@@ -253,6 +253,87 @@ my body weight is 51.5
 test explicit_variable ... ok
 ```
 
+---
+
+Here's integer and float type
+
+![img_2.png](img_2.png)
+
+![img_3.png](img_3.png)
+
+If you make a variable implicitly or dont mention the data type, 
+Rust will automatically give i32 for integers and f64 for decimals
+
+---
+
+Type data conversion
+
+Rust can perform data type conversions from smaller to larger types, and vice versa. However, there is something to keep in mind: converting a larger type to a smaller one can cause an integer overflow. 
+For example, trying to convert the value 100,000 from an i32 to an i8 will trigger an integer overflow
+<br>
+
+first, example from smaller to larger types
+
+```
+#[test]
+fn conversion(){
+    let a: i8 = 19;
+    println!("my number {} ", a);
+
+    let b: i16 = a as i16;
+    println!("his number is {} ", b);
+
+    let c : i32 = a as i32;
+    println!("my number {} ", c); 
+}
+```
+
+the output will be
+
+```
+PS D:\Rust\basic_rust> cargo test conversion -- --nocapture       
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.51s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+my number 19 
+his number is 19 
+my number 19 
+test conversion ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+```
+
+---
+
+and an example for large to small
+
+```
+#[test]
+fn conversion_to_large(){
+    let a: i64 = 1000000;
+    println!("number {} ", a);
+
+    let b: i8 = a as i8;
+    println!("number {} ", b);
+
+}
+```
+
+the output
+
+```
+PS D:\Rust\basic_rust> cargo test conversion_to_large -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.42s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+number 1000000 
+number 64 
+test conversion_to_large ... ok
+```
 
 
 
