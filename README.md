@@ -72,6 +72,9 @@ fn testing(){
     println!(my name's ghen and i currently learn rust);
 }
 ```
-this is output
-
+this is output, we can run with "cargo test name_test_function -- --exact" or can also "cargo test name_test_funciton -- --nocapture"
+<br> but, first step jus run all unit test and won't show the output. so i often use second step
 ![img_1.png](img_1.png)
+---
+
+### Variable
