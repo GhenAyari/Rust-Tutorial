@@ -22,3 +22,14 @@ fn variable_mutable(){
     println!("my age in 2026 is {} ", age_in_2025);
 }
 
+#[test]
+fn shadowing(){
+    let name = "Ghendida";
+    println!("Hallo {} ", name);
+
+    let name = 10;
+    println!("it's the {}th now ", name);
+
+    let name = 2026;
+    println!("this is {} year ", name);
+}

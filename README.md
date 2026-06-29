@@ -177,3 +177,47 @@ error: could not compile `basic_rust` (bin "basic_rust" test) due to 1 previous 
 
 ```
 
+---
+
+In Rust, we can create variables with the same name, but when we do, the previous variable will be covered, 
+or what is called shadowing. this practice is not ideal, but it is still allowed in Rust
+
+<br>
+example for shadowing
+
+```
+#[test]
+fn shadowing(){
+    let name = "Ghendida";
+    println!("Hallo {} ", name);
+
+    let name = 10;
+    println!("it's the {}th now ", name);
+
+    let name = 2026;
+    println!("this is {} year ", name);
+}
+```
+
+and output will be
+
+```
+PS D:\Rust\basic_rust> cargo test shadowing -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.52s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+Hallo Ghendida 
+it's the 10th now 
+this is 2026 year 
+test shadowing ... ok
+
+```
+
+As seen above, if we create a variable with the same name but a different value and type, 
+the previous variable will be shadowed and become inaccessible
+
+
+---
+
