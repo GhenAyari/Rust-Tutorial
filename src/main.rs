@@ -1,6 +1,24 @@
+use std::io;
+use std::io::Write;
 
 fn main(){
-    println!("Hello, world!");
+
+    print!("Inpur your name = ");
+    io::stdout().flush().unwrap();
+
+    let mut nama = String::new();
+    io::stdin().read_line(&mut nama).expect("Failed to read line");
+
+    print!("input your age = ");
+    io::stdout().flush().unwrap();
+
+    let mut age = String::new();
+    io::stdin().read_line(&mut age).expect("Failed to read age");
+
+    let age: f32 = age.trim().parse().unwrap();
+    println!();
+    print!("Hallo {}", nama);
+    print!("your age is {}", age);
 }
 
 #[test]
@@ -154,3 +172,18 @@ fn mutable_tuple(){
     println!("{:?}", about_me);
 
 }
+
+
+#[test]
+fn tuple_practice(){
+    let mut me: (&str, i8, i16, &str) = ("Ghen", 19, 2006, "Mulawarman University");
+
+    println!("my name's {}, my age is {}, i was born in {}, and currently i'm student in {} ", me.0, me.1, me.2, me.3 );
+
+    me.0 = "Ghendida";
+    me.1 = 20;
+
+    println!("my name's is {}, my age is {}, i was born in {}, and currently i'm student in {} ", me.0, me.1, me.2, me.3 );
+}
+
+
