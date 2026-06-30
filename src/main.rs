@@ -111,11 +111,14 @@ fn comparison_operators(){
 fn boolean_operators(){
 
     let age = 20;
+    let height = 170;
 
     let category = 18 <= age;
+    let height = 165 <= height;
 
-    println!("is he an adult? {} , {}, and his age is ", category, age);
+    let result = category && height;
 
+    println!("is he an adult man? {}", result);
 
 }
 

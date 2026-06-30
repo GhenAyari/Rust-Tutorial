@@ -423,7 +423,7 @@ test comparison_operators ... ok
 
 ---
 
-Operators boolean
+boolean operators
 
 Operator boolean adalah operator logika yang digunakan untuk membandingkan nilai atau mengevaluasi ekspresi, menghasilkan nilai akhir berupa benar (true) atau salah (false).
 Operator ini berfungsi sebagai dasar pengendalian alur program dan penyaringan informasi dalam berbagai sistem digital
@@ -431,6 +431,42 @@ Operator ini berfungsi sebagai dasar pengendalian alur program dan penyaringan i
 ![img_6.png](img_6.png)
 
 ![img_7.png](img_7.png)
+
+![img_8.png](img_8.png)
+
+![img_9.png](img_9.png)
+
+an example for boolean operators
+
+```
+#[test]
+fn boolean_operators(){
+
+    let age = 20;
+    let height = 170;
+
+    let category = 18 <= age;
+    let height = 165 <= height;
+
+    let result = category && height;
+
+    println!("is he an adult man? {}", result);
+
+}
+```
+
+and the output: 
+
+```
+PS D:\Rust\basic_rust> cargo test boolean_operators -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.55s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+is he an adult man? true
+test boolean_operators ... ok
+```
 
 
 
