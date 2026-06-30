@@ -122,3 +122,35 @@ fn boolean_operators(){
 
 }
 
+#[test]
+fn tuple(){
+    let a: (i32, f64, &str) = (500, 6.4, "Hello");
+
+    println!("Here is tuple = {:?} ", a);
+
+    let tuple1 = a.0;
+    let tuple2 = a.1;
+    let tuple3 = a.2;
+
+    println!("{}, {}, {} ", tuple1, tuple2, tuple3);
+
+    // or we can also do Destructing tuple
+    let (a, b, _) = a; // use _ if don't wanna ose one of them
+    println!("Use desctructing tuple = {}, {}",a, b );
+}
+
+#[test]
+fn mutable_tuple(){
+    let mut about_me: (&str, i8, &str) = ("Ghen", 19, "Mulawarman University");
+
+    let (a, b, c) = about_me;
+
+    println!("{}, {}, {}", a, b, c);
+
+    about_me.0 = "Ghendida";
+    about_me.1 = 20;
+    about_me.2 = "From mulawarman university";
+
+    println!("{:?}", about_me);
+
+}

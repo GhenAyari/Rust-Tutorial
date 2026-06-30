@@ -468,6 +468,87 @@ is he an adult man? true
 test boolean_operators ... ok
 ```
 
+---
+
+### Compound data type
+
+Tuple,A tuple is a data type that groups together a collection of data types. 
+The number of elements in a tuple is final and can't be modified, decreased, or increased. to create a tuple,can use parentheses ()
+
+an example for tuple
+
+```
+#[test]
+fn tuple(){
+    let a: (i32, f64, &str) = (500, 6.4, "Hello");
+
+    println!("Here is tuple = {:?} ", a);
+
+    let tuple1 = a.0;
+    let tuple2 = a.1;
+    let tuple3 = a.2;
+
+    println!("{}, {}, {} ", tuple1, tuple2, tuple3);
+
+    // or we can also do Destructing tuple
+    let (a, b, _) = a; // use _ if don't wanna ose one of them
+    println!("Use desctructing tuple = {}, {}",a, b );
+}
+```
+
+and the output:
+
+```
+S D:\Rust\basic_rust> cargo test tuple -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.52s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+Here is tuple = (500, 6.4, "Hello") 
+500, 6.4, Hello 
+500, 6.4
+test tuple ... ok
+```
+
+--- 
+
+Mutable Tuple<br>
+Technically, we can still modify the contents of a tuple by making it a mutable tuple. You just need to add the mut keyword
+
+an example for mutable tuple 
+
+```
+#[test]
+fn mutable_tuple(){
+    let mut about_me: (&str, i8, &str) = ("Ghen", 19, "Mulawarman University");
+
+    let (a, b, c) = about_me;
+
+    println!("{}, {}, {}", a, b, c);
+
+    about_me.0 = "Ghendida";
+    about_me.1 = 20;
+    about_me.2 = "From mulawarman university";
+
+    println!("{:?}", about_me);
+
+}
+```
+
+```
+PS D:\Rust\basic_rust> cargo test mutable_tuple -- --nocapture 
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+Ghen, 19, Mulawarman University
+("Ghendida", 20, "From mulawarman university")
+test mutable_tuple ... ok
+```
+
+
 
 
 
