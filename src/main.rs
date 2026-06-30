@@ -186,4 +186,32 @@ fn tuple_practice(){
     println!("my name's is {}, my age is {}, i was born in {}, and currently i'm student in {} ", me.0, me.1, me.2, me.3 );
 }
 
+#[test]
+fn array(){
+
+    let array_list: [i8; 3] = [10, 20, 30];
+    println!("here are some array = {:?}", array_list);
+
+    let a = array_list[0];
+    let b = array_list[1];
+    let c = array_list[2];
+
+    println!("{}, {}, {}", a, b, c);
+
+}
+
+#[test]
+fn mutable_array(){
+
+    let mut array_can_change: [&str; 3] = ["Ramli", "Ruger", "Razi"];
+
+    println!("{:?}", array_can_change);
+
+    array_can_change[0] = "Rizal";
+    array_can_change[1] = "Raditya";
+    array_can_change[2] = "Roslan";
+
+    println!("{}, {}, {}" , array_can_change[0], array_can_change[1], array_can_change[2]);
+
+}
 

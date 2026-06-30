@@ -548,6 +548,81 @@ Ghen, 19, Mulawarman University
 test mutable_tuple ... ok
 ```
 
+--- 
+Array <br>
+
+An array is a data type that contains a collection of data just like a tuple. The difference is in an 
+array you can only use one data type, different from a tuple which can use many data types. To make an array, use []
+
+example code below:
+
+```
+#[test]
+fn array(){
+
+    let array_list: [i8; 3] = [10, 20, 30];
+    println!("here are some array = {:?}", array_list);
+
+    let a = array_list[0];
+    let b = array_list[1];
+    let c = array_list[2];
+
+    println!("{}, {}, {}", a, b, c);
+
+
+}
+```
+
+the output result below:
+
+```
+PS D:\Rust\basic_rust> cargo test array -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.58s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+here are some array = [10, 20, 30]
+10, 20, 30
+test array ... ok
+```
+
+--- 
+Mutable Array<br>
+we can change contain of array with use "mut".
+
+example code below
+
+```
+#[test]
+fn mutable_array(){
+
+    let mut array_can_change: [&str; 3] = ["Ramli", "Ruger", "Razi"];
+
+    println!("{:?}", array_can_change);
+
+    array_can_change[0] = "Rizal";
+    array_can_change[1] = "Raditya";
+    array_can_change[2] = "Roslan";
+
+    println!("{}, {}, {}" , array_can_change[0], array_can_change[1], array_can_change[2]);
+
+}
+```
+
+the output result below
+
+```
+PS D:\Rust\basic_rust> cargo test mutable_array -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.59s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+["Ramli", "Ruger", "Razi"]
+Rizal, Raditya, Roslan
+test mutable_array ... ok
+```
 
 
 
