@@ -215,3 +215,22 @@ fn mutable_array(){
 
 }
 
+#[test]
+fn two_dimensional_arrays(){
+
+    let array: [[i32; 3];3] = [
+        [13, 16, 6],
+        [10, 08, 09],
+        [10, 06, 30]
+
+    ];
+
+    println!("{:?}", array);
+
+    println!("{}", array[1][1]);
+    println!("{}", array[0][1]);
+    println!("{}", array[0][0]);
+
+}
+
+

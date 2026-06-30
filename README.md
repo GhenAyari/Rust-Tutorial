@@ -624,6 +624,47 @@ Rizal, Raditya, Roslan
 test mutable_array ... ok
 ```
 
+--- 
+two demonsional array <br>
+we can create an array inside an array, which is commonly referred to as a two-dimensional array
+
+example code below
+
+```
+#[test]
+fn two_dimensional_arrays(){
+
+    let array: [[i32; 3];3] = [
+        [13, 16, 6],
+        [10, 08, 09],
+        [10, 06, 30]
+
+    ];
+
+    println!("{:?}", array);
+
+    println!("{}", array[1][1]);
+    println!("{}", array[0][1]);
+    println!("{}", array[0][0]);
+
+}
+```
+
+and the output result below
+
+```
+PS D:\Rust\basic_rust> cargo test two_dimensional_array -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.45s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+[[13, 16, 6], [10, 8, 9], [10, 6, 30]]
+8
+16
+13
+test two_dimensional_arrays ... ok
+```
 
 
 
