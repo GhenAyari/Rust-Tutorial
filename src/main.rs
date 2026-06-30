@@ -90,6 +90,32 @@ fn operators_numeric(){
 
     println!("result = {}, ({} + {}), X {}, = {} ", l, a, b, height, result);
 
+}
+
+#[test]
+fn comparison_operators(){
+
+    let a = 15 > 10;
+    let b = 10 >= 10;
+    let c = 15 < 10;
+    let d = 10 == 10;
+
+    println!("is the number 15 than 10? = {}", a);
+    println!("is the number 10 than same as 10? = {}", b);
+    println!("is the number 15 less than 10? = {}", c);
+    println!("is the number 10 same as 10? = {}", d);
+
+}
+
+#[test]
+fn boolean_operators(){
+
+    let age = 20;
+
+    let category = 18 <= age;
+
+    println!("is he an adult? {} , {}, and his age is ", category, age);
+
 
 }
 

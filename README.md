@@ -337,6 +337,8 @@ test conversion_to_large ... ok
 
 --- 
 
+### Operators
+
 Operators numeric
 
 ![img_4.png](img_4.png)
@@ -374,6 +376,61 @@ running 1 test
 result = 0.5, (5 + 8), X 3, = 19.5 
 test operators_numeric ... ok
 ```
+
+--- 
+
+comparison operators<br>
+
+Comparison operators are special symbols in programming used to compare two values or expressions to determine the relationship between them. The result of a comparison operation is 
+always a boolean value—either True or False—which is commonly used in decision-making structures like if statements or loops
+
+![img_5.png](img_5.png)
+
+example for comparison operators
+
+```
+#[test]
+fn comparison_operators(){
+
+    let a = 15 > 10;
+    let b = 10 >= 10;
+    let c = 15 < 10;
+    let d = 10 == 10;
+
+    println!("is the number 15 than 10? = {}", a);
+    println!("is the number 10 than same as 10? = {}", b);
+    println!("is the number 15 less than 10? = {}", c);
+    println!("is the number 10 same as 10? = {}", d);
+
+}
+```
+
+and the output:
+
+```
+PS D:\Rust\basic_rust> cargo test comparison_operators -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.57s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+is the number 15 than 10? = true
+is the number 10 than same as 10? = true
+is the number 15 less than 10? = false
+is the number 10 same as 10? = true
+test comparison_operators ... ok
+```
+
+---
+
+Operators boolean
+
+Operator boolean adalah operator logika yang digunakan untuk membandingkan nilai atau mengevaluasi ekspresi, menghasilkan nilai akhir berupa benar (true) atau salah (false).
+Operator ini berfungsi sebagai dasar pengendalian alur program dan penyaringan informasi dalam berbagai sistem digital
+
+![img_6.png](img_6.png)
+
+![img_7.png](img_7.png)
 
 
 
