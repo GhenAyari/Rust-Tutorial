@@ -1121,6 +1121,106 @@ This is why Rust's ownership system is especially important for heap-allocated d
 
 When the owner goes out of scope, Rust automatically frees the associated heap memory.
 
+---
+
+### &str and String
+
+- Rust features two string types: &str (string slice), which has a fixed size, and String, which is growable<br>
+- &str is fixed-size, it goes onto the stack, while String is allocated on the heap due to its dynamic size<br>
+
+example code for &str is below
+
+```
+#[test]
+fn string_slice() {
+
+    // name is a string slice (&str)
+    //
+    // STACK:
+    // - Pointer
+    // - Length
+    //
+    // READ-ONLY MEMORY:
+    // - "  Ghendida  "
+    //
+    // &str does not own the text.
+    let mut name: &str = "  Ghendida  ";
+
+    println!("{}", name);
+
+    // trim()
+    //
+    // Removes leading and trailing whitespace.
+    //
+    // IMPORTANT:
+    // trim() does NOT create a new String.
+    //
+    // It returns another &str that points
+    // to a portion of the original text.
+    //
+    // STACK:
+    // - New Pointer
+    // - New Length
+    //
+    // READ-ONLY MEMORY:
+    // - Still points to the same text
+    //
+    // No HEAP allocation occurs.
+    let delete_space: &str = name.trim();
+
+    println!("{}", delete_space);
+}
+```
+
+and the output
+
+```
+PS D:\Rust\basic_rust> cargo test string_slice -- --nocapture         
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.50s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+  Ghendida  
+Ghendida
+test string_slice ... ok
+```
+
+example code for String is below
+
+```
+#[test]
+fn string_not_fixed_size() {
+
+    let name: String = String::from("ghendida ayari");
+    println!("{}\n",name.to_lowercase());
+
+    let mut list_name: (String, String, String) = (String::new(), String::from("satrio"), String::from("Rusman"));
+    println!("{:?}", list_name);
+
+    list_name.0.push_str("Akmal");
+
+    println!("\n{}, {}, {} ", list_name.0.to_uppercase() , list_name.1.to_uppercase(), list_name.2.replace("Rusman", "Ramli").to_uppercase());
+
+
+}
+```
+
+the output will be
+
+```
+PS D:\Rust\basic_rust> cargo test string_not_fixed_size -- --nocapture
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+ghendida ayari
+
+("", "satrio", "Rusman")
+
+AKMAL, SATRIO, RAMLI 
+test string_not_fixed_size ... ok
+```
 
 
 

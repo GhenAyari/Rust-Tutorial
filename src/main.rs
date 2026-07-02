@@ -346,4 +346,61 @@ fn function_b(){
     // is automatically cleaned up by Rust
 }
 
+#[test]
+fn string_slice() {
+
+    // name is a string slice (&str)
+    //
+    // STACK:
+    // - Pointer
+    // - Length
+    //
+    // READ-ONLY MEMORY:
+    // - "  Ghendida  "
+    //
+    // &str does not own the text.
+    let name: &str = "  Ghendida  ";
+
+    println!("{}", name);
+
+    // trim()
+    //
+    // Removes leading and trailing whitespace.
+    //
+    // IMPORTANT:
+    // trim() does NOT create a new String.
+    //
+    // It returns another &str that points
+    // to a portion of the original text.
+    //
+    // STACK:
+    // - New Pointer
+    // - New Length
+    //
+    // READ-ONLY MEMORY:
+    // - Still points to the same text
+    //
+    // No HEAP allocation occurs.
+    let delete_space: &str = name.trim();
+
+    println!("{}", delete_space);
+}
+
+#[test]
+fn string_not_fixed_size() {
+
+    let name: String = String::from("ghendida ayari");
+    println!("{}\n",name.to_lowercase());
+
+    let mut list_name: (String, String, String) = (String::new(), String::from("satrio"), String::from("Rusman"));
+    println!("{:?}", list_name);
+
+    list_name.0.push_str("Akmal");
+
+    println!("\n{}, {}, {} ", list_name.0.to_uppercase() , list_name.1.to_uppercase(), list_name.2.replace("Rusman", "Ramli").to_uppercase());
+
+
+}
+
+
 
