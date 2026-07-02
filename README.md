@@ -709,9 +709,43 @@ be used inside the scope where the variable is located and in the inner scope, b
 
 example code below 
 
-```angular2html
+```
+const UNIV_NAME: &str = "Mulawarman University"; // This variable can be used because it is located in the outermost scope so any function can access it
+#[test]
+fn scope() {
+    // variable name can't used in here
+    let name = "Ghendida"; // variable name can used start here
+    println!("he's name is {}", name);
+
+    { // inner scope
+        println!("he's name middle name is Gantari and first name {}", name);
+        let age: i8 = 19;
+        println!("he's {} years old and from {} ", age, UNIV_NAME);
+    }
+
+    // println!("{}", age); // error bc in outer scope
+}
+```
+
+the output below
 
 ```
+PS D:\Rust\basic_rust> cargo test scope -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.57s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+he's name is Ghendida
+he's name middle name is Gantari and first name Ghendida
+he's 19 years old and from Mulawarman University 
+test scope ... ok
+```
+
+--- 
+
+### Management Memory 
+
 
 
 

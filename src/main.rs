@@ -244,4 +244,22 @@ fn const_variable() {
 
 }
 
+const UNIV_NAME: &str = "Mulawarman University"; // This variable can be used because it is located in the outermost scope so any function can access it
+#[test]
+fn scope() {
+    // variable name can't used in here
+    let name = "Ghendida"; // variable name can used start here
+    println!("he's name is {}", name);
+
+    { // inner scope
+        println!("he's name middle name is Gantari and first name {}", name);
+        let age: i8 = 19;
+        println!("he's {} years old and from {} ", age, UNIV_NAME);
+    }
+
+    // println!("{}", age); // error bc in outer scope
+}
+
+
+
 
