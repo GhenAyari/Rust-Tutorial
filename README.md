@@ -1467,5 +1467,42 @@ Rust is unique because it provides memory safety without using a Garbage Collect
 
 ---
 
+#### Ownership scope 
+
+Scope is the area where a variable is valid and can be accessed. Ownership scope refers to the period during which an owner remains within that scope and retains its data. 
+Once the owner goes out of scope, Rust automatically triggers the drop process and frees the memory associated with that owner
+
+example code below 
+
+```
+#[test]
+fn ownership_scope() {
+
+    // let a variable can't access in here because out of scope and hasn't been created in this line
+    let a = 10; // can access start here
+
+    {
+        let name = "ghen";
+        println!("{}", name);
+    } // variable name can't accesss start here because already out of scope
+
+    println!("{}", a); // can access in here because still in scope
+
+} // variable a can't access or ended in here bcs already out of scope
+```
+
+and output below
+
+```
+PS D:\Rust\basic_rust> cargo test ownership_scope -- --nocapture      
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.53s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+ghen
+10
+test ownership_scope ... ok
+```
 
 

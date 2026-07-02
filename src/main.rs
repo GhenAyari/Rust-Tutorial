@@ -402,7 +402,20 @@ fn string_not_fixed_size() {
 
 }
 
+#[test]
+fn ownership_scope() {
 
+    // let a variable can't access in here because out of scope and hasn't been created in this line
+    let a = 10; // can access start here
+
+    {
+        let name = "ghen";
+        println!("{}", name);
+    } // variable name can't accesss start here because already out of scope
+
+    println!("{}", a); // can access in here because still in scope
+
+} // variable a can't access or ended in here bcs already out of scope
 
 
 
