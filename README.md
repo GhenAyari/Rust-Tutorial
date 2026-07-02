@@ -666,7 +666,52 @@ running 1 test
 test two_dimensional_arrays ... ok
 ```
 
+--- 
+### Constant
 
+A constant is an immutable variable that uses the const keyword. The difference 
+between const and let is that constants cannot be made mutable, and you must explicitly state the data type when creating a constant
+
+example code below
+
+```
+const MAXIMUM: i16 = 37;
+#[test]
+fn const_variable() {
+    const MINIMUM: i16 = 33;
+    println!("Use constant variable {}", MINIMUM);
+
+    println!("We can use variable out of scope {}", MAXIMUM);
+
+
+}
+```
+
+an output will be bellow
+
+```
+PS D:\Rust\basic_rust> cargo test const_variable -- --nocapture       
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.52s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+Use constant variable 33
+We can use variable out of scope 37
+test const_variable ... ok
+```
+
+---
+
+### Scope 
+Variable scope defines the area where a variable can be used. A variable can 
+be used inside the scope where the variable is located and in the inner scope, but it can't be used in the outer scope
+
+example code below 
+
+```angular2html
+
+```
 
 
 

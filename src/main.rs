@@ -233,4 +233,15 @@ fn two_dimensional_arrays(){
 
 }
 
+const MAXIMUM: i16 = 37;
+#[test]
+fn const_variable() {
+    const MINIMUM: i16 = 33;
+    println!("Use constant variable {}", MINIMUM);
+
+    println!("We can use variable out of scope {}", MAXIMUM);
+
+
+}
+
 
