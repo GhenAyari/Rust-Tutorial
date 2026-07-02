@@ -746,6 +746,380 @@ test scope ... ok
 
 ### Management Memory 
 
+Memory management is how a programming language manages memory (RAM) usage while a program is running. Every time a program creates data, the computer must allocate space in memory to store it. When that data is no longer needed, the memory space must be freed
+so it can be reused by other data. The main challenge is determining when memory should be released and who is responsible for doing so<br>
+
+In languages like C, the programmer is fully responsible for memory management. Programmers must manually request memory when needed and return it once they are finished. This approach offers immense control and high performance, but it is also highly error-prone. If a programmer forgets to free the memory, a 
+memory leak occurs. If memory is freed more than once or used after being released, the program can crash or exhibit undefined behavior<br>
+
+Languages like Java, Kotlin, Python, JavaScript, and Go take a different approach. They use a Garbage Collector, which is a system that automatically finds and cleans up memory that is no longer in use. This approach makes development easier because programmers don't have to worry about when to free memory. However, this cleanup process requires extra resources and can sometimes cause performance drops or brief pauses while the program is running.
+
+Rust attempts to combine the strengths of both approaches. It does not force the programmer to manage memory manually like C, nor does it use a Garbage Collector like Java or Python. Instead, Rust utilizes a system of ownership, borrowing, and lifetimes to ensure every piece of data has clear ownership rules. The Rust compiler checks these rules during compilation. 
+If there is any potential memory management error, the program will not compile until the issue is resolved<br>
+
+As a result, Rust can manage memory automatically without needing a Garbage Collector at runtime. Many errors that are typically only caught during runtime in other languages can be detected early by the Rust compiler. This is why Rust is often described as a language that
+offers a combination of high performance like C/C++ and better memory safety than many other systems programming languages<br>
+
+To summarize in a single sentence: C and C++ entrust memory management to the programmer, 
+Java and Python entrust it to the Garbage Collector, while Rust entrusts it to the compiler through the ownership system
+
+When a Rust program runs, it stores data in RAM (Random Access Memory).
+<br>
+
+Most data is stored in one of two places:
+
+```text
+RAM
+├── Stack
+└── Heap
+```
+
+Understanding Stack and Heap is important because Rust's Ownership system was designed around them.
+
+---
+
+#### Stack
+
+The Stack is a fast and organized memory region.
+
+Think of it like a stack of plates:
+
+```text
+Top
+┌─────┐
+│  3  │
+├─────┤
+│  2  │
+├─────┤
+│  1  │
+└─────┘
+Bottom
+```
+
+You can only add or remove items from the top.
+
+Because of this structure:
+
+- Very fast
+- Automatically managed
+- Predictable memory access
+
+##### Common Stack Data
+
+- Integers (`i32`, `u64`)
+- Floats (`f32`, `f64`)
+- Booleans (`bool`)
+- Characters (`char`)
+- Fixed-size arrays
+
+---
+
+#### Heap
+
+The Heap is a larger and more flexible memory region.
+
+Think of it like a warehouse:
+
+```text
+┌─────────┐
+│ Box A   │
+├─────────┤
+│ Box B   │
+├─────────┤
+│ Box C   │
+└─────────┘
+```
+
+Unlike the Stack, the operating system must search for available space before storing data.
+
+Because of this:
+
+- More flexible
+- Can store dynamic data
+- Slower than Stack
+
+#### Common Heap Data
+
+- String
+- Vec<T>
+- HashMap<K, V>
+- Dynamic collections
+
+---
+
+#### Stack vs Heap
+
+| Feature | Stack | Heap |
+|----------|----------|----------|
+| Speed | Very Fast | Slower |
+| Allocation | Automatic | Dynamic |
+| Memory Size | Smaller | Larger |
+| Structure | Ordered | Flexible |
+| Access Cost | Low | Higher |
+| Common Data | Numbers, Booleans | Strings, Vectors |
+
+---
+
+##### How String Uses Stack and Heap
+
+A Rust String uses both memory regions.
+
+```text
+Stack
+┌──────────┐
+│ Pointer  │ ─────────────┐
+│ Length   │              │
+│ Capacity │              │
+└──────────┘              │
+                          ▼
+Heap
+┌─────────────────────┐
+│ G | h | e | n       │
+└─────────────────────┘
+```
+
+##### Stack Stores
+
+- Pointer
+- Length
+- Capacity
+
+##### Heap Stores
+
+- Actual text data
+
+For example:
+
+```text
+"Ghen"
+```
+
+The characters themselves live on the Heap.
+
+---
+
+#### Why Ownership Exists
+
+Heap memory is powerful but dangerous.
+
+Without proper management, programs may suffer from:
+
+- Memory Leaks
+- Double Free Errors
+- Dangling Pointers
+- Undefined Behavior
+
+Rust prevents these issues using:
+
+- Ownership
+- Borrowing
+- Lifetimes
+
+The Rust compiler checks these rules before the program runs.
+
+---
+
+#### Memory Management Comparison
+
+| Language | Memory Management |
+|-----------|------------------|
+| C | Manual |
+| C++ | Mostly Manual |
+| Java | Garbage Collector |
+| Kotlin | Garbage Collector |
+| Python | Garbage Collector + Reference Counting |
+| JavaScript | Garbage Collector |
+| Go | Garbage Collector |
+| Rust | Ownership System |
+
+Rust is unique because it provides memory safety without requiring a Garbage Collector.
+
+example code below
+
+```
+#[test]
+fn memory_management() {
+
+    // When function_a() is called,
+    // Rust creates a stack frame for function_a
+    function_a();
+
+    // After function_a() finishes,
+    // its stack frame is removed
+
+    // Then Rust creates a new stack frame
+    // for function_b
+    function_b();
+}
+
+fn function_a(){
+
+    // age is an i32
+    // its size is fixed (4 bytes)
+    // stored directly on the STACK
+    let age = 19;
+
+    // The variable year_of_birth itself is stored on the STACK
+    //
+    // However, the actual String data ("2006")
+    // is stored on the HEAP
+    //
+    // Stack:
+    // Pointer
+    // Length
+    // Capacity
+    //
+    // Heap:
+    // "2" "0" "0" "6"
+    let year_of_birth: String = String::from("2006");
+
+    // year is an i32
+    // the result of parsing the String
+    // stored on the STACK
+    let year: i32 = year_of_birth.parse().unwrap();
+
+    println!(
+        "Ghen is {} years old and born in {}",
+        age,
+        year
+    );
+
+    // function_a finishes here
+
+    // age and year are removed from the STACK
+
+    // year_of_birth is also removed from the STACK
+
+    // Before it is removed,
+    // Rust automatically frees
+    // the "2006" data stored on the HEAP
+}
+
+fn function_b(){
+
+    // The variable name is stored on the STACK
+    //
+    // The actual String data "Ghendida"
+    // is stored on the HEAP
+    let name: String = String::from("Ghendida");
+
+    // i32 value
+    // stored on the STACK
+    let entry_year = 2024;
+
+    println!(
+        "my name is {} and i entered this university in {}",
+        name,
+        entry_year
+    );
+
+    // function_b finishes here
+
+    // entry_year is removed from the STACK
+
+    // name is removed from the STACK
+
+    // The "Ghendida" data stored on the HEAP
+    // is automatically cleaned up by Rust
+}
+```
+
+#### Memory Layout During `function_a()`
+
+When `function_a()` is running, the stack contains the local variables `age`, `year`, and the metadata of `year_of_birth`.
+
+The actual string data `"2006"` is stored on the heap.
+
+```text
+STACK
+┌─────────────────────┐
+│ age = 19            │
+├─────────────────────┤
+│ year = 2006         │
+├─────────────────────┤
+│ year_of_birth       │
+│ Pointer ───────────────┐
+│ Length = 4         │   │
+│ Capacity = 4       │   │
+└─────────────────────┘   │
+                          ▼
+HEAP
+┌─────────────────────┐
+│ 2 │ 0 │ 0 │ 6       │
+└─────────────────────┘
+```
+
+---
+
+#### after `function_a()` finishes
+
+When the function scope ends:
+
+- `age` is removed from the stack.
+- `year` is removed from the stack.
+- `year_of_birth` is dropped.
+- The heap memory containing `"2006"` is automatically freed by Rust.
+
+```text
+STACK
+┌─────────────────────┐
+│ (empty)             │
+└─────────────────────┘
+
+HEAP
+┌─────────────────────┐
+│ "2006" freed        │
+└─────────────────────┘
+```
+
+---
+
+#### memory layout during `function_b()`
+
+When `function_b()` is running:
+
+- `entry_year` is stored directly on the stack.
+- `name` stores String metadata on the stack.
+- The actual text `"Ghendida"` is stored on the heap.
+
+```text
+STACK
+┌─────────────────────┐
+│ entry_year = 2024   │
+├─────────────────────┤
+│ name                │
+│ Pointer ───────────────┐
+│ Length = 8         │   │
+│ Capacity = 8       │   │
+└─────────────────────┘   │
+                          ▼
+HEAP
+┌─────────────────────┐
+│ G h e n d i d a     │
+└─────────────────────┘
+```
+
+---
+
+#### key Observation
+
+A `String` in Rust does **not** store its text directly on the stack.
+
+The stack only stores:
+
+- Pointer
+- Length
+- Capacity
+
+The actual text data lives on the heap.
+
+This is why Rust's ownership system is especially important for heap-allocated data such as:
+
+- `String`
+- `Vec<T>`
+- `HashMap<K, V>`
+
+When the owner goes out of scope, Rust automatically frees the associated heap memory.
 
 
 

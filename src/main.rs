@@ -260,6 +260,90 @@ fn scope() {
     // println!("{}", age); // error bc in outer scope
 }
 
+#[test]
+fn memory_management() {
 
+    // When function_a() is called,
+    // Rust creates a stack frame for function_a
+    function_a();
+
+    // After function_a() finishes,
+    // its stack frame is removed
+
+    // Then Rust creates a new stack frame
+    // for function_b
+    function_b();
+}
+
+fn function_a(){
+
+    // age is an i32
+    // its size is fixed (4 bytes)
+    // stored directly on the STACK
+    let age = 19;
+
+    // The variable year_of_birth itself is stored on the STACK
+    //
+    // However, the actual String data ("2006")
+    // is stored on the HEAP
+    //
+    // Stack:
+    // Pointer
+    // Length
+    // Capacity
+    //
+    // Heap:
+    // "2" "0" "0" "6"
+    let year_of_birth: String = String::from("2006");
+
+    // year is an i32
+    // the result of parsing the String
+    // stored on the STACK
+    let year: i32 = year_of_birth.parse().unwrap();
+
+    println!(
+        "Ghen is {} years old and born in {}",
+        age,
+        year
+    );
+
+    // function_a finishes here
+
+    // age and year are removed from the STACK
+
+    // year_of_birth is also removed from the STACK
+
+    // Before it is removed,
+    // Rust automatically frees
+    // the "2006" data stored on the HEAP
+}
+
+fn function_b(){
+
+    // The variable name is stored on the STACK
+    //
+    // The actual String data "Ghendida"
+    // is stored on the HEAP
+    let name: String = String::from("Ghendida");
+
+    // i32 value
+    // stored on the STACK
+    let entry_year = 2024;
+
+    println!(
+        "my name is {} and i entered this university in {}",
+        name,
+        entry_year
+    );
+
+    // function_b finishes here
+
+    // entry_year is removed from the STACK
+
+    // name is removed from the STACK
+
+    // The "Ghendida" data stored on the HEAP
+    // is automatically cleaned up by Rust
+}
 
 
