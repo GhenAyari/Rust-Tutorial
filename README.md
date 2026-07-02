@@ -1232,15 +1232,15 @@ A beginner-friendly guide to one of the most important concepts in Rust.
 
 ### Table of Contents
 
-- [Introduction](###-introduction)
-- [What is Ownership?](###-what-is-ownership)
-- [Why Does Rust Need Ownership?](###-why-does-rust-need-ownership)
-- [The Three Rules of Ownership](###-the-three-rules-of-ownership)
-- [Ownership and Scope](###-ownership-and-scope)
-- [Ownership and Heap Memory](###-ownership-and-heap-memory)
-- [Why Ownership Makes Rust Safe](####-why-ownership-makes-rust-safe)
-- [Comparison with Other Languages](###-comparison-with-other-languages)
-- [Key Takeaways](###-key-takeaways)
+- [Introduction](#introduction)
+- [What is Ownership?](#what-is-ownership)
+- [Why Does Rust Need Ownership?](#why-does-rust-need-ownership)
+- [The Three Rules of Ownership](#the-three-rules-of-ownership)
+- [Ownership and Scope](#ownership-and-scope)
+- [Ownership and Heap Memory](#ownership-and-heap-memory)
+- [Why Ownership Makes Rust Safe](#why-ownership-makes-rust-safe)
+- [Comparison with Other Languages](#comparison-with-other-languages)
+- [Key Takeaways](#key-takeaways)
 
 ---
 
@@ -1428,13 +1428,13 @@ Therefore, memory cannot be freed twice.
 
 Rust ensures that data cannot be accessed after it has been dropped.
 
-#### mproves Concurrency Safety
+#### Improves Concurrency Safety
 
 Ownership rules help prevent data races in multithreaded programs.
 
 ---
 
-### comparison with Other Languages
+### Comparison with Other Languages
 
 | Language | Memory Management |
 |-----------|------------------|
