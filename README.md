@@ -1505,4 +1505,52 @@ ghen
 test ownership_scope ... ok
 ```
 
+---
+
+#### Data Copy
+
+example code below
+
+```
+#[test]
+fn data_copy() {
+    let a = 16;
+    let b = a;
+
+    println!("{}, {}", a, b);
+    
+}
+```
+
+output below
+
+```
+C:/Users/Asus/.cargo/bin/cargo.exe test --color=always --package basic_rust --bin basic_rust data_copy --profile test --no-fail-fast --config "target.x86_64-pc-windows-gnu.runner=['C:\Program Files\JetBrains\RustRover 2025.3.4\bin\native-helper\intellij-rust-native-helper.exe']" -- --format=json --exact -Z unstable-options --show-output
+Testing started at 7:05 PM ...
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+16, 16
+```
+
+explanation
+
+```text
+STACK
+┌──────────┐
+│ a = 16   │
+├──────────┤
+│ b = 16   │
+└──────────┘
+
+HEAP
+┌──────────┐
+│ (empty)  │
+└──────────┘
+```
+
+- `i32` is stored on the stack.
+- `b = a` creates a copy of the value.
+- Both `a` and `b` remain valid.
+- No ownership transfer occurs.
+- No heap allocation is involved.
 

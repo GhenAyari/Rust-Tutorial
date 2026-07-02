@@ -417,5 +417,13 @@ fn ownership_scope() {
 
 } // variable a can't access or ended in here bcs already out of scope
 
+#[test]
+fn data_copy() {
+    let a = 16;
+    let b = a;
+
+    println!("{}, {}", a, b);
+
+}
 
 
