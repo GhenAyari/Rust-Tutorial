@@ -1,4 +1,4 @@
-> 🌐 **[🇬🇧 English](README.md) | 🇮🇩 Bahasa Indonesia
+[🇬🇧 English](README.md) | 🇮🇩 Bahasa Indonesia
 
 ---
 
