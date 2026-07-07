@@ -1,6 +1,6 @@
 # This is my repository for learn Rust programming, written on 29 july 2026, by GhenAyari.
 
-🇬🇧 English | [🇮🇩 Bahasa Indonesia](README.id.md)a
+🇬🇧 English | [🇮🇩 Bahasa Indonesia](README.id.md)
 
 ---
 
