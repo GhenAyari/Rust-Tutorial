@@ -1554,3 +1554,131 @@ HEAP
 - No ownership transfer occurs.
 - No heap allocation is involved.
 
+---
+
+#### Ownership Movement
+
+However, "Data Copy" does not occur for data types stored on the Heap.
+
+Following the Ownership rules, a value can only have one owner at a time.
+
+Therefore, when we create a new variable (a new owner) from an existing variable (the old owner), the data is not copied. Instead, the ownership is transferred from the old owner to the new owner.
+
+Once the transfer is complete, the old owner is automatically considered invalid and can no longer be used.
+
+example code below
+
+```
+#[test]
+fn ownership_movement() {
+
+    let name: String = String::from("Ghendida");
+
+    // ownership name has move to name_2
+    let name_2 = name;
+    // name variable has can't access because ownership move to name_2
+
+    println!("{}", name_2);
+
+}
+```
+
+and output below
+
+```
+PS D:\Rust\basic_rust> cargo test ownership_movement -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.52s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+Ghendida
+test ownership_movement ... ok
+```
+
+---
+
+#### Clone
+
+Now we know that data on the Stack will be copied, while data on the Heap will have its ownership moved.
+
+So, what if we also want to copy data that is stored on the Heap?
+
+To do that, we must use "Clone".
+
+Cloning means creating an exact duplicate of the original data.
+
+String has a .clone() method specifically for this purpose.
+
+When we call the .clone() method, it will copy the String data into a completely new String.
+
+In Rust, almost all data types stored on the Heap implement the .clone() method
+
+example code is below
+
+```
+#[test]
+fn clone() {
+
+    let name: String = String::from("Ghendida");
+
+    let name2 = name.clone();
+
+    println!("{}, {}", name, name2); // This is known as a clone.
+    // If the string data is 10 MB, Rust will perform a clone of the same size, which is 10 MB
+
+}
+```
+
+and the output
+
+```
+PS D:\Rust\basic_rust> cargo test clone -- --nocapture             
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+Ghendida, Ghendida
+test clone ... ok
+```
+
+## If Expression
+
+Rust also has if expressions. An if expression is used to branch your code depending on conditions. 
+If the condition is met, the if code block will be executed, but if it is not met, it will not be executed
+
+example code below
+
+```
+#[test]
+fn if_expression() {
+
+    let a = 8;
+
+    if a >= 9 {
+        println!("Cool!");
+    } else if a >= 8 {
+        println!("Not bad")
+    } else if a >= 5 {
+        println!("is bad")
+    } else {
+        println!("shit")
+    }
+
+}
+```
+
+and the output
+
+```
+PS D:\Rust\basic_rust> cargo test if_expression -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.55s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+Not bad
+test if_expression ... ok
+
+```

@@ -426,4 +426,45 @@ fn data_copy() {
 
 }
 
+#[test]
+fn ownership_movement() {
+
+    let name: String = String::from("Ghendida");
+
+    // ownership name has move to name_2
+    let name_2 = name;
+    // name variable has can't access because ownership move to name_2
+
+    println!("{}", name_2);
+
+}
+
+#[test]
+fn clone() {
+
+    let name: String = String::from("Ghendida");
+
+    let name2 = name.clone();
+
+    println!("{}, {}", name, name2); // This is known as a clone.
+    // If the string data is 10 MB, Rust will perform a clone of the same size, which is 10 MB
+
+}
+
+#[test]
+fn if_expression() {
+
+    let a = 8;
+
+    if a >= 9 {
+        println!("Cool!");
+    } else if a >= 8 {
+        println!("Not bad")
+    } else if a >= 5 {
+        println!("is bad")
+    } else {
+        println!("shit")
+    }
+
+}
 
