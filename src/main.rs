@@ -468,3 +468,56 @@ fn if_expression() {
 
 }
 
+#[test]
+fn let_statement () {
+
+    let value = 80;
+    let result: &str;
+
+    if value >= 80{
+        result = "Good";
+    } else if value >= 70 {
+        result = "Not Bad";
+    } else if value >= 60 {
+        result = "Bad";
+    } else {
+        result = "Shit";
+    }
+
+    println!("{}", result);
+
+}
+
+#[test]
+fn let_statement_simple() {
+    let value = 75;
+
+    let result = if value >= 80 {
+        "Good"
+    } else if value >= 70 {
+        "Not Bad"
+    } else if value >= 60 {
+        "Bad"
+    } else {
+        "Shit"
+    };
+
+    println!("{}", result);
+}
+
+#[test]
+fn loop_expression() {
+    let mut counter = 0;
+
+    loop{
+        counter += 1;
+
+        if counter == 11 {
+            break;
+        } else if counter % 2 == 1 {
+            continue;
+        }
+
+        println!("Counter: {}", counter);
+    }
+}

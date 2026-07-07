@@ -1682,3 +1682,48 @@ Not bad
 test if_expression ... ok
 
 ```
+
+---
+
+## Let Statement
+
+In Rust, if is an expression, meaning it can return a value and can be used with a let statement to 
+assign data to a variable. This is very useful because we don't need to separate the variable declaration from assigning its value
+
+example code below
+
+```
+#[test]
+fn let_statement () {
+
+    let value = 80;
+    let result: &str;
+
+    if value >= 80{
+        result = "Good";
+    } else if value >= 70 {
+        result = "Not Bad";
+    } else if value >= 60 {
+        result = "Bad";
+    } else {
+        result = "Shit";
+    }
+
+    println!("{}", result);
+
+}
+```
+
+and output is below
+
+```
+PS D:\Rust\basic_rust> cargo test let_statement -- --nocapture
+   Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.54s                                                                                                           
+     Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
+
+running 1 test
+Good
+test let_statement ... ok
+```
+
