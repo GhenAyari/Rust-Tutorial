@@ -1,6 +1,9 @@
 # This is my repository for learn Rust programming, written on 29 july 2026, by GhenAyari.
 
---- 
+> 🌐 **[🇬🇧 English](README.md) | 🇮🇩 Bahasa Indonesia
+
+---
+
 ## How to write "Hello world in Rust"
 <br>
 
