@@ -2173,3 +2173,177 @@ fn call_function_recursive() {
     function_recursive(String::from("Baskoro"), 3);
 }
 ```
+
+---
+## Ownership function
+
+In Rust, memory safety is guaranteed through a system called **Ownership**. When passing variables into a function, Rust behaves differently depending on where the data is stored in memory: **Stack** or **Heap**.
+
+### The Core Concept: Copy vs Move
+
+#### 1. The Stack (Copy Trait)
+Data types with a fixed size known at compile time (like `i8`, `i16`, `bool`, `char`) are stored on the **Stack**.
+When you pass these variables to a function, Rust simply **copies** the value. The original variable remains valid and can still be used.
+
+#### 2. The Heap (Move Semantics)
+Dynamic data types that can grow or shrink (like `String`) are stored on the **Heap**.
+When you pass a `String` to a function, Rust **moves** the ownership of that data to the function. The original variable loses its "ownership" and is immediately destroyed to prevent memory leaks.
+
+---
+
+### Visual Illustration
+
+```text
+============================================================
+1. COPY (Stack - Fixed Size Data)
+============================================================
+let number = 16;
+
+[ Main Function ]                     [ number_function ]
+  number (16)       ---- COPIES --->    number (16)
+ (STILL VALID)                        (Works independently)
+
+============================================================
+2. MOVE (Heap - Dynamic Data)
+============================================================
+let nama = String::from("Rusdi");
+
+[ Main Function ]                     [ name function ]
+  nama ("Rusdi")    ---- MOVES ---->    name ("Rusdi")
+ (DESTROYED/DROP)                     (Takes full ownership)
+============================================================
+```
+
+Code Example
+Below is the implementation demonstrating both concepts, as well as the difference between printing directly and returning a formatted string.
+
+
+```
+// 1. Stack Data Function (Copy)
+fn number_function(number: i16) {
+    println!("umur = {}", number);
+}
+
+// 2. Heap Data Function (Move)
+// This function promises to return a String type
+fn name(name: String) -> String { 
+    // format! works exactly like println! but instead of printing to the terminal,
+    // it builds and stores the text into a new String variable.
+    format!("nama {}", name) 
+}
+
+#[test]
+fn show_name_number() {
+    // --- STACK (COPY) ---
+    let number = 16; // 16 is copied because it has a fixed size
+    number_function(number); 
+    // This is the same as number_function(10) because 'number' is stored in the stack.
+    // In the stack, there is no ownership transfer; the data is merely copied.
+
+    // --- HEAP (MOVE) ---
+    let nama = String::from("Rusdi"); // "Rusdi" is stored in the heap because it's a String.
+    name(nama); 
+    // 'nama' has now transferred its ownership to the 'name' function.
+    // Therefore, 'nama' can no longer be called here because it belongs to 'name' now.
+    
+    // println!("nama {}", nama); // ERROR: Value borrowed after move.
+
+    // Calling the function directly inside println!
+    // We don't need {:?} because the 'name' function uses format! to return a clean String.
+    println!("{}", name(String::from("Amba"))); 
+}
+```
+
+![Screenshot From 2026-07-09 22-52-03.png](../../Pictures/Screenshots/Screenshot%20From%202026-07-09%2022-52-03.png)
+
+--- 
+
+## Returning Ownership (Tuple Workaround) in Rust
+
+Because Rust's memory management strictly enforces the **Move** semantic for Heap data (like `String`), variables sent into a function are usually destroyed (dropped) after the function finishes.
+
+However, we can "rescue" our original variables by making the function **return their ownership** back to us, usually by packing them into a **Tuple** alongside the newly created data.
+
+### Code Example
+
+```rust
+fn full_name_return_function(first_name: String, last_name: String) -> (String, String, String) {
+    // 1. The variables 'first_name' and 'last_name' take ownership of the data from the outside.
+    // 2. A new text is assembled in the Heap and stored in the 'full_name' variable.
+    let full_name = format!("{} {}", first_name, last_name);
+
+    // 3. RETURNING OWNERSHIP VIA TUPLE:
+    // Instead of letting 'first_name' and 'last_name' die (drop) inside this function,
+    // we pack them back into a Tuple along with the new 'full_name',
+    // and return them to give ownership back to the caller function.
+    (first_name, last_name, full_name)
+}
+
+#[test]
+fn show_full_name_return_function() {
+    // 1. We create two Strings, "Ezra" and "Arden".
+    // 2. We Move them into 'full_name_return_function'.
+    // 3. The function returns a Tuple containing 3 Strings.
+    // 4. We use Destructuring 'let (a, b, c)' to capture and assign 
+    //    the ownership of those 3 Strings back to our local scope.
+    let (a, b, c) = full_name_return_function(String::from("Ezra"), String::from("Arden"));
+    
+    // Now variables a, b, and c legally own their respective String data,
+    // so all three can be printed safely without any ownership errors!
+    println!("{} ", a); // Prints: Ezra
+    println!("{} ", b); // Prints: Arden
+    println!("{} ", c); // Prints: Ezra Arden
+}
+```
+
+### Visualizing the Workflow (The Factory Analogy)
+To easily understand how the memory moves, imagine the function as an Assembly Factory and variables as Boxes of Materials
+
+```
+
+=========================================================================
+VISUALIZING THE OWNERSHIP RETURN FLOW
+=========================================================================
+
+LOCATION 1: show_full_name_return_function (HOMETOWN)
+---------------------------------------------------
+STEP 1: You create 2 new boxes of materials.
+📦 String 1 = "Ezra"
+📦 String 2 = "Arden"
+
+STEP 2: You send both boxes via courier (MOVE) to the Factory.
+(Since the goods are sent, your HOMETOWN is now EMPTY. You no longer
+own "Ezra" and "Arden").
+|
+| Sending... 🚚💨
+v
+
+LOCATION 2: full_name_return_function (ASSEMBLY FACTORY)
+---------------------------------------------------
+STEP 3: The factory receives your boxes.
+The items now legally belong to the factory with new labels:
+📦 first_name = "Ezra"
+📦 last_name = "Arden"
+
+STEP 4: The factory builds a new item using your materials.
+📦 full_name = "Ezra Arden" (This is the 3rd, newly created item)
+
+STEP 5: The factory packs ALL THREE items into one big cardboard box (Tuple).
+📦 Cardboard Package = ("Ezra", "Arden", "Ezra Arden")
+Then, the package is shipped back to you (RETURN).
+|
+| Shipping back... 🚚💨
+v
+
+BACK TO LOCATION 1: show_full_name_return_function (HOMETOWN)
+---------------------------------------------------
+STEP 6: The package arrives! You tear it open (Destructuring let (a, b, c)).
+You distribute the contents to new owners in your town:
+📦 a receives "Ezra"
+📦 b receives "Arden"
+📦 c receives "Ezra Arden"
+
+DONE! Because the items are back in your town (owned by a, b, and c),
+you can now print them safely.
+```
+

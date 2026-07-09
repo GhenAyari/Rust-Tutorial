@@ -1379,3 +1379,178 @@ fn call_function_recursive() {
     function_recursive(String::from("Baskoro"), 3);
 }
 ```
+
+---
+
+## Kepemilikan (Ownership) pada Fungsi
+
+Di Rust, keamanan memori dijamin melalui sistem yang disebut **Ownership** (Kepemilikan). Ketika kita mengirim variabel ke dalam sebuah fungsi, Rust memberikan perlakuan yang berbeda tergantung di mana data tersebut disimpan: di **Stack** atau di **Heap**.
+
+
+
+### Konsep Utama: Copy vs Move
+
+#### 1. Stack (Sifat Copy)
+Tipe data yang ukurannya sudah pasti sejak awal (seperti `i8`, `i16`, `bool`, `char`) disimpan di **Stack**. 
+Ketika kamu mengirim variabel ini ke dalam fungsi, Rust hanya **mendongkrak (copy)** nilainya. Variabel asli tetap aman, utuh, dan masih bisa digunakan.
+
+#### 2. Heap (Sistem Move / Pindah Tangan)
+Tipe data dinamis yang ukurannya bisa berubah-ubah (seperti `String`) disimpan di **Heap**. 
+Ketika kamu mengirim `String` ke dalam fungsi, Rust **memindahkan (move)** kepemilikan data tersebut secara mutlak ke dalam fungsi. Variabel asli langsung dihanguskan (drop) untuk mencegah kebocoran memori.
+
+---
+
+### Ilustrasi Visual
+
+```text
+============================================================
+1. COPY (Stack - Data Ukuran Pasti)
+============================================================
+let number = 16;
+
+[ Fungsi Utama ]                      [ number_function ]
+  number (16)       ---- COPY ----->    number (16)
+ (MASIH VALID)                        (Berdiri sendiri)
+
+============================================================
+2. MOVE (Heap - Data Dinamis)
+============================================================
+let nama = String::from("Rusdi");
+
+[ Fungsi Utama ]                      [ fungsi name ]
+  nama ("Rusdi")    ---- MOVE ----->    name ("Rusdi")
+ (HANGUS / DROP)                      (Diambil alih total)
+============================================================
+```
+
+Contoh Kode
+Berikut adalah implementasi yang mendemonstrasikan kedua konsep di atas, sekaligus menunjukkan perbedaan antara mencetak langsung dan mengembalikan nilai teks (formatted string).
+
+```
+// 1. Fungsi Data Stack (Copy)
+fn number_function(number: i16) {
+    println!("umur = {}", number);
+}
+
+// 2. Fungsi Data Heap (Move)
+// Fungsi ini berjanji menghasilkan (return) data bertipe String
+fn name(name: String) -> String { 
+    // format! mirip println! 
+    // Bedanya, format! tidak langsung memunculkannya ke layar,
+    // melainkan menyusun dan menyimpannya menjadi variabel String baru.
+    format!("nama {}", name) 
+}
+
+#[test]
+fn show_name_number() {
+    // --- STACK (COPY) ---
+    let number = 16; // 16 dicopy karena fix size
+    number_function(number); 
+    // Ini sama saja dengan number_function(10) karena number disimpan di stack.
+    // Di stack tidak ada pindah ownership, yang ada hanya copy datanya.
+
+    // --- HEAP (MOVE) ---
+    let nama = String::from("Rusdi"); // "Rusdi" disimpan di heap karena dia String.
+    name(nama); 
+    // 'nama' sekarang berpindah kepemilikan (move) menjadi milik fungsi 'name'.
+    // Jadi 'nama' sudah tidak bisa dipanggil lagi di bawah baris ini.
+    
+    // println!("nama {}", nama); // ERROR: Data sudah pindah kepemilikan (Moved).
+
+    // Memanggil fungsi secara langsung.
+    // Ini bisa jalan dan tidak perlu menggunakan {:?} karena tadi di fungsi 'name' pakai format!
+    println!("{}", name(String::from("Amba"))); 
+}
+```
+
+![Screenshot From 2026-07-09 22-52-03.png](../../Pictures/Screenshots/Screenshot%20From%202026-07-09%2022-52-03.png)
+
+---
+
+## Mengembalikan Kepemilikan (Returning Ownership) di Rust
+
+Karena manajemen memori Rust sangat ketat menerapkan aturan **Move** (Pindah Tangan) untuk data di Heap (seperti `String`), variabel yang dikirim ke dalam fungsi biasanya akan hangus (drop) setelah fungsi tersebut selesai.
+
+Namun, kita bisa menyelamatkan variabel asli kita dengan cara menyuruh fungsi tersebut **mengembalikan kepemilikannya** kepada kita. Trik yang paling sering digunakan adalah membungkus kembali data lama beserta data baru ke dalam sebuah **Tuple**.
+
+### Contoh Kode
+
+```
+fn full_name_return_function(first_name: String, last_name: String) -> (String, String, String) {
+    // 1. Variabel 'first_name' dan 'last_name' menerima kepemilikan data dari luar.
+    // 2. Teks baru dirakit di Heap dan disimpan di variabel 'full_name'.
+    let full_name = format!("{} {}", first_name, last_name);
+
+    // 3. MENGEMBALIKAN OWNERSHIP VIA TUPLE:
+    // Daripada membiarkan 'first_name' dan 'last_name' mati (drop) di dalam fungsi,
+    // kita bungkus mereka kembali ke dalam Tuple bersama dengan 'full_name',
+    // lalu kita lemparkan (return) keluar untuk mengembalikan hak miliknya ke pemanggil.
+    (first_name, last_name, full_name)
+}
+
+#[test]
+fn show_full_name_return_function() {
+    // 1. Kita membuat data String "Ezra" dan "Arden".
+    // 2. Data tersebut dikirim (Move) ke dalam fungsi 'full_name_return_function'.
+    // 3. Fungsi mengembalikan paket Tuple berisi 3 String.
+    // 4. Kita gunakan teknik Destructuring 'let (a, b, c)' untuk menangkap kembali 
+    //    kepemilikan atas ketiga data String tersebut dari memori.
+    let (a, b, c) = full_name_return_function(String::from("Ezra"), String::from("Arden"));
+    
+    // Sekarang variabel a, b, dan c sah memegang hak milik masing-masing data String,
+    // sehingga ketiganya bisa dicetak dengan aman tanpa error!
+    println!("{} ", a); // Mencetak: Ezra
+    println!("{} ", b); // Mencetak: Arden
+    println!("{} ", c); // Mencetak: Ezra Arden
+}
+```
+
+### Visualisasi Cara Kerja (Analogi Pabrik) 
+untuk memudahkan pemahaman tentang pergerakan memori, bayangkan fungsi tersebut sebagai Pabrik Perakitan, dan variabel sebagai Kotak Barang.
+
+```
+=========================================================================
+            VISUALISASI ALUR PINDAH TANGAN (RETURNING OWNERSHIP)
+=========================================================================
+
+LOKASI 1: show_full_name_return_function (KOTA ASAL)
+---------------------------------------------------
+LANGKAH 1: Kamu membuat 2 barang baru.
+📦 String 1 = "Ezra"
+📦 String 2 = "Arden"
+
+LANGKAH 2: Kamu mengirim kedua barang itu pakai kurir (MOVE) ke Pabrik.
+(Karena barangnya dikirim, KOTA ASAL sekarang KOSONG. Kamu tidak punya 
+hak lagi atas barang "Ezra" dan "Arden").
+        |
+        | Mengirim... 🚚💨
+        v
+
+LOKASI 2: full_name_return_function (PABRIK PERAKITAN)
+---------------------------------------------------
+LANGKAH 3: Pabrik menerima barangmu.
+Barang sekarang sah menjadi milik pabrik dengan nama label baru:
+📦 first_name = "Ezra"
+📦 last_name = "Arden"
+
+LANGKAH 4: Pabrik merakit barang baru dari barang yang kamu kirim.
+📦 full_name = "Ezra Arden" (Ini barang ke-3 yang baru jadi)
+
+LANGKAH 5: Pabrik membungkus KETIGA barang tersebut jadi satu paket kardus (Tuple).
+📦 Paket Kardus = ("Ezra", "Arden", "Ezra Arden")
+Lalu paket itu dikirim balik ke kamu (RETURN).
+        |
+        | Mengirim balik... 🚚💨
+        v
+
+KEMBALI KE LOKASI 1: show_full_name_return_function (KOTA ASAL)
+---------------------------------------------------
+LANGKAH 6: Paket sampai! Kamu merobek paketnya (Destructuring let (a, b, c)).
+Kamu membagikan isi paket itu ke pemilik baru di kotamu:
+📦 a menerima barang "Ezra"
+📦 b menerima barang "Arden"
+📦 c menerima barang "Ezra Arden"
+
+SELESAI! Karena barangnya sudah kembali ke kotamu (dimiliki a, b, dan c), 
+sekarang kamu bisa mencetaknya dengan aman menggunakan println!.
+```

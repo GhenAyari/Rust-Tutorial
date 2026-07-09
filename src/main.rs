@@ -704,7 +704,7 @@ fn factorial_recursive(a: i32) -> i32 { // contoh faktorial menggunakan recursiv
     if a <= 1{ // jika a atau isi parameternya kurang dari sama dengan 1
         return 1; // hasilnya 1
     }
-    a * factorial_recursive(a-1) 
+    a * factorial_recursive(a-1)
     // Memanggil dirinya sendiri dengan parameter yang dikurangi 1 (a - 1).
     // Komputer akan menumpuk perkaliannya secara bertahap:
     // Misal parameter 3, alurnya: 3 * (2 * (1)) sehingga menghasilkan 6.
@@ -729,4 +729,72 @@ fn function_recursive(name: String, times: u32){ //
 #[test]
 fn call_function_recursive() {
     function_recursive(String::from("Baskoro"), 3);
+}
+
+fn number_function(number: i16){
+    println!("umur = {}", number);
+
+}
+
+fn name(name: String) -> String{ // funcntion ini berjanji menghasilkan String
+
+    format!("nama {}", name) // format! mirip println! bedanya kalau format tidak langsung memunculkannya ia menyimpan terlebih dahulu menjadi variable
+}
+
+#[test]
+fn show_name_number() {
+    let number = 16; // 16 dicopy karena fix size
+    number_function(number); // ini sama aja dengan number_function(10) karena number disimpan di stack, di stack tidak ada pindah ownership yang ada hanya copy datanya
+
+    let nama = String::from("Rusdi"); // Rusdi disimpan di heap karena dia String dan Rusdi milik nama
+    name(nama); // nama sekarang berpindah kepikimilkan menjadi name jadi nama sudah tidak bisa dipanggil lagi karena sudah milik name
+    // println!("nama {}", nama);  ini gabisa karena nama sudah menjadi milik name
+    println!("{}", name(String::from("Amba"))); // ini bisa dan tidak perlu menggunakan {:?} karena tadi di function name pakai format!
+}
+
+fn full_name(first_name: String, last_name: String)-> String {
+
+    format!("{} {}", first_name, last_name)
+}
+
+#[test]
+fn show_full_name() {
+    let nama_depan = String::from("Ambasat");
+    let nama_belakang = String::from("Zaki");
+
+    // 1. nama_depan dan nama_belakang pindah kepemilikan ke dalam fungsi full_name (lalu hangus).
+    // 2. Fungsi full_name mengembalikan data String BARU hasil rakitan, lalu ditangkap oleh variabel 'name'.
+    let name = full_name(nama_depan, nama_belakang);
+    println!("{} ", name);
+
+    // println!("{}", nama_depan); ini sudah tidak bisa digunakan karena ownership/ kepemilikannya sudah berpindah ke variable name
+    // println!("{}", nama_belakang); // ini juga sama kayak nama_depan
+}
+
+fn full_name_return_function(first_name: String, last_name: String) -> (String, String, String) {
+    // 1. Variabel 'first_name' dan 'last_name' menerima kepemilikan data dari luar.
+    // 2. Teks baru dirakit di Heap dan disimpan di variabel 'full_name'.
+    let full_name = format!("{} {}", first_name, last_name);
+
+    // 3. MENGBALIKKAN OWNERSHIP VIA TUPLE:
+    // Daripada membiarkan 'first_name' dan 'last_name' mati (drop) di dalam fungsi,
+    // kita bungkus mereka kembali ke dalam Tuple bersama dengan 'full_name',
+    // lalu kita lemparkan (return) keluar untuk mengembalikan hak miliknya ke fungsi utama.
+    (first_name, last_name, full_name)
+}
+
+#[test]
+fn show_full_name_return_function() {
+    // 1. Kita membuat data String "Ezra" dan "Arden" langsung saat memanggil fungsi.
+    // 2. Data tersebut dikirim (Move) ke dalam fungsi 'full_name_return_function'.
+    // 3. Setelah fungsi selesai memproses, fungsi mengembalikan paket Tuple berisi 3 String.
+    // 4. Kita gunakan teknik Destructuring 'let (a, b, c)' untuk menangkap kembali
+    //    kepemilikan atas ketiga data String tersebut dari memori.
+    let (a, b, c) = full_name_return_function(String::from("Ezra"), String::from("Arden"));
+
+    // Sekarang variabel a, b, dan c sah memegang hak milik masing-masing data String,
+    // sehingga ketiganya bisa dicetak dengan aman tanpa error!
+    println!("{} ", a); // Mencetak: Ezra
+    println!("{} ", b); // Mencetak: Arden
+    println!("{} ", c); // Mencetak: Ezra Arden
 }
