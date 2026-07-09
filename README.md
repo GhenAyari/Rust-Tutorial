@@ -1730,3 +1730,85 @@ Good
 test let_statement ... ok
 ```
 
+--- 
+
+## Loop
+
+In Rust, the `loop` keyword is used to create an **infinite loop**. Unlike `while` or `for`, a `loop` does not have a built-in exit condition at the start; it will execute the block of code repeatedly forever until it is explicitly told to stop.
+
+### Key Concepts
+
+*   **`break`**: Acts as an emergency stop. It immediately terminates the loop and exits the block.
+*   **`continue`**: Skips the remaining code in the current iteration and immediately jumps back to the top of the loop for the next turn.
+*   **Loop as an Expression**: In Rust, a `loop` can return a value. You can pass a value directly after the `break` keyword, which can then be assigned to a variable using a `let` statement.
+
+### Code Example
+
+```
+#[test]
+fn loop_expression() {
+    let mut counter = 0; // dimulai dari 0
+
+    loop{
+        counter += 1; // anggka akan ditambah 1 terus menerus
+
+        if counter == 11 { // jika counternya sudah mencapai 11
+            break; // hentikan
+        } else if counter % 2 == 1 { // jika counter dimodulus 2 hasilnya 1 maka buang atau tidak perlu tampilkan
+            continue; // continue akan mengabaikan atau skip dan langsung ke perulangan berikutnya
+        }
+
+        println!("Counter: {}", counter);
+    }
+}
+```
+
+and output is below
+
+```
+/home/ghen/.cargo/bin/cargo test --color=always --package basic_rust --bin basic_rust --profile test --no-fail-fast --config target.x86_64-unknown-linux-gnu.runner=['/home/ghen/.local/share/JetBrains/Toolbox/apps/rustrover/bin/native-helper/intellij-rust-native-helper'] -- loop_expression --format=json --exact -Z unstable-options --show-output
+Testing started at 7:11 PM ...
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running unittests src/main.rs (target/debug/deps/basic_rust-bf48ffa96a14829d)
+Counter: 2
+Counter: 4
+Counter: 6
+Counter: 8
+Counter: 10
+```
+
+another example
+
+```
+#[test]
+fn loop_return_value() {
+    let mut counter = 0; // angkanya adalah  0
+
+    let result = loop {
+        counter += 1; // perulangan akan dilakukan dan akan ditambah 1 terus
+        if counter >= 10 { // jika lebih dari sama dengan 10
+            break counter * 3; //break atau hentikan lalu dikali 3. jadi 3x10
+        }
+    };
+    println!("{}", result); // memanggil perulangan
+
+}
+```
+
+the output
+
+```
+#[test]
+fn loop_return_value() {
+    let mut counter = 0; // angkanya adalah  0
+
+    let result = loop {
+        counter += 1; // perulangan akan dilakukan dan akan ditambah 1 terus
+        if counter >= 10 { // jika lebih dari sama dengan 10
+            break counter * 3; //break atau hentikan lalu dikali 3. jadi 3x10
+        }
+    };
+    println!("{}", result); // memanggil perulangan
+
+}
+```

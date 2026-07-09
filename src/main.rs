@@ -507,17 +507,33 @@ fn let_statement_simple() {
 
 #[test]
 fn loop_expression() {
-    let mut counter = 0;
+    let mut counter = 0; // dimulai dari 0
 
     loop{
-        counter += 1;
+        counter += 1; // anggka akan ditambah 1 terus menerus
 
-        if counter == 11 {
-            break;
-        } else if counter % 2 == 1 {
-            continue;
+        if counter == 11 { // jika counternya sudah mencapai 11
+            break; // hentikan
+        } else if counter % 2 == 1 { // jika counter dimodulus 2 hasilnya 1 maka buang atau tidak perlu tampilkan
+            continue; // continue akan mengabaikan atau skip dan langsung ke perulangan berikutnya
         }
 
         println!("Counter: {}", counter);
     }
+    
 }
+
+#[test]
+fn loop_return_value() {
+    let mut counter = 0; // angkanya adalah  0
+
+    let result = loop {
+        counter += 1; // perulangan akan dilakukan dan akan ditambah 1 terus
+        if counter >= 10 { // jika lebih dari sama dengan 10
+            break counter * 3; //break atau hentikan lalu dikali 3. jadi 3x10
+        }
+    };
+    println!("{}", result); // memanggil perulangan
+
+}
+

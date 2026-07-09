@@ -1021,3 +1021,79 @@ fn let_statement () {
     println!("Hasil performa: {}", result); // Output: Bagus
 }
 ```
+
+--- 
+## Memahami Loop Di RUst
+
+Di dalam Rust, kata kunci `loop` digunakan untuk membuat **perulangan abadi (infinite loop)**. Berbeda dengan `while` atau `for`, `loop` tidak memiliki kondisi berhenti bawaan di awal jalurnya; ia akan mengeksekusi blok kode secara terus-menerus selamanya sampai diperintahkan untuk berhenti secara eksplisit.
+
+### Konsep Kunci
+
+*   **`break`**: Berfungsi sebagai tombol darurat. Perintah ini langsung menghentikan jalurnya perulangan dan keluar dari blok kode.
+*   **`continue`**: Melewati sisa kode yang ada di bawahnya pada putaran saat ini, lalu langsung lompat kembali ke atas `loop` untuk memulai putaran berikutnya.
+*   **Loop sebagai Expression**: Di Rust, `loop` merupakan sebuah *expression* yang bisa menghasilkan nilai. Kamu bisa menaruh nilai tepat setelah kata kunci `break`, lalu memasukkannya langsung ke dalam variabel menggunakan `let statement`.
+
+contoh kode
+
+```
+#[test]
+fn loop_expression() {
+    let mut counter = 0; // dimulai dari 0
+
+    loop{
+        counter += 1; // anggka akan ditambah 1 terus menerus
+
+        if counter == 11 { // jika counternya sudah mencapai 11
+            break; // hentikan
+        } else if counter % 2 == 1 { // jika counter dimodulus 2 hasilnya 1 maka buang atau tidak perlu tampilkan
+            continue; // continue akan mengabaikan atau skip dan langsung ke perulangan berikutnya
+        }
+
+        println!("Counter: {}", counter);
+    }
+    
+}
+```
+
+hasilnya adalah
+
+```
+/home/ghen/.cargo/bin/cargo test --color=always --package basic_rust --bin basic_rust --profile test --no-fail-fast --config target.x86_64-unknown-linux-gnu.runner=['/home/ghen/.local/share/JetBrains/Toolbox/apps/rustrover/bin/native-helper/intellij-rust-native-helper'] -- loop_expression --format=json --exact -Z unstable-options --show-output
+Testing started at 7:15 PM ...
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running unittests src/main.rs (target/debug/deps/basic_rust-bf48ffa96a14829d)
+Counter: 2
+Counter: 4
+Counter: 6
+Counter: 8
+Counter: 10
+```
+
+dan contoh lain dari loop 
+
+```
+#[test]
+fn loop_return_value() {
+    let mut counter = 0; // angkanya adalah  0
+
+    let result = loop {
+        counter += 1; // perulangan akan dilakukan dan akan ditambah 1 terus
+        if counter >= 10 { // jika lebih dari sama dengan 10
+            break counter * 3; //break atau hentikan lalu dikali 3. jadi 3x10
+        }
+    };
+    println!("{}", result); // memanggil perulangan
+
+}
+```
+
+dan hasilnya adalah
+
+```
+/home/ghen/.cargo/bin/cargo test --color=always --package basic_rust --bin basic_rust --profile test --no-fail-fast --config target.x86_64-unknown-linux-gnu.runner=['/home/ghen/.local/share/JetBrains/Toolbox/apps/rustrover/bin/native-helper/intellij-rust-native-helper'] -- loop_return_value --format=json --exact -Z unstable-options --show-output
+Testing started at 7:16 PM ...
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running unittests src/main.rs (target/debug/deps/basic_rust-bf48ffa96a14829d)
+30
+```
+
