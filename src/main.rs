@@ -540,23 +540,160 @@ fn loop_return_value() {
 
 #[test]
 fn loop_label() {
-    let mut number = 1;
+    let mut number = 1; // number sama dengan 1
 
-    'luar: loop {
-        let mut i = 1;
+    'luar: loop { // loop paling luar
+        let mut i = 1; // variable baru i sama dengan 1
 
         loop {
-            if number > 10 {
-                break 'luar;
+            if number > 10 { // jika number lebih dari 10
+                break 'luar; // hentikan
             }
-            println!("{} X {} = {}", number, i, number * i);
-            i += 1;
-            if i > 10 {
-                break;
+            println!("{} X {} = {}", number, i, number * i); // memanggil number dan i = number x i
+            i += 1; // i akan ditambahkan 1 terus
+            if i > 10 { // jika i lebih dari 10
+                break; // hentikan
             }
         }
 
-        number += 1;
+        number += 1; // number akan terus ditambahkan 1
     }
 }
 
+#[test]
+fn while_loop() {
+
+    let mut number = 0; // number dimulai dari 0
+
+    while number <= 15 { // selama number kurang dari sama degan 15 maka jalankan terus
+        if number % 2 == 1 { // jika number dimodulus 1 menghasilkan 1 (agar memunculkan yang ganjil aja)
+            println!("{}", number); // munculkan number
+        }
+        number += 1; // number akan ditambah 1 terus
+    }
+}
+
+#[test]
+fn while_array() {
+
+    let arrayy: [&str; 5] = ["Ambatukam", "Rusman", "Rusdiyansah", "Marlan", "Zuki"];
+    let mut index = 0;
+
+    while index < arrayy.len() {
+        println!("{} ", arrayy[index]);
+        index += 1;
+    }
+}
+
+#[test]
+fn loop_tuple_tapi_tidak_bisa() {
+
+    // untuk di tuple itu tidak bisa menggunakan perulangan, yang bisa hanya di array
+
+    let tuple: (i8, i8, &str) = (16, 10, "Ambatukam");
+
+    let (index1, index2, index3) = tuple;
+
+    println!("Nilai 1 = {}", index1);
+    println!("Nilai 2 = {}", index2);
+    println!("Nilai 3 = {}", index3);
+
+}
+
+#[test]
+fn loop_array() {
+
+    let arrayy: [&str; 5] = ["Ambatukam", "Rusman", "Rusdiyansah", "Marlan", "Zuki"]; // membuat array
+
+    for value in arrayy  { // value adalah variable baru dan di dalam array
+        print!(" {} ", value); // memanggil value
+    }
+}
+
+#[test]
+fn range_exclude() {
+    // let arrayy: [&str; 5] = ["Ambatukam", "Rusman", "Rusdiyansah", "Marlan", "Zuki"];
+
+    // contoh range exclude
+    let range = 0..6; // rangenya 0 sampai 5, 6 ga keikut
+    println!("Range start {} ", range.start);
+    println!("Range end {} ", range.end);
+
+
+    for i in range {
+        println!("Nama = {} ", i);
+    }
+}
+
+#[test]
+fn range_array_exclude() {
+
+    // range exclude
+    let range = 0..5;
+
+    let arrayy: [&str; 5] = ["Ambatukam", "Rusman", "Rusdiyansah", "Marlan", "Zuki"];
+
+    for i in range {
+        println!("Nama = {} ", arrayy[i]);
+    }
+}
+
+#[test]
+fn range_array_inclusive() {
+
+    let mut angka = 0;
+    // range exclude
+    let range = 0..=4; // karena ini range inclusive maka 4nya akan muncul beda sama exclude, kalau pakai exclude angka 4 ga masuk
+
+    let arrayy: [&str; 5] = ["Ambatukam", "Rusman", "Rusdiyansah", "Marlan", "Zuki"];
+
+    for i in range {
+        println!("Nama = {} range ke {} ", arrayy[i], angka);
+        angka += 1;
+    }
+}
+
+fn test_funcion(){
+    let absen: (&str, i32, i8) = ("Ghen", 2006, 16);
+
+    let (tuple1, tuple2, tuple3) = absen;
+    println!("Nama {}", tuple1);
+    println!("Tahun lahir {}", tuple2);
+    println!("Tanggal lahir {}", tuple3);
+}
+
+#[test]
+fn call_test_function() {
+    test_funcion();
+}
+
+fn say_hello(first_name: &str, last_name: &str) { // memberikan parameter di functionnya agar nanti ketika memanggil function tinggal memberikan parameter
+
+    println!("Hallo {} dan {}", first_name, last_name);
+
+}
+
+#[test]
+fn call_say_hello() {
+    say_hello("Ghendida", "Aditya"); // mengisi parameter dari functionnya
+    say_hello("Nolan", "Alerick");
+}
+
+fn factorial_loop(a: i32) -> i32 {
+
+    if a < 1 {
+        return 0;
+    }
+
+    let mut result = 1;
+    for i in 1..=a{
+       result *= i;
+   }
+    result
+}
+
+#[test]
+fn call_factorial_loop() {
+    let hasil = factorial_loop(3);
+    println!("hasil {}", hasil);
+}
