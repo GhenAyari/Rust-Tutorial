@@ -2056,3 +2056,120 @@ fn test_for_ranges() {
     }
 }
 ```
+
+---
+## Function
+
+Functions are the core building blocks in Rust. They allow us to write reusable, organized, and modular code. This section covers everything from basic functions to recursive algorithms.
+
+### 1. Basic Functions
+A function is declared using the `fn` keyword. Here is a simple function that unpacks (destructures) a tuple and prints its values.
+
+```rust
+fn test_function() {
+    let absen: (&str, i32, i8) = ("Ghen", 2006, 16);
+
+    // Destructuring the tuple into 3 separate variables
+    let (tuple1, tuple2, tuple3) = absen;
+    
+    println!("Name: {}", tuple1);
+    println!("Birth Year: {}", tuple2);
+    println!("Birth Date: {}", tuple3);
+}
+
+#[test]
+fn call_test_function() {
+    test_function();
+}
+```
+
+### 2. Functions with Parameters
+Parameters allow functions to accept input data dynamically. You must explicitly define the data type for each parameter.
+
+```rust
+// This function requires two string slice (&str) parameters
+fn say_hello(first_name: &str, last_name: &str) { 
+    println!("Hello {} {}!", first_name, last_name);
+}
+
+#[test]
+fn call_say_hello() {
+    // Calling the function by providing the exact arguments
+    say_hello("Ghendida", "Aditya"); 
+    say_hello("Nolan", "Alerick");
+}
+```
+
+### 3. Functions with Return Values
+If a function produces a result, we must declare the return type using an arrow `->`. Rust uses **Implicit Return**, meaning the last expression without a semicolon (`;`) is automatically returned.
+
+```rust
+// Calculates the factorial of 'a' using a standard for-loop
+fn factorial_loop(a: i32) -> i32 { 
+    // Guard clause: if 'a' is less than 1, return 0 immediately
+    if a < 1 {
+        return 0; 
+    } 
+
+    let mut result = 1; 
+    
+    // Iterates from 1 up to 'a'
+    for i in 1..=a { 
+       result *= i; 
+    }
+    
+    // Implicit Return: sends the final 'result' out of the function
+    result 
+}
+
+#[test]
+fn call_factorial_loop() {
+    // We must store the returned value in a variable to use it
+    let hasil = factorial_loop(3); 
+    println!("Result: {}", hasil); // Output: 6
+}
+```
+
+### 4. Recursive Functions
+A recursive function is a function that calls itself to solve smaller instances of the same problem. It must have a **Base Case** (a stopping condition) to prevent infinite loops (Stack Overflow).
+
+**Example A: Recursion with Return Value (Math)**
+```rust
+fn factorial_recursive(a: i32) -> i32 { 
+    // 1. BASE CASE: Stops recursion when 'a' reaches 1 or less
+    if a <= 1 { 
+        return 1; 
+    }
+    
+    // 2. RECURSIVE STEP: Multiplies 'a' by the result of the function with 'a - 1'
+    // E.g., for a = 3, it stacks: 3 * (2 * (1)) = 6
+    a * factorial_recursive(a - 1) 
+}
+
+#[test]
+fn call_factorial_recursive() {
+    let hasil = factorial_recursive(3);
+    println!("Recursive Result: {}", hasil);
+}
+```
+
+**Example B: Recursion without Return Value (Action)**
+```rust
+// Prints a name multiple times using recursion instead of a loop
+fn function_recursive(name: String, times: u32) { 
+    // Base Case: Stop when times hit 0
+    if times == 0 {
+        return;
+    } else {
+        println!("{}", name);
+    }
+    
+    // Call itself, reducing the 'times' counter by 1
+    function_recursive(name, times - 1);
+}
+
+#[test]
+fn call_function_recursive() {
+    function_recursive(String::from("Baskoro"), 3);
+}
+```

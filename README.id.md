@@ -1261,3 +1261,121 @@ fn test_for_range() {
     }
 }
 ```
+
+---
+
+## Fungsi (Functions) di Rust
+
+Fungsi adalah blok bangunan utama di dalam Rust. Dengan fungsi, kita bisa membuat kode yang rapi, dapat digunakan berulang kali, dan terstruktur. Bagian ini membahas mulai dari fungsi dasar hingga algoritma rekursif.
+
+### 1. Fungsi Dasar
+Sebuah fungsi dibuat menggunakan kata kunci `fn`. Berikut adalah contoh fungsi sederhana yang membongkar (*destructuring*) sebuah *tuple* dan mencetak isinya.
+
+```rust
+fn test_function() {
+    let absen: (&str, i32, i8) = ("Ghen", 2006, 16);
+
+    // Membongkar tuple menjadi 3 variabel terpisah
+    let (tuple1, tuple2, tuple3) = absen;
+    
+    println!("Nama: {}", tuple1);
+    println!("Tahun lahir: {}", tuple2);
+    println!("Tanggal lahir: {}", tuple3);
+}
+
+#[test]
+fn call_test_function() {
+    test_function();
+}
+```
+
+### 2. Fungsi dengan Parameter
+Parameter memungkinkan fungsi untuk menerima data dari luar secara dinamis. Di Rust, tipe data untuk setiap parameter wajib dituliskan secara jelas.
+
+```rust
+// Fungsi ini meminta dua parameter bertipe string slice (&str)
+fn say_hello(first_name: &str, last_name: &str) { 
+    println!("Halo {} {}!", first_name, last_name);
+}
+
+#[test]
+fn call_say_hello() {
+    // Memanggil fungsi dengan mengirimkan data langsung (argumen)
+    say_hello("Ghendida", "Aditya"); 
+    say_hello("Nolan", "Alerick");
+}
+```
+
+### 3. Fungsi dengan Nilai Kembalian (Return Value)
+Jika fungsi menghasilkan sebuah data untuk dikeluarkan, kita harus berjanji menggunakan tanda panah `->`. Rust menggunakan **Implicit Return**, di mana baris terakhir yang tidak menggunakan titik koma (`;`) akan otomatis dijadikan hasil keluaran fungsi.
+
+```rust
+// Menghitung faktorial dari 'a' menggunakan for-loop biasa
+fn factorial_loop(a: i32) -> i32 { 
+    // Kondisi Penyelamat: jika angka kurang dari 1, langsung kembalikan 0
+    if a < 1 {
+        return 0; 
+    } 
+
+    let mut result = 1; 
+    
+    // Perulangan dari 1 sampai batas 'a'
+    for i in 1..=a { 
+       result *= i; 
+    }
+    
+    // Implicit Return: Melempar nilai 'result' keluar sebagai hasil akhir
+    result 
+}
+
+#[test]
+fn call_factorial_loop() {
+    // Menampung hasil keluaran fungsi ke dalam variabel 'hasil'
+    let hasil = factorial_loop(3); 
+    println!("Hasil: {}", hasil); // Output: 6
+}
+```
+
+### 4. Fungsi Rekursif (Recursive Function)
+Fungsi rekursif adalah fungsi yang **memanggil dirinya sendiri** untuk menyelesaikan sebuah masalah secara bertahap. Fungsi ini WAJIB memiliki **Base Case** (kondisi berhenti) agar tidak memanggil dirinya selamanya dan membuat memori komputer penuh (*Stack Overflow*).
+
+**Contoh A: Rekursif dengan Return Value (Matematika)**
+```rust
+fn factorial_recursive(a: i32) -> i32 { 
+    // 1. BASE CASE (Kondisi Berhenti): Stop memanggil diri sendiri saat 'a' mencapai 1
+    if a <= 1 { 
+        return 1; 
+    }
+    
+    // 2. RECURSIVE STEP: Nilai 'a' dikali dengan hasil fungsi untuk angka sebelumnya
+    // Misal a = 3, alur di memori: 3 * (2 * (1)) = 6
+    a * factorial_recursive(a - 1) 
+}
+
+#[test]
+fn call_factorial_recursive() {
+    let hasil = factorial_recursive(3);
+    println!("Hasil Rekursif: {}", hasil);
+}
+```
+
+**Contoh B: Rekursif tanpa Return Value (Aksi Mencetak)**
+```rust
+// Mencetak nama berkali-kali menggunakan rekursif, bukan dengan perulangan loop
+fn function_recursive(name: String, times: u32) { 
+    // Base Case: Berhenti jika sisa waktu (times) sudah 0
+    if times == 0 {
+        return;
+    } else {
+        println!("{}", name);
+    }
+    
+    // Memanggil dirinya sendiri, dengan sisa 'times' yang dikurangi 1
+    function_recursive(name, times - 1);
+}
+
+#[test]
+fn call_function_recursive() {
+    function_recursive(String::from("Baskoro"), 3);
+}
+```
