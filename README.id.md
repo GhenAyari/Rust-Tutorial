@@ -1097,3 +1097,84 @@ Testing started at 7:16 PM ...
 30
 ```
 
+--- 
+
+### Loop Label
+
+Bagian ini menjelaskan cara menggunakan perulangan bersarang (*nested loops*) dan **Loop Labels** (`'label:`) di Rust untuk membuat tabel perkalian matematika.
+
+Struktur Kode
+
+```
+#[test]
+fn loop_label() {
+    let mut number = 1; // Angka pengali sebelah kiri (Variabel Luar)
+
+    'luar: loop {
+        let mut i = 1; // Angka pengali sebelah kanan (Variabel Dalam)
+
+        loop {
+            if number >= 10 {
+                break 'luar; // Menghentikan SELURUH struktur perulangan bersarang
+            }
+            
+            println!("{} X {} = {}", number, i, number * i);
+            i += 1;
+            
+            if i > 10 {
+                break; // Menghentikan perulangan DALAM saja
+            }
+        }
+
+        number += 1; // Hanya bertambah setelah loop dalam menyelesaikan 10 putaran
+    }
+}
+```
+
+output di bawah ini 
+
+```
+1 X 1 = 1
+1 X 2 = 2
+1 X 3 = 3
+1 X 4 = 4
+1 X 5 = 5
+1 X 6 = 6
+1 X 7 = 7
+1 X 8 = 8
+1 X 9 = 9
+1 X 10 = 10
+2 X 1 = 2
+2 X 2 = 4
+2 X 3 = 6
+2 X 4 = 8
+2 X 5 = 10
+2 X 6 = 12
+2 X 7 = 14
+2 X 8 = 16
+2 X 9 = 18
+2 X 10 = 20
+```
+
+#### Visualisasi Siklus Hidup (Cara Kerja)
+
+Untuk memudahkan pemahaman tentang bagaimana variabel-variabel ini bergerak di dalam memori, berikut adalah rincian alur eksekusinya langkah demi langkah:
+
+1. Scope dan Penempatan lokasi
+* **`number` (Variabel Luar)** dideklarasikan di lingkup teratas (*top-level scope*). Program hanya membaca baris ini **satu kali saja** di awal.
+* **`i` (Variabel Dalam)** dideklarasikan di dalam lingkup loop luar. Setiap kali loop luar menyelesaikan satu putaran penuh dan kembali ke atas, baris ini dieksekusi ulang, memaksa `i` kembali menjadi `1`.
+
+2. Garis Waktu Eksekusi
+
+| Loop Luar (`number`) | Loop Dalam (`i`) | Apa yang Terjadi di Balik Layar? |
+| :--- | :--- | :--- |
+| **`number = 1`** | `i = 1` | Loop dalam dimulai. Mencetak `1 X 1 = 1`. `i` naik jadi 2. |
+| `number = 1` | `i = 2` | Tetap di loop dalam. Mencetak `1 X 2 = 2`. `i` naik jadi 3. |
+| *... (berputar)* | *... (berputar)* | *Terus berlanjut sampai `i` bernilai 10 dan mencetak `1 X 10 = 10`.* |
+| `number = 1` | `i = 11` | Kondisi `if i > 10` terpenuhi, memicu `break;`. Loop dalam hancur. |
+| **`number += 1` $\rightarrow$ `2`**| *Dihapus* | Alur turun ke bawah, menambah `number` jadi 2, lalu putar balik ke atas `'luar`. |
+| `number = 2` | **`i = 1`** | **Baris `let mut i = 1;` dibaca lagi.** Variabel `i` baru lahir dari angka 1. |
+| `number = 2` | `i = 2` | Loop dalam mengulang proses dari 1 sampai 10 untuk perkalian angka 2. |
+
+3. Akhir Perulangan
+Sistem ini terus berjalan bergantian hingga variabel `number` menyentuh angka `10`. Pada detik itu juga, kondisi `if number >= 10` di dalam loop bernilai benar, memicu perintah `break 'luar;` yang langsung menghancurkan kedua tingkat loop seketika tanpa permisi.

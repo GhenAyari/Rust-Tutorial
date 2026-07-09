@@ -1812,3 +1812,168 @@ fn loop_return_value() {
 
 }
 ```
+
+--- 
+### Loop Label
+
+This section demonstrates how to use nested loops (a loop inside another loop) and **Loop Labels** (`'label:`) in Rust to create a multiplication table.
+
+Code Structure
+
+```
+#[test]
+fn loop_label() {
+    let mut number = 1; // Left-hand side multiplier (Outer Variable)
+
+    'luar: loop {
+        let mut i = 1; // Right-hand side multiplier (Inner Variable)
+
+        loop {
+            if number >= 10 {
+                break 'luar; // Terminate the ENTIRE nested loop structure
+            }
+            
+            println!("{} X {} = {}", number, i, number * i);
+            i += 1;
+            
+            if i > 10 {
+                break; // Terminate only the INNER loop
+            }
+        }
+
+        number += 1; // Incremented only after the inner loop finishes 10 cycles
+    }
+}
+```
+
+and output below
+
+```
+/home/ghen/.cargo/bin/cargo test --color=always --package basic_rust --bin basic_rust --profile test --no-fail-fast --config target.x86_64-unknown-linux-gnu.runner=['/home/ghen/.local/share/JetBrains/Toolbox/apps/rustrover/bin/native-helper/intellij-rust-native-helper'] -- loop_label --format=json --exact -Z unstable-options --show-output
+Testing started at 3:17 PM ...
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running unittests src/main.rs (target/debug/deps/basic_rust-bf48ffa96a14829d)
+1 X 1 = 1
+1 X 2 = 2
+1 X 3 = 3
+1 X 4 = 4
+1 X 5 = 5
+1 X 6 = 6
+1 X 7 = 7
+1 X 8 = 8
+1 X 9 = 9
+1 X 10 = 10
+2 X 1 = 2
+2 X 2 = 4
+2 X 3 = 6
+2 X 4 = 8
+2 X 5 = 10
+2 X 6 = 12
+2 X 7 = 14
+2 X 8 = 16
+2 X 9 = 18
+2 X 10 = 20
+3 X 1 = 3
+3 X 2 = 6
+3 X 3 = 9
+3 X 4 = 12
+3 X 5 = 15
+3 X 6 = 18
+3 X 7 = 21
+3 X 8 = 24
+3 X 9 = 27
+3 X 10 = 30
+4 X 1 = 4
+4 X 2 = 8
+4 X 3 = 12
+4 X 4 = 16
+4 X 5 = 20
+4 X 6 = 24
+4 X 7 = 28
+4 X 8 = 32
+4 X 9 = 36
+4 X 10 = 40
+5 X 1 = 5
+5 X 2 = 10
+5 X 3 = 15
+5 X 4 = 20
+5 X 5 = 25
+5 X 6 = 30
+5 X 7 = 35
+5 X 8 = 40
+5 X 9 = 45
+5 X 10 = 50
+6 X 1 = 6
+6 X 2 = 12
+6 X 3 = 18
+6 X 4 = 24
+6 X 5 = 30
+6 X 6 = 36
+6 X 7 = 42
+6 X 8 = 48
+6 X 9 = 54
+6 X 10 = 60
+7 X 1 = 7
+7 X 2 = 14
+7 X 3 = 21
+7 X 4 = 28
+7 X 5 = 35
+7 X 6 = 42
+7 X 7 = 49
+7 X 8 = 56
+7 X 9 = 63
+7 X 10 = 70
+8 X 1 = 8
+8 X 2 = 16
+8 X 3 = 24
+8 X 4 = 32
+8 X 5 = 40
+8 X 6 = 48
+8 X 7 = 56
+8 X 8 = 64
+8 X 9 = 72
+8 X 10 = 80
+9 X 1 = 9
+9 X 2 = 18
+9 X 3 = 27
+9 X 4 = 36
+9 X 5 = 45
+9 X 6 = 54
+9 X 7 = 63
+9 X 8 = 72
+9 X 9 = 81
+9 X 10 = 90
+10 X 1 = 10
+10 X 2 = 20
+10 X 3 = 30
+10 X 4 = 40
+10 X 5 = 50
+10 X 6 = 60
+10 X 7 = 70
+10 X 8 = 80
+10 X 9 = 90
+10 X 10 = 100
+```
+
+#### Visualizing the Lifecycle (How It Works)
+
+To easily understand how the variables move under the hood, here is a step-by-step breakdown of their execution flow:
+
+ 1. Scope and Placement
+* **`number` (Outer Variable)** is declared at the top-level scope. The program evaluates this line **only once**.
+* **`i` (Inner Variable)** is declared within the outer loop's scope. Every single time the outer loop completes a cycle and restarts, this line is re-evaluated, resetting `i` back to `1`.
+
+2. The Execution Timeline
+
+| Outer Loop (`number`) | Inner Loop (`i`) | What Happens Behind the Scenes? |
+| :--- | :--- | :--- |
+| **`number = 1`** | `i = 1` | The inner loop starts. Prints `1 X 1 = 1`. `i` increments to 2. |
+| `number = 1` | `i = 2` | Stays in the inner loop. Prints `1 X 2 = 2`. `i` increments to 3. |
+| *... (cycles)* | *... (cycles)* | *Continues until `i` reaches 10 and prints `1 X 10 = 10`.* |
+| `number = 1` | `i = 11` | Condition `if i > 10` triggers `break;`. The inner loop is destroyed. |
+| **`number += 1` $\rightarrow$ `2`**| *Dropped* | Flow moves down, increments `number` to 2, and loops back to the top of `'luar`. |
+| `number = 2` | **`i = 1`** | **`let mut i = 1;` is read again.** A brand new `i` is born at 1. |
+| `number = 2` | `i = 2` | The inner loop cycles through 1 to 10 all over again for multiplication 2. |
+
+3. The Grand Finale
+This system continues until `number` hits `10`. At that exact moment, the inner loop's condition `if number >= 10` evaluates to true, triggering `break 'luar;`. This bypasses the normal flow and immediately terminates both loops simultaneously.
