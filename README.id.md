@@ -1178,3 +1178,86 @@ Untuk memudahkan pemahaman tentang bagaimana variabel-variabel ini bergerak di d
 
 3. Akhir Perulangan
 Sistem ini terus berjalan bergantian hingga variabel `number` menyentuh angka `10`. Pada detik itu juga, kondisi `if number >= 10` di dalam loop bernilai benar, memicu perintah `break 'luar;` yang langsung menghancurkan kedua tingkat loop seketika tanpa permisi.
+
+---
+
+## Loop
+
+### Perbandingan `loop` vs `while` di Rust
+
+Rust menyediakan beberapa cara untuk melakukan perulangan. Dua alur kontrol kondisional yang paling mendasar adalah `loop` dan `while`. Memahami kapan harus menggunakan masing-masing perintah ini sangat penting untuk menulis kode Rust yang bersih dan efisien.
+
+### Tabel Perbandingan
+
+| Fitur | `loop` | `while` |
+| :--- | :--- | :--- |
+| **Konsep Dasar** | Perulangan tanpa henti (*infinite loop*) secara bawaan. | Perulangan bersyarat (*conditional loop*). |
+| **Kondisi Berhenti** | Tidak ada di pintu masuk. Harus dihentikan manual menggunakan `break` di dalam blok. | Dievaluasi di pintu masuk sebelum putaran dimulai. |
+| **Kapan Digunakan?**| Untuk sistem yang harus jalan terus (seperti server, *game loop*) atau jika kondisi berhentinya dinamis. | Untuk perulangan yang batasnya sudah jelas (seperti membaca isi array berdasarkan indeks). |
+| **Sebagai *Expression***| **Bisa.** Dapat mengembalikan nilai melalui perintah `break nilai;`. | **Tidak Bisa.** Selalu menghasilkan tipe unit kosongan `()`. |
+
+---
+
+### Mekanisme Detail
+
+#### 1. Kata Kunci `loop`
+`loop` memerintahkan compiler untuk mengeksekusi blok kode selamanya sampai ia menyentuh perintah `break` secara eksplisit. Karena Rust tahu bahwa `loop` hanya akan berhenti saat kamu memanggil `break`, Rust mengizinkan kita untuk melempar/mengembalikan nilai keluar dari loop tersebut.
+
+```rust
+fn while_loop() {
+
+    let mut number = 0; // number dimulai dari 0
+
+    while number <= 15 { // selama number kurang dari sama degan 15 maka jalankan terus
+        if number % 2 == 1 { // jika number dimodulus 1 menghasilkan 1 (agar memunculkan yang ganjil aja)
+            println!("{}", number); // munculkan number
+        }
+        number += 1; // number akan ditambah 1 terus
+    }
+}
+
+#[test]
+fn while_array() {
+
+    let arrayy: [&str; 5] = ["Ambatukam", "Rusman", "Rusdiyansah", "Marlan", "Zuki"];
+    let mut index = 0;
+
+    while index < arrayy.len() {
+        println!("{} ", arrayy[index]);
+        index += 1;
+    }
+}
+
+```
+--- 
+## Memahami `for` Loop di Rust
+
+`for loop` adalah primadona perulangan di Rust. Dibandingkan dengan `loop` dan `while`, `for loop` adalah opsi yang paling sering digunakan, paling aman, dan paling bersih (*clean*).
+
+Jika `while` mengulang sesuatu berdasarkan *kondisi*, maka `for loop` mengulang berdasarkan **koleksi data** atau **rentang nilai (range)** yang batasnya sudah pasti sejak awal.
+
+### Keunggulan Utama
+* **Keamanan Memori**: Menghilangkan risiko error "out-of-bounds" (indeks melampaui batas kapasitas) saat membaca array.
+* **Anti-Macet**: Kamu tidak perlu menulis penambah nilai variabel manual (seperti `i += 1`), sehingga mustahil terjadi *infinite loop* karena lupa menaikkan nilai counter.
+
+---
+
+### Contoh Kode
+
+#### 1. Perulangan Menggunakan Rentang Angka (`..` dan `..=`)
+Rust menggunakan tanda titik dua kali untuk membuat rentang deret angka secara otomatis.
+
+```rust
+#[test]
+fn test_for_range() {
+    // Range Eksklusif (1 sampai 4): Angka terakhir TIDAK diajak
+    for i in 1..5 {
+        println!("Eksklusif: {}", i); // Mencetak 1, 2, 3, 4
+    }
+
+    // Range Inklusif (1 sampai 5): Angka terakhir DIAJAK
+    for j in 1..=5 {
+        println!("Inklusif: {}", j); // Mencetak 1, 2, 3, 4, 5
+    }
+}
+```

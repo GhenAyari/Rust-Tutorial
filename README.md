@@ -1977,3 +1977,82 @@ To easily understand how the variables move under the hood, here is a step-by-st
 
 3. The Grand Finale
 This system continues until `number` hits `10`. At that exact moment, the inner loop's condition `if number >= 10` evaluates to true, triggering `break 'luar;`. This bypasses the normal flow and immediately terminates both loops simultaneously.
+
+
+--- 
+## While loop
+
+Rust provides several ways to handle repetition. The two most fundamental conditional control flows are `loop` and `while`. Understanding when to use which is essential for writing clean and idiomatic Rust code.
+
+### Summary Table
+
+| Feature | `loop` | `while` |
+| :--- | :--- | :--- |
+| **Concept** | Infinite loop by default. | Conditional loop. |
+| **Exit Condition** | None at the entry point. Requires manual `break` inside the block. | Evaluated at the entry point before each iteration. |
+| **Use Case** | Continuous processes (e.g., servers, game loops) or dynamic breaking logic. | Iterating through collection bounds or waiting for a specific flag to change. |
+| **As an Expression** | **Supported.** Can return a value via `break value;`. | **Not supported.** Always evaluates to the unit type `()`. |
+
+---
+
+### Detailed Mechanics
+
+#### 1. The `loop` Keyword
+A `loop` tells the compiler to re-execute a block of code forever until it explicitly hits a `break` statement. Because Rust knows a `loop` can only be exited when you decide to break, it allows you to return a value directly from it.
+
+```rust
+fn while_loop() {
+
+    let mut number = 0; // number dimulai dari 0
+
+    while number <= 15 { // selama number kurang dari sama degan 15 maka jalankan terus
+        if number % 2 == 1 { // jika number dimodulus 1 menghasilkan 1 (agar memunculkan yang ganjil aja)
+            println!("{}", number); // munculkan number
+        }
+        number += 1; // number akan ditambah 1 terus
+    }
+}
+
+#[test]
+fn while_array() {
+
+    let arrayy: [&str; 5] = ["Ambatukam", "Rusman", "Rusdiyansah", "Marlan", "Zuki"];
+    let mut index = 0;
+
+    while index < arrayy.len() {
+        println!("{} ", arrayy[index]);
+        index += 1;
+    }
+}
+```
+
+--- 
+## For
+
+The `for` loop is the most common, secure, and idiomatic way to handle repetition in Rust. While `while` loops iterate based on a *condition*, a `for` loop iterates over a **collection** or a **range of values** with a predefined boundary.
+
+### Key Advantages
+* **Memory Safety**: Eliminates the risk of "out-of-bounds" errors when traversing arrays.
+* **No Infinite Loop Trap**: You don't need to manually increment a counter (e.g., `i += 1`), preventing accidental infinite loops.
+
+---
+
+### Code Examples
+
+#### 1. Iterating Over Ranges (`..` and `..=`)
+Rust uses ranges to generate numbers sequentially.
+
+```rust
+#[test]
+fn test_for_ranges() {
+    // Exclusive Range (1 to 4): upper bound is NOT included
+    for i in 1..5 {
+        println!("Exclusive: {}", i); // Prints 1, 2, 3, 4
+    }
+
+    // Inclusive Range (1 to 5): upper bound IS included
+    for j in 1..=5 {
+        println!("Inclusive: {}", j); // Prints 1, 2, 3, 4, 5
+    }
+}
+```

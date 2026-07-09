@@ -679,21 +679,54 @@ fn call_say_hello() {
     say_hello("Nolan", "Alerick");
 }
 
-fn factorial_loop(a: i32) -> i32 {
+fn factorial_loop(a: i32) -> i32 { // membuat parameter dengan nilai i32 dan membuat janji akan menghasilkan nilai i32 juga
 
     if a < 1 {
-        return 0;
-    }
+        return 0;  // jika a kurang dari 1, user memasukkan kurang dari 1 atau negatif
+    } // maka hasilnya 0 dan tidak menghasilkann apa ap
 
-    let mut result = 1;
-    for i in 1..=a{
-       result *= i;
+    let mut result = 1; // membuat variable hasil yaitu 1
+    for i in 1..=a{ // variable i dari 1 sampai a,misal memasukkan angka 5 di parameter artinya 1 sampai 5
+       result *= i; // akan menghasilkan angka result dikali dengan i
    }
-    result
+    result // Implicit Return atau Expression misal memasukkan factorial_loop(3) maka akan menghasilkan atau mengeluarkan 6 dari 1x2x3 (berdasarkan pemrograman)
 }
 
 #[test]
 fn call_factorial_loop() {
-    let hasil = factorial_loop(3);
+    // factorial_loop(6); // ini tidak mencetak apa apa
+
+    let hasil = factorial_loop(3); // cara memanggilnya
+    println!("hasil {}", hasil); // membuat println! untuk memanggil function dan mencetak hasil dari function
+}
+
+fn factorial_recursive(a: i32) -> i32 { // contoh faktorial menggunakan recursive function
+    if a <= 1{ // jika a atau isi parameternya kurang dari sama dengan 1
+        return 1; // hasilnya 1
+    }
+    a * factorial_recursive(a-1) 
+    // Memanggil dirinya sendiri dengan parameter yang dikurangi 1 (a - 1).
+    // Komputer akan menumpuk perkaliannya secara bertahap:
+    // Misal parameter 3, alurnya: 3 * (2 * (1)) sehingga menghasilkan 6.
+}
+
+#[test]
+fn call_factorial_recursive() {
+    let hasil = factorial_recursive(3);
     println!("hasil {}", hasil);
+}
+
+fn function_recursive(name: String, times: u32){ //
+    if times == 0{
+        return;
+    } else {
+        println!("{}", name);
+    }
+    function_recursive(name, times - 1);
+
+}
+
+#[test]
+fn call_function_recursive() {
+    function_recursive(String::from("Baskoro"), 3);
 }
