@@ -798,3 +798,21 @@ fn show_full_name_return_function() {
     println!("{} ", b); // Mencetak: Arden
     println!("{} ", c); // Mencetak: Ezra Arden
 }
+
+fn full_name_references(first_name: &String, last_name: &String)-> String{
+    format!("{} {}", first_name, last_name)
+}
+
+#[test]
+fn show_full_name_references() {
+
+    let first_name = String::from("Caleum");
+    let last_name = String::from("Lucien");
+
+    let name = full_name_references(&first_name, &last_name);
+
+    println!("{}", first_name);
+    println!("{} ", last_name);
+    println!("{} ", name);
+
+}
