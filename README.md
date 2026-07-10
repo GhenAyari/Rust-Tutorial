@@ -2474,5 +2474,63 @@ let mut value = String::from("Rusdiyansah");
 }
 ```
 
+---
 
+## Understanding Slices and String Slices in Rust
+
+### What is a Slice?
+In Rust, a **slice** is a reference to a contiguous sequence of elements in a collection (like an array or a string) rather than the whole collection.
+
+When you create a slice, you are not copying any data or allocating new memory. Instead, a slice acts as a "window" that merely looks at existing data. Under the hood, a slice stores only two pieces of information:
+1. **Pointer:** The exact memory address where the slice begins.
+2. **Length:** The number of elements the slice encompasses.
+
+## What is a String Slice (`&str`)?
+A `String` in Rust is essentially a growable array of bytes (`Vec<u8>`) encoded in UTF-8, stored on the Heap memory. A **string slice (`&str`)** is just a reference (a "window") to a portion of that UTF-8 data. Because it's a reference, it is incredibly fast and memory-efficient.
+
+## Code Examples
+
+```rust
+#[test]
+fn slice_references() {
+    // The array is stored in a contiguous memory block with a fixed size (6 elements).
+    let angka: [i16; 6] = [1, 2, 3, 4, 5, 6];
+
+    // The `..` syntax means "take everything from start to finish".
+    // slice1 references all elements in the array.
+    let slice1: &[i16] = &angka[..];
+    println!("slice1: {:?}", slice1); // Output: [1, 2, 3, 4, 5, 6]
+
+    // `0..6` means "start from index 0, up to before index 6".
+    // The upper bound is exclusive.
+    let slice2: &[i16] = &angka[0..6];
+    println!("slice2: {:?}", slice2); // Output: [1, 2, 3, 4, 5, 6]
+
+    // `2..` means "start from index 2, and continue to the very end".
+    let slice3: &[i16] = &angka[2..];
+    println!("slice3: {:?}", slice3); // Output: [3, 4, 5, 6]
+
+    // `..5` means "start from the beginning, stop before index 5".
+    let slice4: &[i16] = &angka[..5];
+    println!("slice4: {:?}", slice4); // Output: [1, 2, 3, 4, 5]
+}
+
+#[test]
+fn string_slice_references() {
+    // The `name` variable is a String type. Its actual data is allocated on the Heap
+    // because text size can dynamically grow or shrink.
+    let name: String = String::from("Ghen Ayari");
+    
+    // &str (String slice) directly peeks into the Heap memory owned by `name`.
+    // `..4` takes the first 4 bytes (indices 0, 1, 2, 3).
+    let first_name: &str = &name[..4];
+    println!("{}", first_name); // Output: Ghen
+
+    // `5..` skips the first 5 bytes (discarding "Ghen " including the space),
+    // and takes the remainder of the string.
+    let last_name: &str = &name[5..];
+    println!("{}", last_name); // Output: Ayari
+}
+```
+![Screenshot From 2026-07-10 17-16-47.png](../../Pictures/Screenshots/Screenshot%20From%202026-07-10%2017-16-47.png)
 

@@ -860,3 +860,31 @@ fn test_ubah_buku() {
     println!("{} dan jumlahnya digabung jumlah sementara dan jumlah tetap adalah {}", buku, jumlah_sementara);
 
 }
+#[test]
+fn slice_references() {
+    let angka: [i16; 6] = [1, 2, 3, 4, 5, 6];
+
+    let slice1: &[i16] = &angka[..];
+    println!("slice1: {:?}", slice1);
+
+    let slice2: &[i16] = &angka[0..6];
+    println!("slice2: {:?}", slice2);
+
+    let slice3: &[i16] = &angka[2..];
+    println!("slice3: {:?}", slice3);
+
+    let slice4: &[i16] = &angka[..5];
+    println!("slice4: {:?}", slice4);
+
+}
+
+#[test]
+fn string_slice_references() {
+
+    let name: String = String::from("Ghen Ayari");
+    let first_name: &str = &name[..4];
+    println!("{}", first_name);
+
+    let last_name: &str = &name[5..];
+    println!("{}", last_name);
+}

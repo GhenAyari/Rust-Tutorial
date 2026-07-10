@@ -1689,3 +1689,65 @@ fn test_ubah_buku() {
     println!("{} dan jumlahnya digabung jumlah sementara dan jumlah tetap adalah {}", buku, jumlah_sementara);
 }
 ```
+
+---
+
+## Memahami Slice dan String Slice di Rust
+
+### Apa Itu Slice?
+Di dalam bahasa Rust, slice adalah referensi (penunjuk) ke sebagian elemen berurutan di dalam sebuah koleksi data (seperti array atau string), dan bukan ke seluruh koleksinya.
+
+Saat membuat sebuah slice, kamu tidak sedang menyalin data atau mengalokasikan memori baru. Slice bertindak seperti "jendela" untuk melihat data yang sudah ada. Di balik layar, slice hanya menyimpan dua informasi:
+1. **Pointer:** Alamat memori tempat data tersebut dimulai.
+
+2. **Length (Panjang):** Berapa banyak elemen yang masuk ke dalam cakupan slice tersebut.
+
+### Apa Itu String Slice (&str)?
+A. Tipe data `String` di Rust pada dasarnya adalah array byte (`Vec<u8>`) yang bisa bertambah besar ukurannya, dienkode dalam standar UTF-8, dan disimpan di dalam memori Heap. **String slice (`&str`)** hanyalah referensi ke sebagian data UTF-8 tersebut. Karena sifatnya yang hanya "meminjam" data, proses ini berjalan sangat cepat dan hemat RAM.
+
+### Contoh kode
+
+```rust
+#[test]
+fn slice_references() {
+    // Array disimpan di satu blok memori berurutan yang ukurannya tetap (6 elemen).
+    let angka: [i16; 6] = [1, 2, 3, 4, 5, 6];
+
+    // Simbol `..` berarti "ambil semuanya dari awal sampai akhir".
+    // slice1 mereferensikan seluruh elemen array.
+    let slice1: &[i16] = &angka[..];
+    println!("slice1: {:?}", slice1); // Output: [1, 2, 3, 4, 5, 6]
+
+    // Simbol `0..6` berarti "mulai dari index 0, sampai sebelum index 6".
+    // Ingat, angka terakhir bersifat eksklusif (tidak diikutkan).
+    let slice2: &[i16] = &angka[0..6];
+    println!("slice2: {:?}", slice2); // Output: [1, 2, 3, 4, 5, 6]
+
+    // Simbol `2..` berarti "mulai dari index 2, teruskan sampai elemen paling akhir".
+    let slice3: &[i16] = &angka[2..];
+    println!("slice3: {:?}", slice3); // Output: [3, 4, 5, 6]
+
+    // Simbol `..5` berarti "mulai dari elemen paling awal, berhenti sebelum index 5".
+    let slice4: &[i16] = &angka[..5];
+    println!("slice4: {:?}", slice4); // Output: [1, 2, 3, 4, 5]
+}
+
+#[test]
+fn string_slice_references() {
+    // Variabel `name` bertipe String. Data aslinya dialokasikan di dalam memori Heap
+    // karena ukuran teks bisa bertambah atau berkurang secara dinamis.
+    let name: String = String::from("Ghen Ayari");
+    
+    // &str (String slice) mengintip langsung ke memori Heap milik `name`.
+    // `..4` mengambil 4 byte pertama (index 0, 1, 2, 3).
+    let first_name: &str = &name[..4];
+    println!("{}", first_name); // Output: Ghen
+
+    // `5..` melompati 5 byte pertama (membuang "Ghen " termasuk spasi),
+    // lalu mengambil sisanya sampai karakter terakhir.
+    let last_name: &str = &name[5..];
+    println!("{}", last_name); // Output: Ayari
+}
+```
+
+![Screenshot From 2026-07-10 17-16-47.png](../../Pictures/Screenshots/Screenshot%20From%202026-07-10%2017-16-47.png)
