@@ -1751,3 +1751,199 @@ fn string_slice_references() {
 ```
 
 ![Screenshot From 2026-07-10 17-16-47.png](../../Pictures/Screenshots/Screenshot%20From%202026-07-10%2017-16-47.png)
+
+---
+
+## Struct di Rust
+Di Rust, **Struct** adalah tipe data kustom yang memungkinkan kita membungkus dan memberi nama pada beberapa nilai yang saling berkaitan menjadi satu kesatuan. Walaupun sekilas mirip dengan *Class* di pemrograman berorientasi objek (OOP), Rust memisahkan secara tegas antara **Data** (Struct) dan **Behavior/Perilaku** (yang nantinya ditambahkan menggunakan blok `impl`).
+
+### Istilah Penting
+1. **Struct (Cetakan/Blueprint):** Rancangan pabrik yang mendefinisikan syarat data apa saja yang harus ada.
+2. **Field (Data):** Variabel atau atribut yang ada di dalam Struct (contoh: `first_name`, `age`).
+3. **Instance (Wujud Nyata):** Hasil cetakan dari Struct. Ketika kamu mengisi semua *field* dan menyimpannya ke dalam variabel, ia berubah menjadi *Instance* (objek nyata di memori).
+
+### Tiga Jenis Struct
+1. **Classic Struct:** Memiliki nama untuk setiap *field*. Cocok untuk data yang kompleks agar tidak tertukar.
+2. **Tuple Struct:** Gabungan Tuple dan Struct. *Field*-nya tidak bernama dan diakses menggunakan urutan indeks (`.0`, `.1`). Cocok untuk koordinat.
+3. **Unit Struct:** Tidak memiliki *field* sama sekali. Berguna sebagai penanda (*marker*) pada logika tingkat lanjut.
+
+### Contoh Kode & Fitur
+
+```rust
+// 1. CLASSIC STRUCT
+struct Person {
+    first_name: String,
+    middle_name: String,
+    last_name: String,
+    age: u8
+}
+
+#[test]
+fn struct_person() {
+    // Membuat instance dari Person. Semua field WAJIB diisi.
+    let person: Person = Person {
+        first_name: String::from("Ghendida"),
+        last_name: String::from("Ayari"),
+        middle_name: String::from("Gantari"),
+        age: 20
+    };
+
+    println!("{}", person.first_name);
+    // ... dst
+}
+
+// Menggunakan References (&) agar fungsi ini hanya MEMINJAM Struct, 
+// tidak merampas kepemilikannya.
+fn print_person(person: &Person) { 
+    println!("Nama depan = {}", person.first_name);
+    println!("Usia = {}", person.age);
+}
+
+#[test]
+fn struct_init_shorthand() {
+    let first_name: String = String::from("Ghendida");
+    let last_name: String = String::from("Ayari");
+    let age: u8 = 21;
+
+    let person: Person = Person {
+        // FIELD INIT SHORTHAND: Karena nama variabel dan nama field sama, cukup tulis sekali.
+        // EFEKNYA: Variabel first_name dan last_name dari luar akan di-MOVE (hangus),
+        // kepemilikannya sekarang pindah seutuhnya ke dalam struct 'person'.
+        first_name, 
+        middle_name: String::from("Gantari"),
+        last_name, 
+        age // Karena u8 adalah tipe Stack (Copy), age ini cuma di-copy, variabel aslinya tidak hangus.
+    };
+
+    // println!("{}", first_name); // BENAR! Ini akan error karena ownership sudah pindah.
+
+    print_person(&person);
+
+    // STRUCT UPDATE SYNTAX (..)
+    let person2: Person = Person {
+        // Kamu melakukan CLONE karena String ada di Heap.
+        // Jika kamu TIDAK melakukan clone, maka '..person' di bawah akan merampas
+        // sisa field String dari 'person' lama, membuat 'person' lama cacat (Partial Move).
+        first_name: person.first_name.clone(),
+        middle_name: person.middle_name.clone(),
+        last_name: person.last_name.clone(),
+        
+        // Memerintahkan Rust: "Untuk field sisanya (yaitu age), tolong ambil/copy dari 'person' lama"
+        ..person
+    };
+
+    print_person(&person2);
+    // Ini BISA DIPANGGIL dengan aman karena kamu sangat pintar menghindari 
+    // pemindahan String dengan menggunakan .clone() di atas!
+    print_person(&person); 
+}
+
+// 2. TUPLE STRUCT
+// Field tidak bernama, urutannya penting. Sangat cocok untuk koordinat.
+struct GeoPoint(f64, f64);
+
+#[test]
+fn tuple_struct() {
+    let geo_point = GeoPoint(-656.73, 314.431);
+    // Mengaksesnya menggunakan indeks (.0, .1) layaknya Tuple biasa
+    println!("lat = {} ", geo_point.0);
+    println!("let = {} ", geo_point.1);
+}
+
+// 3. UNIT STRUCT
+// Tidak punya field. Berguna untuk logika penandaan tingkat lanjut nanti.
+struct Nothing;
+
+#[test]
+fn test_nothing() {
+    let _notihing1 = Nothing;
+    let _nothing2 = Nothing{}; // Menggunakan kurung kurawal kosong juga valid
+}
+```
+
+---
+
+## Impl dan Method di Rust
+
+Di Rust, Data dan Perilaku (Behavior) dipisahkan secara tegas. Jika `struct` digunakan untuk membuat kerangka **Data**, maka blok `impl` (Implementation) digunakan untuk merancang **Perilaku/Fungsi** dari data tersebut.
+
+### Analogi: Pabrik dan Sepeda Motor
+* **Struct:** Cetak biru atau rancangan di atas kertas (menentukan syarat: harus ada nama, warna, bensin).
+* **Blok Impl:** Buku panduan manual atau pabriknya. Tempat menaruh semua instruksi tentang apa yang bisa dilakukan motor tersebut.
+* **Associated Function:** Mesin pembuat di dalam pabrik. Tugasnya murni *mencetak* wujud fisik motor dari nol.
+* **Method:** Aksi yang bisa dilakukan oleh wujud fisik motor yang sudah jadi (misal: mengecek status, diisi bensin, atau dihancurkan).
+
+### Aturan Main Blok `impl`
+* **✅ Yang BISA dilakukan:** Kamu bisa membuat lebih dari satu blok `impl` untuk Struct yang sama (Rust akan menggabungkannya otomatis saat kompilasi).
+* **❌ Yang TIDAK BISA dilakukan:** Kamu tidak bisa menaruh variabel/field data baru di dalam blok `impl`. Ruangan ini khusus untuk fungsi dan konstanta saja.
+
+### Aturan Kepemilikan (Ownership) pada `self`
+Parameter pertama pada fungsi di dalam `impl` menentukan jenis fungsi tersebut:
+1. **Tanpa `self` (Associated Function):** Berperan sebagai pabrik/pembuat objek. Dipanggil menggunakan titik dua ganda (`NamaStruct::nama_fungsi()`).
+2. **`&self` (Membaca):** Method hanya meminjam untuk melihat/membaca data.
+3. **`&mut self` (Membaca & Mengubah):** Method meminjam akses VIP untuk mengedit data di dalam struct.
+4. **`self` (Mengambil Ownership):** Method merampas hak milik instance secara utuh. Setelah fungsi ini selesai, objek aslinya akan **hangus/mati** dari memori dan tidak bisa dipakai lagi.
+
+---
+
+### Contoh Kode
+
+```rust
+struct Motor {
+    nama: String,
+    warna: String,
+    no_rangka: u32,
+    bensin: u8
+}
+
+impl Motor { 
+    // 1. ASSOCIATED FUNCTION
+    // Fungsi ini ibarat pabrik, tugasnya hanya mencetak wujud dari struct.
+    // Tidak ada &self (membaca), &mut self (membaca mengubah), atau self (mengambil ownership).
+    fn motor_baru(nama_merek: String, warna_motor: String) -> Motor { 
+        Motor {
+            nama: nama_merek,
+            warna: warna_motor,
+            bensin: 0,
+            no_rangka: 18765,
+        }
+    }
+
+    // 2. METHOD - IMMUTABLE BORROW
+    // Function ini menggunakan &self untuk membaca saja.
+    fn keluar_pabrik_cek_status(&self) { 
+        println!("Motor dengan nomor rangka {} keluar pabrik dan sekarang bensinnya {} ", self.no_rangka, self.bensin);
+    }
+
+    // 3. METHOD - MUTABLE BORROW
+    // Fungsi ini menggunakan &mut self untuk membaca dan mengubah/mengedit data.
+    fn isi_bensin(&mut self, tambah_bensin: u8) { 
+        self.bensin += tambah_bensin; // Menambah bensin yang sudah ada dengan nilai baru
+        println!("Motor dengan nomor rangka {} dan warna {} sudah isi bensin menjadi {} liter ", self.no_rangka, self.warna, self.bensin);
+    }
+
+    // 4. METHOD - TAKE OWNERSHIP
+    // Mengambil ownership. Kepemilikan sekarang berpindah, semua tentang Motor telah menjadi milik fungsi ini.
+    fn hancurkan_motor(self) { 
+        println!("Hancurkan motor menjadi rongsokan {} ", self.nama);
+        // Setelah batas ini, data motor di memori akan dibersihkan (Drop).
+    }
+}
+
+#[test]
+fn show_motor() {
+    // Cara memanggil associated function menggunakan '::'
+    let mut motor_saya = Motor::motor_baru(String::from("Yamaha"), String::from("Hitam")); 
+
+    // Cara memanggil method dengan nama_variabel.nama_method()
+    motor_saya.keluar_pabrik_cek_status(); 
+
+    motor_saya.isi_bensin(3);
+
+    // Pemilik dari Motor sekarang sudah dipanggil dan sudah berakhir.
+    motor_saya.hancurkan_motor(); 
+
+    // motor_saya.keluar_pabrik_cek_status(); 
+    // ^ Baris ini sudah tidak bisa dijalankan lagi karena hancurkan_motor telah mengakhiri siklus hidup 'motor_saya'.
+}
+```

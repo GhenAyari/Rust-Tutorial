@@ -2534,3 +2534,197 @@ fn string_slice_references() {
 ```
 ![Screenshot From 2026-07-10 17-16-47.png](../../Pictures/Screenshots/Screenshot%20From%202026-07-10%2017-16-47.png)
 
+---
+## Struct
+In Rust, a **Struct** (short for structure) is a custom data type that lets you package together and name multiple related values that make up a meaningful group. While they may look like Classes in Object-Oriented Programming (OOP), Rust strictly separates **Data** (Struct) from **Behavior** (which is done later using `impl`).
+
+### Core Terminologies
+1. **Struct (The Blueprint):** The template or blueprint that defines what data is required.
+2. **Field (The Data):** The specific attributes or variables defined inside the Struct blueprint (e.g., `first_name`, `age`).
+3. **Instance (The Object):** The actual, physical realization of the Struct in memory. When you assign the Struct to a variable and fill in all the fields, it becomes an Instance.
+
+### Three Types of Structs
+1. **Classic C-like Structs:** Has named fields. Best for complex data.
+2. **Tuple Structs:** Looks like a tuple. Has unnamed fields, accessed by index (`.0`, `.1`). Great for coordinates or RGB colors.
+3. **Unit-like Structs:** Has no fields at all. Useful for traits and marker types.
+
+### Code Examples & Features
+
+```rust
+// 1. CLASSIC STRUCT
+struct Person {
+    first_name: String,
+    middle_name: String,
+    last_name: String,
+    age: u8
+}
+
+#[test]
+fn struct_person() {
+    // Creating an instance of Person. All fields MUST be populated.
+    let person: Person = Person {
+        first_name: String::from("Ghendida"),
+        last_name: String::from("Ayari"),
+        middle_name: String::from("Gantari"),
+        age: 20
+    };
+
+    println!("{}", person.first_name);
+    // ... etc
+}
+
+// Using References (&) so this function only BORROWS the Struct, 
+// without taking its ownership.
+fn print_person(person: &Person) { 
+    println!("Nama depan = {}", person.first_name);
+    println!("Usia = {}", person.age);
+}
+
+#[test]
+fn struct_init_shorthand() {
+    let first_name: String = String::from("Ghendida");
+    let last_name: String = String::from("Ayari");
+    let age: u8 = 21;
+
+    let person: Person = Person {
+        // FIELD INIT SHORTHAND: Because the variable name and field name match, we can write it once.
+        // EFFECT: The 'first_name' and 'last_name' variables are MOVED from the outer scope,
+        // their ownership is now fully transferred into the 'person' struct.
+        first_name, 
+        middle_name: String::from("Gantari"),
+        last_name, 
+        age // Because u8 is a Stack (Copy) type, 'age' is just copied. The original variable is not dropped.
+    };
+
+    // println!("{}", first_name); // CORRECT! This will cause an error because ownership has moved.
+
+    print_person(&person);
+
+    // STRUCT UPDATE SYNTAX (..)
+    let person2: Person = Person {
+        // We use CLONE because String lives on the Heap.
+        // If we DON'T clone, the '..person' syntax below will take ownership of 
+        // the remaining String fields from the old 'person', causing a Partial Move.
+        first_name: person.first_name.clone(),
+        middle_name: person.middle_name.clone(),
+        last_name: person.last_name.clone(),
+        
+        // Tells Rust: "For the remaining fields (i.e., age), please copy them from the old 'person'"
+        ..person
+    };
+
+    print_person(&person2);
+    // This can STILL BE CALLED safely because we smartly avoided 
+    // moving the Strings by using .clone() above!
+    print_person(&person); 
+}
+
+// 2. TUPLE STRUCT
+// Unnamed fields, order matters. Perfect for mathematical coordinates.
+struct GeoPoint(f64, f64);
+
+#[test]
+fn tuple_struct() {
+    let geo_point = GeoPoint(-656.73, 314.431);
+    // Accessed using index (.0, .1) just like a normal Tuple
+    println!("lat = {} ", geo_point.0);
+    println!("let = {} ", geo_point.1);
+}
+
+// 3. UNIT STRUCT
+// Has no fields. Useful for advanced logical markers later on.
+struct Nothing;
+
+#[test]
+fn test_nothing() {
+    let _nothing1 = Nothing;
+    let _nothing2 = Nothing{}; // Using empty curly braces is also valid
+}
+```
+
+---
+
+## Impl and Methods in Rust
+
+In Rust, data and behavior are strictly separated. While `struct` defines the **Data** (the blueprint), the `impl` (Implementation) block defines the **Behavior** (the actions).
+
+### The Analogy: The Factory and the Motorcycle
+* **Struct:** The blueprint or design of the motorcycle (defines what it has: name, color, fuel).
+* **Impl Block:** The workshop manual or the factory itself. It contains all the instructions on what the motorcycle can do.
+* **Associated Function:** The factory machine. It doesn't need an existing motorcycle to work; its job is to *produce* a new motorcycle.
+* **Method:** The actions performed by the *physical* motorcycle after it's built (e.g., checking status, refueling, or sending it to the scrapyard).
+
+### Rules of `impl` (What You Can and Cannot Do)
+* **✅ CAN DO:** You can create more than one `impl` block for the same Struct. Rust will automatically merge them during compilation.
+* **❌ CANNOT DO:** You cannot define new variables or data fields inside an `impl` block. This space is strictly reserved for functions and constants.
+
+### The Power of `self` (Ownership in Methods)
+The first parameter of a function inside an `impl` block determines its type:
+1. **No `self` (Associated Function):** Acts as a constructor. Called using double colons (`StructName::function_name()`).
+2. **`&self` (Immutable Borrow):** The method only needs to **read** the data.
+3. **`&mut self` (Mutable Borrow):** The method needs to **read and modify** the data.
+4. **`self` (Take Ownership):** The method **consumes** the instance. Once this method finishes, the instance is dropped from memory and can no longer be used.
+
+---
+
+### Code Example
+
+```rust
+struct Motor {
+    nama: String,
+    warna: String,
+    no_rangka: u32,
+    bensin: u8
+}
+
+impl Motor {
+    // 1. ASSOCIATED FUNCTION
+    // Does not take 'self'. Acts as a factory to produce a Motor instance.
+    fn motor_baru(nama_merek: String, warna_motor: String) -> Motor { 
+        Motor {
+            nama: nama_merek,
+            warna: warna_motor,
+            bensin: 0,
+            no_rangka: 18765,
+        }
+    }
+
+    // 2. METHOD: IMMUTABLE BORROW (&self)
+    // Uses '&self' to read data only. Cannot modify fields.
+    fn keluar_pabrik_cek_status(&self) { 
+        println!("Motor dengan nomor rangka {} keluar pabrik dan sekarang bensinnya {} ", self.no_rangka, self.bensin);
+    }
+
+    // 3. METHOD: MUTABLE BORROW (&mut self)
+    // Uses '&mut self' to modify data (e.g., adding fuel).
+    fn isi_bensin(&mut self, tambah_bensin: u8) { 
+        self.bensin += tambah_bensin; 
+        println!("Motor dengan nomor rangka {} dan warna {} sudah isi bensin menjadi {} liter ", self.no_rangka, self.warna, self.bensin);
+    }
+
+    // 4. METHOD: TAKE OWNERSHIP (self)
+    // Consumes the instance. The entire Motor ownership is moved into this function.
+    fn hancurkan_motor(self) { 
+        println!("Hancurkan motor menjadi rongsokan {} ", self.nama);
+        // Motor is destroyed from memory after this block ends.
+    }
+}
+
+#[test]
+fn show_motor() {
+    // Calling an associated function using '::'
+    let mut motor_saya = Motor::motor_baru(String::from("Yamaha"), String::from("Hitam")); 
+
+    // Calling methods using dot notation ('.') on the instance
+    motor_saya.keluar_pabrik_cek_status(); 
+
+    motor_saya.isi_bensin(3);
+
+    // Taking ownership. 'motor_saya' is now consumed.
+    motor_saya.hancurkan_motor(); 
+
+    // motor_saya.keluar_pabrik_cek_status(); // ERROR! Cannot be called anymore because 'motor_saya' has been destroyed.
+}
+```
+
+

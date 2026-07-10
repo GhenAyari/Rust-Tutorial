@@ -888,3 +888,193 @@ fn string_slice_references() {
     let last_name: &str = &name[5..];
     println!("{}", last_name);
 }
+
+
+struct Person {
+    first_name: String,
+    middle_name: String,
+    last_name: String,
+    age: u8
+}
+
+#[test]
+fn struct_person() {
+
+    let person: Person = Person {
+        first_name: String::from("Ghendida"),
+        last_name: String::from("Ayari"),
+        middle_name: String::from("Gantari"),
+        age: 20
+    };
+
+    println!("{}", person.first_name);
+    println!("{}", person.middle_name);
+    println!("{}", person.last_name);
+    println!("{}", person.age);
+
+}
+
+fn print_person(person: &Person) { // struct bisa  juga ditaruh di parameter sebuah function
+
+    println!("Nama depan = {}", person.first_name);
+    println!("Nama Tengah = {}", person.middle_name);
+    println!("Nama Belakang = {}", person.last_name);
+    println!("Usia = {}", person.age);
+
+
+}
+
+#[test]
+fn show_print_person() {
+
+    let person: Person = Person {
+        first_name: String::from("Ghendida"),
+        last_name: String::from("Ayari"),
+        middle_name: String::from("Gantari"),
+        age: 16
+    };
+
+    print_person(&person);
+}
+
+#[test]
+fn struct_init_shorthand() {
+
+    let first_name: String = String::from("Ghendida");
+    let last_name: String = String::from("Ayari");
+    let age: u8 = 21;
+
+    let person: Person = Person {
+        first_name, // bisa menyingkat menjadi seperti ini tapi ownership first_name sekarang berubah kepemilikan menjadi milik person
+        middle_name: String::from("Gantari"),
+        last_name, // ini juga sama
+        age // sama seperti tadi
+    };
+
+    // println!("{}", first_name); ini sudah tidak bisa digunakan lagi karena ownership sudah berpindah
+
+    print_person(&person);
+
+    let person2: Person = Person {
+
+        first_name: person.first_name.clone(),
+        middle_name: person.middle_name.clone(),
+        last_name: person.last_name.clone(),
+        ..person};
+
+    print_person(&person2);
+    print_person(&person);
+}
+
+struct GeoPoint(f64, f64);
+
+#[test]
+fn tuple_struct() {
+    let geo_point = GeoPoint(-656.73, 314.431);
+    println!("lat = {} ", geo_point.0);
+    println!("let = {} ", geo_point.1);
+
+}
+
+struct Nothing;
+
+#[test]
+fn test_nothing() {
+    let _notihing1 = Nothing;
+    let _nothing2 = Nothing{};
+}
+
+struct Motor{
+    nama: String,
+    warna: String,
+    no_rangka: u32,
+    bensin: u8
+}
+
+impl Motor { // membuat method dari motor menggunakan kata kuncni "Impl" dan namanya harus sama dengan nama struct
+
+    /*
+    1. Yang BISA dilakukan: bisa membuat lebih dari satu blok impl untuk Struct yang sama (Rust akan menggabungkannya otomatis saat kompilasi).
+    2. Yang TIDAK BISA dilakukan:  tidak bisa menaruh variabel/field data baru di dalam blok impl. Ruangan ini khusus untuk fungsi dan konstanta saja.
+    */
+
+    fn motor_baru(nama_merek: String, warna_motor: String) -> Motor{ // ini namanya associated function, fungsi ini ibarat pabrik tugasnya hanya mencetak wujud dari struct
+        // seperti di sini tugasnya mencetak motor, function ini juga tidak ada &self (membaca), &mut self (membaca mengubah), self (mengambil ownership)
+        Motor{
+            nama: nama_merek,
+            warna: warna_motor,
+            bensin: 0,
+            no_rangka: 18765,
+        }
+    }
+
+
+    fn keluar_pabrik_cek_status(&self) { // function ini menggunakan &self untuk membaca saja
+        println!("Motor dengan nomor rangka {} keluar pabrik dan sekarang bensinnya {} ", self.no_rangka, self.bensin);
+    }
+
+    fn isi_bensin(&mut self, tambah_bensin: u8){ // fungsi ini mengguanakn &mut self untuk membaca dan mengubah/mengedit
+        self.bensin += tambah_bensin; // seperti di sini menambah bensin dengan bensin ditambah variable baru yang akan diisi nantinya
+        println!("Motor dengan nomor rangka {} dan warna {} sudah isi bensin menjadi {} liter ", self.no_rangka, self.warna, self.bensin);
+    }
+
+    fn hancurkan_motor(self){ // mengambil ownership, kepemilikan sekarang berpindah,semua tentang Motor telah menjad milik hancurkan_motor
+        println!("Hancurkan motor menjadi rongsokan {} ", self.nama);
+    }
+
+}
+
+#[test]
+fn show_motor() {
+
+    let mut motor_saya = Motor::motor_baru(String::from("Yamaha"), String::from("Hitam")); // cara memanggil associated function
+
+    motor_saya.keluar_pabrik_cek_status(); // cara memanggil fucntion lain dengan associatedfuncton.namafunctionain()
+
+    motor_saya.isi_bensin(3);
+
+    motor_saya.hancurkan_motor(); // pemilik dari Motor sekarang sudah dipangil dan sudah berakhir, function lain sudah tidak bisa dipanggill lagi
+
+    // motor_saya.keluar_pabrik_cek_status();  sudah tidak bisa lagi karena hancurkan_motor telah dipanggil/berakhir artinya yang lain sudah tidak bisa dipanggil
+}
+
+struct Novel{
+    judul: String,
+    genre: String,
+    halaman: u32
+}
+
+impl Novel {
+    fn mulai_menulis(judul_naskah: String, genre_naskah: String) -> Novel{
+        Novel{
+            judul: judul_naskah,
+            genre: genre_naskah,
+            halaman: 6
+        }
+    }
+
+    fn cek_progress(&self){
+        println!("Naskah {} bergenre {} saat ini memiliki {} halaman awal ", self.judul, self.genre, self.halaman);
+    }
+
+    fn tambah_halaman(&mut self, menambah_halaman: u32){
+        self.halaman += menambah_halaman;
+        println!("Sekarang halaman {} memiliki {} halaman setelah ditambah ", self.judul, self.halaman);
+    }
+
+    fn kirim_ke_penerbit(self){
+        println!("Naskah dengan judul {} telah dikirim ke penerbit, sudah tidak dimiliki lagi ", self.judul);
+    }
+}
+
+#[test]
+fn show_novel() {
+    let mut novel_baru = Novel::mulai_menulis(String::from("Obsession"), String::from("Thriller, Romance"));
+
+    novel_baru.cek_progress();
+
+    novel_baru.tambah_halaman(31);
+
+    novel_baru.kirim_ke_penerbit();
+}
+
