@@ -1554,3 +1554,138 @@ Kamu membagikan isi paket itu ke pemilik baru di kotamu:
 SELESAI! Karena barangnya sudah kembali ke kotamu (dimiliki a, b, dan c), 
 sekarang kamu bisa mencetaknya dengan aman menggunakan println!.
 ```
+
+--- 
+
+## Reference Dan Borrowing
+
+Metode mengembalikan hak milik menggunakan Tuple memang berhasil, tapi akan sangat melelahkan jika variabel kita ada banyak. Di sinilah **References** (`&`) atau Referensi hadir sebagai pahlawan!
+
+Di Rust, menggunakan referensi sering disebut dengan istilah **Borrowing (Peminjaman)**. Referensi mengizinkan sebuah fungsi untuk membaca atau menggunakan data **tanpa merampas kepemilikannya (Ownership)**.
+
+### Analogi Buku Catatan
+
+
+* **Tanpa Referensi (Move / Pindah Tangan):** Kamu memberikan buku catatanmu ke teman. Buku itu sekarang jadi milik temanmu. Kamu kehilangan hak atas buku itu (variabel hangus/drop). Jika ingin membacanya lagi, temanmu harus memaketkan dan mengirim baliknya kepadamu.
+* **Dengan Referensi (Borrowing):** Kamu meminjamkan buku catatanmu sebentar (`&`). Kamu bilang, *"Baca aja, tapi ini tetap milikku ya!"* Begitu temanmu selesai membaca (fungsi selesai berjalan), buku itu otomatis kembali ke mejamu. Kamu tidak pernah kehilangan hak milik sedikit pun.
+
+### Contoh Kode
+
+Dengan menambahkan simbol *ampersand* (`&`), kita mengirimkan "akses sementara" ke data, bukan memindahkan data aslinya.
+
+```rust
+// Parameter fungsi menggunakan '&String', artinya fungsi ini HANYA MEMINJAM data.
+// Fungsi ini TIDAK mengambil alih kepemilikan.
+fn full_name_references(first_name: &String, last_name: &String) -> String {
+    format!("{} {}", first_name, last_name)
+}
+
+#[test]
+fn show_full_name_references() {
+    // 1. Membuat data String asli di Heap. 
+    // Variabel first_name dan last_name adalah PEMILIK SAH dari data ini.
+    let first_name = String::from("Caleum");
+    let last_name = String::from("Lucien");
+
+    // 2. PROSES PEMINJAMAN (BORROWING):
+    // Dengan menambahkan tanda '&', kita TIDAK memindahkan kepemilikan (Move).
+    // Kita hanya memberikan "akses baca" atau meminjamkan data tersebut 
+    // ke fungsi full_name_references. 
+    // Fungsi merakit String baru dan mengembalikannya ke variabel 'name'.
+    let name = full_name_references(&first_name, &last_name);
+
+    // 3. PEMBUKTIAN KEPEMILIKAN AMAN:
+    // Karena tadi datanya HANYA DIPINJAM, setelah fungsi full_name_references selesai,
+    // first_name dan last_name tetap menjadi pemilik sah datanya dan tidak hangus (drop).
+    // Hasilnya, kita bisa mencetak ketiganya dengan aman tanpa error sama sekali!
+    println!("{}", first_name); // Mencetak: Caleum (Aman!)
+    println!("{} ", last_name); // Mencetak: Lucien (Aman!)
+    println!("{} ", name);      // Mencetak: Caleum Lucien (Hasil rakitan baru yang aman)
+}
+```
+
+![Screenshot From 2026-07-10 11-23-01.png](../../Pictures/Screenshots/Screenshot%20From%202026-07-10%2011-23-01.png)
+
+
+Di Rust, **References** dan **Borrowing** adalah fitur utama yang menjamin keamanan memori tanpa menggunakan *garbage collector*.
+* **Reference (Kata Benda / Tipe Data):** Tipe data penunjuk yang mengizinkan kita merujuk pada sebuah nilai tanpa mengambil alih kepemilikannya (contoh: `&String`, `&mut i32`).
+* **Borrowing (Kata Kerja / Aksi):** Tindakan membuat referensi tersebut dan meminjamkannya ke fungsi atau variabel lain (contoh: `&buku`).
+
+### Aturan Emas Peminjaman (Golden Rules)
+Rust menerapkan aturan ketat saat kompilasi untuk mencegah *Data Race* (tabrakan data):
+1. Dalam satu waktu, kamu HANYA boleh memilih **salah satu** dari kondisi berikut:
+    * Memiliki **satu** referensi yang bisa diubah (*Mutable* / `&mut T`).
+    * **ATAU** memiliki **banyak** referensi yang hanya bisa dibaca (*Immutable* / `&T`).
+2. Referensi harus selalu menunjuk ke data yang masih hidup/valid.
+
+### Immutable vs Mutable
+* **Immutable Borrowing (`&`)**: Gunakan saat fungsi hanya perlu **membaca** data. Banyak variabel boleh membaca data yang sama secara bersamaan.
+* **Mutable Borrowing (`&mut`)**: Gunakan saat fungsi perlu **mengubah** data asli secara langsung. HANYA BOLEH ADA SATU peminjam *mutable* dalam satu waktu. Khusus untuk tipe data primitif (seperti `i32`), kamu wajib menggunakan tanda bintang / *dereference* (`*`) untuk mengubah nilainya.
+
+---
+
+### Contoh Kode
+
+#### 1. Immutable Borrowing (Hanya Membaca)
+```rust
+// 1. REFERENCE (Tipe Data)
+// Parameter 'teks' meminta sebuah REFERENCE bertipe data '&String'.
+// Fungsi ini hanya bisa membaca, tidak bisa mengubah isinya.
+fn baca_buku(teks: &String) {
+    println!("Membaca: {}", teks);
+}
+
+#[test]
+fn test_perbedaan() {
+    let buku = String::from("Pemrograman Rust");
+
+    // 2. BORROWING (Aksi Peminjaman)
+    // Dengan menambahkan '&' di depan variabel 'buku',
+    // kita sedang MELAKUKAN BORROWING (tindakan meminjamkan data).
+    baca_buku(&buku);
+}
+```
+
+```rust
+// Parameter menggunakan '&mut String', artinya meminta akses VIP untuk merombak data.
+fn change_value(value: &mut String) {
+    // Tipe data kompleks seperti String otomatis melakukan dereference saat memanggil fungsinya.
+    value.push_str(" Testing");
+}
+
+#[test]
+fn test_change_value() {
+    // Variabel aslinya WAJIB dideklarasikan dengan 'mut'
+    let mut value = String::from("Rusdiyansah");
+    
+    // Kita menyerahkan kunci akses VIP menggunakan '&mut'
+    change_value(&mut value);
+    
+    println!("{}", value); // Output: Rusdiyansah Testing
+}
+```
+
+#### Mutable Borrowing (Mengubah String)
+```rust
+// Fungsi ini meminjam String dan angka (i32) secara mutable sekaligus.
+fn ubah_buku(teks: &mut String, jumlah_tetap: &mut i32) {
+    teks.push_str(" Edisi terbaru");
+    
+    // PENTING: Untuk tipe data number/primitif yang menggunakan mutable references, 
+    // WAJIB menggunakan tanda '*' (dereference) untuk mengubah nilai aslinya.
+    *jumlah_tetap += 10; 
+}
+```
+#### Mutable Borrowing (Berbagai Tipe Data & Dereference)
+```rust
+#[test]
+fn test_ubah_buku() {
+    let mut buku = String::from("Pemrograman Rust");
+    let mut jumlah_sementara = 15;
+
+    // Menyerahkan kedua data asli untuk dirombak di dalam fungsi
+    ubah_buku(&mut buku, &mut jumlah_sementara);
+    
+    println!("{} dan jumlahnya digabung jumlah sementara dan jumlah tetap adalah {}", buku, jumlah_sementara);
+}
+```

@@ -816,3 +816,47 @@ fn show_full_name_references() {
     println!("{} ", name);
 
 }
+
+fn change_value(value: &mut String){
+    value.push_str(" Testing");
+}
+
+#[test]
+fn test_change_value() {
+    let mut value = String::from("Rusdiyansah");
+    change_value(&mut value);
+    println!("{}", value);
+    
+}
+
+// 1. REFERENCE (Tipe Data)
+// Parameter 'teks' meminta sebuah REFERENCE bertipe data '&String'
+fn baca_buku(teks: &String) {
+    println!("Membaca: {}", teks);
+}
+
+#[test]
+fn test_perbedaan() {
+    let buku = String::from("Pemrograman Rust");
+
+    // 2. BORROWING (Aksi Peminjaman)
+    // Dengan menambahkan '&' di depan variabel 'buku',
+    // kita sedang MELAKUKAN BORROWING (tindakan meminjamkan data).
+    baca_buku(&buku);
+}
+
+fn ubah_buku(teks: &mut String, jumlah_tetap: &mut i32){
+    teks.push_str("Edisi terbaru");
+    *jumlah_tetap += 10; // untuk tipe data number yang mutable references, wajib menggunakan *nama_variable
+}
+
+#[test]
+fn test_ubah_buku() {
+
+    let mut buku = String::from("Pemrograman Rust ");
+    let mut jumlah_sementara = 15;
+
+    ubah_buku(&mut buku, &mut jumlah_sementara);
+    println!("{} dan jumlahnya digabung jumlah sementara dan jumlah tetap adalah {}", buku, jumlah_sementara);
+
+}

@@ -2347,3 +2347,132 @@ DONE! Because the items are back in your town (owned by a, b, and c),
 you can now print them safely.
 ```
 
+---
+## References And Borrowing
+The "Returning Ownership" method (using Tuples) works, but it becomes exhausting if you have many variables. This is where **References** (`&`) come to the rescue!
+
+In Rust, using a reference is called **Borrowing**. A reference allows a function to read or use data **without taking ownership** of it.
+
+### The Book Analogy
+
+
+* **Without Reference (Move/Take Ownership):** You give your notebook to a friend. The notebook is now theirs. You no longer own it (your variable is dropped). If you want it back, they have to physically mail it back to you.
+* **With Reference (Borrowing):** You lend your notebook to a friend for a moment (`&`). You say, *"You can read this, but it's still mine!"* Once your friend finishes reading (the function ends), the notebook automatically returns to your desk. You never lost ownership.
+
+### Code Example
+
+By adding an ampersand (`&`), we pass a reference to the data instead of the data itself.
+
+```rust
+// The function parameters use '&String', meaning this function ONLY BORROWS the data.
+// It does NOT take ownership.
+fn full_name_references(first_name: &String, last_name: &String) -> String {
+    format!("{} {}", first_name, last_name)
+}
+
+#[test]
+fn show_full_name_references() {
+    // 1. Create original String data in the Heap. 
+    // 'first_name' and 'last_name' are the LEGAL OWNERS of this data.
+    let first_name = String::from("Caleum");
+    let last_name = String::from("Lucien");
+
+    // 2. THE BORROWING PROCESS:
+    // By adding the '&' symbol, we DO NOT move ownership.
+    // We only give "read access" (borrow) to the full_name_references function. 
+    // The function builds a new String and returns it to the 'name' variable.
+    let name = full_name_references(&first_name, &last_name);
+
+    // 3. OWNERSHIP PROOF:
+    // Because the data was ONLY BORROWED, after the function finishes its job,
+    // 'first_name' and 'last_name' remain the legal owners and are not dropped.
+    // As a result, we can print all three safely without any errors!
+    println!("{}", first_name); // Prints: Caleum (Safe!)
+    println!("{} ", last_name); // Prints: Lucien (Safe!)
+    println!("{} ", name);      // Prints: Caleum Lucien (New assembled string)
+}
+```
+
+![Screenshot From 2026-07-10 11-23-01.png](../../Pictures/Screenshots/Screenshot%20From%202026-07-10%2011-23-01.png)
+
+In Rust, **References** and **Borrowing** are the core features that guarantee memory safety without needing a garbage collector.
+* **Reference (The Noun/Type):** The pointer type that allows you to refer to some value without taking ownership of it (e.g., `&String`, `&mut i32`).
+* **Borrowing (The Verb/Action):** The act of creating a reference and passing it to a function or variable (e.g., `&buku`).
+
+### The Golden Rules of Borrowing
+Rust enforces strict rules at compile time to prevent "Data Races" (memory collisions):
+1. At any given time, you can have **EITHER**:
+    * One mutable reference (`&mut T`).
+    * **OR** any number of immutable references (`&T`).
+2. References must always be valid (no dangling pointers).
+
+### Immutable vs Mutable
+* **Immutable Borrowing (`&`)**: Use this when a function only needs to **read** the data. Multiple functions/variables can read the data simultaneously.
+* **Mutable Borrowing (`&mut`)**: Use this when a function needs to **modify** the original data directly. Only ONE mutable borrow is allowed at a time. For primitive data types (like `i32`), you must use the dereference operator (`*`) to modify the value.
+
+---
+
+### Code Examples
+
+#### 1. Immutable Borrowing (Read-Only)
+```rust
+// 1. REFERENCE (Data Type)
+// The parameter 'teks' requests an IMMUTABLE REFERENCE of type '&String'.
+// It can only read the data, not modify it.
+fn baca_buku(teks: &String) {
+    println!("Membaca: {}", teks);
+}
+
+#[test]
+fn test_perbedaan() {
+    let buku = String::from("Pemrograman Rust");
+
+    // 2. BORROWING (The Action)
+    // By adding '&' in front of the 'buku' variable, 
+    // we are BORROWING the data (giving read-only access).
+    baca_buku(&buku);
+}
+```
+#### 2 Mutable Borrowing (String Modification)
+
+```rust
+// The parameter uses '&mut String', meaning it requests a VIP access to modify the data.
+fn change_value(value: &mut String) {
+    // String has built-in methods, so it automatically dereferences under the hood.
+    value.push_str(" Testing");
+}
+
+#[test]
+fn test_change_value() {
+    // The original variable MUST also be declared as 'mut'
+    let mut value = String::from("Rusdiyansah");
+    
+    // We pass the mutable reference using '&mut'
+    change_value(&mut value);
+    
+    println!("{}", value); // Output: Rusdiyansah Testing
+}
+```
+
+#### 3. Mutable Borrowing (Multiple Types & Dereferencing)
+```rust
+// The parameter uses '&mut String', meaning it requests a VIP access to modify the data.
+fn change_value(value: &mut String) {
+// String has built-in methods, so it automatically dereferences under the hood.
+value.push_str(" Testing");
+}
+
+#[test]
+fn test_change_value() {
+// The original variable MUST also be declared as 'mut'
+let mut value = String::from("Rusdiyansah");
+
+    // We pass the mutable reference using '&mut'
+    change_value(&mut value);
+    
+    println!("{}", value); // Output: Rusdiyansah Testing
+}
+```
+
+
+
