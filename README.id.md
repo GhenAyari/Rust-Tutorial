@@ -2057,3 +2057,162 @@ fn test_mesin_kopi() {
     mesin_kantor.hancurkan_mesin(); // Kepemilikan dirampas, mesin hangus
 }
 ```
+
+---
+## Pattern Matching 
+
+Di Rust, `match` bukan sekadar perintah `switch-case` biasa. Ia adalah sebuah **expression** (ekspresi) yang sangat kuat. `match` mampu membongkar (*destructure*) tipe data yang kompleks, menangkap variabel secara instan, dan menerapkan logika kondisional tambahan.
+
+Pattern matching di Rust beroperasi menggunakan **"Prinsip Cermin"**: cara kamu membongkar data di dalam lengan `match` harus persis sama dengan bentuk cetakan aslinya saat data tersebut dibuat.
+
+### 🛠️ Cara Kerjanya
+Saat kamu memasukkan sebuah nilai ke dalam blok `match`, Rust akan mengevaluasi nilai tersebut dari atas ke bawah. Begitu ia menemukan **pola pertama yang cocok**, Rust akan mengeksekusi blok kode di dalamnya dan langsung keluar dari `match`.
+
+### ⚖️ Aturan Main: Yang BISA dan TIDAK BISA Dilakukan
+
+**✅ Yang BISA kamu lakukan:**
+*   **Membongkar berbagai tipe data:** Kamu bisa membongkar Tuple, Struct, Enum, bahkan kombinasi bersarang dari ketiganya.
+*   **Menangkap variabel secara instan:** Kamu bisa menangkap nilai dari dalam data menjadi variabel lokal baru (seperti `n` atau `p`) untuk dipakai langsung di dalam blok tersebut.
+*   **Menggunakan Kondisi Tambahan (`if`):** Kamu bisa menempelkan kondisi `if` (disebut *Match Guards*) pada pola untuk menambahkan logika perbandingan atau matematika.
+*   **Menggunakan Penangkap Sisa (`_`):** Kamu bisa menggunakan *underscore* (`_`) untuk mengabaikan posisi data tertentu, atau menangkap semua kemungkinan nilai yang tersisa.
+
+**❌ Yang TIDAK BISA kamu lakukan:**
+*   **TIDAK BISA melewatkan kemungkinan (*Non-exhaustive*):** Kamu wajib menangani *semua* kemungkinan nilai. Jika ada nilai yang tidak tertulis, kamu wajib menyediakan *catch-all* (`_` atau variabel penampung) di bagian paling bawah.
+*   **TIDAK BISA kebablasan (*Fall-through*):** Berbeda dengan C atau Java, Rust tidak butuh kata kunci `break`. Begitu satu pola cocok, baris di bawahnya tidak akan pernah dieksekusi.
+*   **TIDAK BISA mencampur tanda kurung:** Kamu tidak bisa membongkar Tuple menggunakan `{}` atau Struct menggunakan `()`. Harus tunduk pada prinsip cermin.
+*   **TIDAK BISA mengembalikan tipe data yang beda:** Jika `match` digunakan untuk menghasilkan nilai, semua lengannya wajib mengembalikan tipe data yang sama persis.
+
+---
+
+### 🚀 Contoh Penerapan
+
+Berikut adalah berbagai jenis pattern matching yang diimplementasikan dalam Rust.
+
+### 1. Membongkar Tuple (Destructuring Tuples)
+Tuple mengandalkan **urutan posisi**. Kamu membongkarnya menggunakan tanda kurung biasa `()`. Kamu bisa mencocokkan nilai pastinya, menangkap nilainya jadi variabel, atau mengabaikannya.
+
+```rust
+#[test]
+fn match_security() {
+    // (bawa id?, bawa tas?)
+    let pengunjung = (true, true); 
+
+    match pengunjung {
+        // Pola 1: Cocok mutlak untuk kedua nilai (sama-sama true)
+        (true, false) => {
+            println!("Silahkan masuk");
+        }
+        // Pola 2: Cocok mutlak untuk kedua nilai
+        (true, true) => {
+            println!("Silahkan masuk tapi tasnya kami lihat dulu");
+        }
+        // Pola 3: Menangkap nilai false di posisi pertama.
+        // Tanda '_' untuk mengabaikan/tidak peduli kemungkinan tas di posisi kedua.
+        (false, _) => { 
+            println!("maaf tidak boleh masuk karena tidak membawa id card");
+        }
+    }
+}
+
+#[test]
+fn match_player() {
+    // (nyawa, peluru)
+    let player = (50, 70); 
+
+    match player {
+        // Jika nyawa 0, tidak peduli sisa peluru berapa. Game Over.
+        (0, _) => {
+            println!("Nyawa anda telah tidak ada");
+        }
+        // Cocok mutlak untuk nyawa dan peluru penuh.
+        (100, 100) => {
+            println!("Kondisi prime siap bertempur");
+        }
+        // Nyawa masih ada (ditangkap ke variabel 'n'), tapi peluru tepat 0.
+        (n, 0) => {
+            println!("nyawa masih {} tapi pelurumu ga ada bjir ", n);
+        }
+        // Menangkap sisa kemungkinan. 
+        // Kedua data ditangkap menjadi variabel baru 'n' dan 'p'.
+        (n, p) => {
+            println!("Terus berjuang dengan sisa nyawa {} dan sisa peluru {}", n, p);
+        }
+    }
+}
+```
+
+### 2. Membongkar Struct (Destructuring Structs)
+Struct mengandalkan **nama field**. Kamu membongkarnya menggunakan kurung kurawal `{}`. Urutan posisinya bebas dibolak-balik, dan kamu bisa pakai `..` untuk mengabaikan field sisanya.
+
+```rust
+struct Karyawan {
+    nama: String,
+    divisi: String,
+}
+
+#[test]
+fn match_karyawan() {
+    let budi = Karyawan {
+        nama: String::from("Budi"),
+        divisi: String::from("IT"),
+    };
+
+    match budi {
+        // Membongkar Struct ke dalam variabel 'nama' dan 'divisi'.
+        // Sekaligus menambahkan Match Guard (if) untuk mengecek divisi spesifik.
+        Karyawan { nama, divisi } if divisi == "IT" => {
+            println!("Tolong codingkan le {} ", nama);
+        }
+        // Tanda '..' (Rest/Ignored) menyuruh Rust mengabaikan sisa field yang ada.
+        // Kita cuma butuh menangkap variabel 'nama'.
+        Karyawan { nama, .. } => {
+            println!("Selamat bekerja {} ", nama);
+        }
+    }
+}
+```
+
+### 3. Match Guards (`if` di dalam `match`)
+Match guards memungkinkanmu untuk menambahkan logika yang kompleks (seperti lebih besar, lebih kecil, atau operator logika lainnya) tepat setelah data berhasil dibongkar.
+
+```rust
+enum Kendaraan {
+    Motor(u32),
+    Mobil(u32),
+    Truk(u32)
+}
+
+fn cek_tilang(target: Kendaraan) {
+    match target {
+        // Menangkap data ke variabel 'kecepatan', LALU mengecek apakah angkanya > 100
+        Kendaraan::Mobil(kecepatan) if kecepatan > 100 => {
+            println!("Kilat!, Mobil melaju dengan kecepatan {}/jam!. Tilang! ", kecepatan);
+        }
+        // Menangkap data ke variabel 'kecepatan', LALU mengecek apakah angkanya > 70
+        Kendaraan::Motor(kecepatan) if kecepatan > 70 => {
+            println!("Anak Amor!, Tilang, karena membahayakan. berjalan dengan kecepatan {}/jam ", kecepatan);
+        }
+        // Menangkap data ke variabel 'kecepatan', LALU mengecek apakah angkanya > 60
+        Kendaraan::Truk(kecepatan) if kecepatan > 60 => {
+            println!("Anak Amor!, Tilang, karena membahayakan. berjalan dengan kecepatan {}/jam ", kecepatan);
+        }
+        // Menangkap semua sisa kendaraan yang tidak melanggar batas kecepatan di atas.
+        _ => {
+            println!("Kecepatan aman silahkan jalan");
+        }
+    }
+}
+
+#[test]
+fn test_kamera_tol() {
+    let kendaraan_1 = Kendaraan::Mobil(110); // Akan masuk kondisi Mobil > 100
+    let kendaraan_2 = Kendaraan::Mobil(60);  // Akan lolos ke kondisi aman '_'
+    let kendaraan_3 = Kendaraan::Motor(75);  // Akan masuk kondisi Motor > 70
+    let kendaraan_4 = Kendaraan::Truk(50);   // Akan lolos ke kondisi aman '_'
+
+    cek_tilang(kendaraan_1);
+    cek_tilang(kendaraan_2);
+    cek_tilang(kendaraan_3);
+    cek_tilang(kendaraan_4);
+}
+```

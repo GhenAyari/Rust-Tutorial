@@ -2840,4 +2840,164 @@ fn test_mesin_kopi() {
 }
 ```
 
+---
+## Pattern Matching in Rust
+
+In Rust, `match` is not just a simple `switch-case` statement. It is a powerful **expression** that can destructure complex data types, bind variables on the fly, and apply conditional logic.
+
+Pattern matching in Rust operates on the **"Mirror Principle"**: the way you destructure (unpack) the data in the `match` arm must exactly mirror the way the data was constructed.
+
+### 🛠️ How It Works
+When you pass a value into a `match` block, Rust evaluates it against a series of patterns from top to bottom. As soon as it finds the **first matching pattern**, it executes the corresponding code block and exits immediately.
+
+### ⚖️ The Rules: What You CAN and CANNOT Do
+
+**✅ What you CAN do:**
+*   **Destructure multiple types of data:** You can unpack Tuples, Structs, Enums, and even nested combinations of them.
+*   **Bind variables on the fly:** You can capture unknown values into new local variables (like `n` or `p`) to use them inside the match arm.
+*   **Use Conditional Guards (`if`):** You can attach an `if` statement to a pattern to add mathematical or logical checks before accepting the match.
+*   **Use the Catch-All (`_`):** You can use `_` to explicitly ignore a specific value in a tuple/struct, or to catch all remaining unhandled cases.
+
+**❌ What you CANNOT do:**
+*   **CANNOT be non-exhaustive:** You must handle *every* possible case. If a variable can be anything, you must provide a catch-all (`_` or a variable name) at the end.
+*   **CANNOT fall-through:** Unlike C or Java, Rust does not require a `break` keyword. Once a match is found, it will never execute the blocks below it.
+*   **CANNOT mix brackets:** You cannot destructure a Tuple using `{}` or a Struct using `()`. You must mirror the original syntax.
+*   **CANNOT return different types:** If the `match` is used as an expression to return a value, all arms must return the exact same data type.
+
+---
+
+### 🚀 Examples in Action
+
+Below are various types of pattern matching implemented in Rust.
+
+### 1. Destructuring Tuples
+Tuples rely on **positional order**. You unpack them using parentheses `()`. You can check exact values, bind values to variables, or ignore them completely.
+
+```rust
+#[test]
+fn match_security() {
+    // (Brings ID?, Brings Bag?)
+    let pengunjung = (true, true); 
+
+    match pengunjung {
+        // Pattern 1: Exact match for both values
+        (true, false) => {
+            println!("Silahkan masuk");
+        }
+        // Pattern 2: Exact match for both values
+        (true, true) => {
+            println!("Silahkan masuk tapi tasnya kami lihat dulu");
+        }
+        // Pattern 3: Catching false on the first position. 
+        // The '_' ignores the second position (we don't care if they have a bag or not)
+        (false, _) => { 
+            println!("Maaf tidak boleh masuk karena tidak membawa ID card");
+        }
+    }
+}
+
+#[test]
+fn match_player() {
+    // (Health, Ammo)
+    let player = (50, 70); 
+
+    match player {
+        // If health is 0, ignore the ammo count. Game over.
+        (0, _) => {
+            println!("Nyawa anda telah tidak ada");
+        }
+        // Exact match for full stats.
+        (100, 100) => {
+            println!("Kondisi prime siap bertempur");
+        }
+        // Health is greater than 0, but ammo is exactly 0.
+        // We bind the current health to the variable 'n' to print it.
+        (n, 0) => {
+            println!("Nyawa masih {} tapi pelurumu ga ada bjir", n);
+        }
+        // Catch-all for any other combinations.
+        // Binds both values to new variables 'n' and 'p'.
+        (n, p) => {
+            println!("Terus berjuang dengan sisa nyawa {} dan sisa peluru {}", n, p);
+        }
+    }
+}
+```
+
+### 2. Destructuring Structs
+Structs rely on named fields. You unpack them using curly braces {}. The order of fields doesn't matter, and you can use .. to ignore the rest of the fields you don't need.
+
+```rust
+struct Karyawan {
+    nama: String,
+    divisi: String,
+}
+
+#[test]
+fn match_karyawan() {
+    let budi = Karyawan {
+        nama: String::from("Budi"),
+        divisi: String::from("IT"),
+    };
+
+    match budi {
+        // Destructures both 'nama' and 'divisi'. 
+        // Also applies a Match Guard (if) to check a specific condition.
+        Karyawan { nama, divisi } if divisi == "IT" => {
+            println!("Tolong codingkan le {}", nama);
+        }
+        // The '..' (Rest pattern) tells Rust to ignore any other fields in the struct.
+        // We only care about capturing the 'nama'.
+        Karyawan { nama, .. } => {
+            println!("Selamat bekerja {}", nama);
+        }
+    }
+}
+```
+
+### 3. Match Guards (if inside match)
+Match guards allow you to add complex logic (like greater than, less than, or logical AND/OR) right after destructuring the data, but before executing the block.
+
+```rust
+enum Kendaraan {
+    Motor(u32),
+    Mobil(u32),
+    Truk(u32)
+}
+
+fn cek_tilang(target: Kendaraan) {
+    match target {
+        // Matches a Mobil, extracts the speed, THEN checks if it's over 100.
+        Kendaraan::Mobil(kecepatan) if kecepatan > 100 => {
+            println!("Kilat! Mobil melaju dengan kecepatan {} km/jam! Tilang!", kecepatan);
+        }
+        // Matches a Motor, extracts the speed, THEN checks if it's over 70.
+        Kendaraan::Motor(kecepatan) if kecepatan > 70 => {
+            println!("Anak Amor! Tilang, karena membahayakan. Berjalan dengan kecepatan {} km/jam", kecepatan);
+        }
+        // Matches a Truk, extracts the speed, THEN checks if it's over 60.
+        Kendaraan::Truk(kecepatan) if kecepatan > 60 => {
+            println!("Anak Amor! Tilang, karena membahayakan. Berjalan dengan kecepatan {} km/jam", kecepatan);
+        }
+        // Catch-all for any vehicle that didn't violate the speed limits above.
+        _ => {
+            println!("Kecepatan aman silahkan jalan");
+        }
+    }
+}
+
+#[test]
+fn test_kamera_tol() {
+    let kendaraan_1 = Kendaraan::Mobil(110); // Will trigger the > 100 guard
+    let kendaraan_2 = Kendaraan::Mobil(60);  // Will fall to the '_' safe catch-all
+    let kendaraan_3 = Kendaraan::Motor(75);  // Will trigger the > 70 guard
+    let kendaraan_4 = Kendaraan::Truk(50);   // Will fall to the '_' safe catch-all
+
+    cek_tilang(kendaraan_1);
+    cek_tilang(kendaraan_2);
+    cek_tilang(kendaraan_3);
+    cek_tilang(kendaraan_4);
+}
+```
+
 
