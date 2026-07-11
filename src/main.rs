@@ -1239,5 +1239,165 @@ fn test_mesin_kopi() {
     mesin_kantor.cek_status();
     mesin_kantor.hancurkan_mesin();
 
+}
 
+// contoh match sebagai expression
+#[test]
+fn match_sebagai_expression() {
+
+    let umur = 7; // variable umur bertipe i32
+
+    let kategori = match umur {
+        17 => "Baru dapat ktp",
+        18 => "Agak gedean dikit",
+        19 => "Bolehlah",
+        _  => "Umur lainnya" // membuang angka yang lainnya karena i32 bisa mencetak angka sampai ribuan jadi menggunakan _
+    };
+
+    println!("umur dia adalah {} dan kategorinya {}", umur, kategori);
+    
+}
+
+// menggunakan range untuk match
+#[test]
+fn match_dengan_range() {
+
+    let nilai_ujian = 19;
+
+    match nilai_ujian {
+        0..=10 => println!("goblok ini"),
+
+        11..=30 => println!("coba lagi bos"),
+
+        31..50 => println!("ya oke lah"),
+
+        50..=79 => println!("Baik"),
+
+        80 | 90  => println!("Baik"), // bisa juga seperti ini dengan menggunakan | (atau)
+
+        81..=89 => println!("Baik"),
+
+        91..=99 => println!("dikit lagi bos"),
+
+        100 => println!("Luar biasa"),
+
+        _ => println!("Angka tidak tersedia")
+    };
+
+    println!("nilai ujian {} ", nilai_ujian);
+
+}
+
+// match untuk membongkar tuple
+
+#[test]
+fn match_security() {
+
+    let pengunjung = (true, true); // (bawa id?, bawa tas?)
+
+    match pengunjung {
+        (true, false) => {
+            println!("Silahkan masuk");
+        }
+        (true, true) => {
+            println!("Silahkan masuk tapi tasnya kami lihat dulu");
+        }
+        (false, _) => { // tanda _ untuk mengabaikan atau membuang atau tidak peduli kemungkinan lain
+            println!("maaf tidak boleh masuk karena tidak membawa id card");
+        }
+    }
+}
+
+// contoh lain match tuple dengan kondisi player game
+
+#[test]
+fn match_player() {
+
+    let player = (50, 70); // (nyawa?, peluru)
+
+    match player {
+        (0, _) => {
+            println!("Nyawa anda telah tidak ada")
+        }
+        (100, 100) => {
+            println!("Kondisi prime siap bertempur")
+        }
+        (n, 0) => {
+            println!("nyawa masih {} tapi pelurumu ga ada bjir ", n)
+        }
+        (n, p) => {
+            println!("Terus berjuang dengan sisa nyawa {} dan sisa peluru {}", n, p)
+        }
+
+    }
+}
+
+// contoh match untuk membongkar struct
+
+struct Karyawan{
+    nama: String,
+    divisi: String,
+}
+
+#[test]
+fn match_karyawan() {
+
+    let budi = Karyawan {
+        nama: String::from("Budi"),
+        divisi: String::from("IT"),
+    };
+
+    match budi {
+        Karyawan {nama, divisi} // menggunakan kurung {} untuk menyimpan variabel
+        if divisi == "IT" => {
+            println!("Tolong codingkan le {} ", nama)
+        }
+        Karyawan {nama, ..} => {
+            println!("Selamat bekerja {} ", nama)
+        }
+
+    }
+}
+
+// match guard (menggunakan if di dalam match)
+
+enum Kendaraan {
+    Motor(u32),
+    Mobil(u32),
+    Truk(u32)
+}
+
+fn cek_tilang(target: Kendaraan) {
+    match target {
+        Kendaraan::Mobil(kecepatan)
+        if kecepatan > 100 => {
+            println!("Kilat!, Mobil melaju dengan kecepatan {}/jam!. Tilang! ", kecepatan)
+        }
+        Kendaraan::Motor(kecepatan)
+        if kecepatan > 70 => {
+            println!("Anak Amor!, Tilang, karena membahayakan. berjalan dengan kecepatan {}/jam ", kecepatan)
+        }
+        Kendaraan::Truk(kecepatan)
+        if kecepatan > 60 => {
+            println!("Anak Amor!, Tilang, karena membahayakan. berjalan dengan kecepatan {}/jam ", kecepatan)
+        }
+        _ => {
+            println!("Kecepatan aman silahkan jalan")
+        }
+    }
+}
+
+#[test]
+fn test_kamera_tol() {
+
+    let kendaraan_1 = Kendaraan::Mobil(110);
+    let kendaraan_2 = Kendaraan::Mobil(60);
+    let kendaraan_3 = Kendaraan::Motor(75);
+    let kendaraan_4 = Kendaraan::Truk(50);
+
+    cek_tilang(kendaraan_1);
+    cek_tilang(kendaraan_2);
+    cek_tilang(kendaraan_3);
+    cek_tilang(kendaraan_4);
+    
 }
