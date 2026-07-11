@@ -1400,3 +1400,66 @@ fn test_kamera_tol() {
     cek_tilang(kendaraan_4);
     
 }
+
+type Kilometer = u32; // mulai sekarang alau aku bilang Kilometer, Rust tahu bahwa itu maksudnya tipe data u32
+type Rupiah = u64; // mulai sekarang kalau aku bilang Rupiah, Rust tahu bahwa itu maksudnya tipe data u64
+
+fn hitung_ongkos(jarak: Kilometer) -> Rupiah {
+                // Biasanya kan pakai jarak: u32, sekarang menggunakan jarak: Kilometer, artinya == jarak: u32
+
+    let tarif_per_km: Rupiah = 3000;
+    // ini artinya tarif_per_km: u64
+
+    // karena jarak tipe datanya tadi adalah u32 maka kita konversi ke Rupiah agar menjadi u64, bisa juga dibuat jarak as u63
+    let total = (jarak as Rupiah) * tarif_per_km;
+
+    total
+
+}
+
+#[test]
+fn test_hitung_ongkos() {
+
+    let jarak_rumah_ke_kantor: Kilometer = 15;
+    let ongkos_hari_ini: Rupiah = hitung_ongkos(jarak_rumah_ke_kantor);
+
+    println!(" jarak rumah ke kantor {} km dengan ongkos {}K", jarak_rumah_ke_kantor, ongkos_hari_ini);
+
+}
+
+// type juga bisa untuk menyingkat tuple yang panjang
+type TitikKordinat = (f64, f64); // kalau aku bilang TitikKordinat, rust udah tau maksudnya adalah tuple berisi 2 index f64
+
+fn cetak_lokasi(lokasi: TitikKordinat) {
+    println!("berada di titik kordinat {} dan {} ", lokasi.0, lokasi.1);
+}
+
+#[test]
+fn test_titik_kordinat() {
+    let rumah: TitikKordinat = (15.73, 30.13);
+    cetak_lokasi(rumah);
+
+}
+
+type JumlahBarang = u32;
+type Duit = u64;
+
+fn hitung_omset(terjual: JumlahBarang, harga_satuan: Duit) -> Duit {
+    let total = (terjual as Duit) * harga_satuan;
+    total
+}
+
+#[test]
+fn test_omset_ukm() {
+    let kopi_terjual: JumlahBarang = 150;
+    let harga_kopi: Duit = 25_000;
+    let total_pendapatan = hitung_omset(kopi_terjual, harga_kopi);
+    println!("Total pendapatan ukm ini adalah {} ", total_pendapatan);
+
+    let kopi_terjual_2: JumlahBarang = 75;
+    let harga_kopi_2: Duit = 30_000;
+    let total_pendapatan = hitung_omset(kopi_terjual_2, harga_kopi_2);
+    println!("Total pendapatan ukm ini adalah {} ", total_pendapatan);
+}
+
+
