@@ -1462,4 +1462,27 @@ fn test_omset_ukm() {
     println!("Total pendapatan ukm ini adalah {} ", total_pendapatan);
 }
 
+type DataRadar =(String, f64, f64, bool);
+
+fn proses_radar(target: DataRadar) {
+    match target {
+        (nama, x, y, true) => {
+            println!("Awas objek {} terdeteksi di kordinat {} {} ini adalah ancaman! ", nama, x, y);
+        }
+        (nama, x, y, false) => {
+            println!("Aman objek {} terpantau lewat di kordinasi {} dan {} ", nama, x, y);
+        }
+    }
+}
+
+#[test]
+fn test_sistem_radar() {
+    let target1: DataRadar = (String::from("Ambatukam"), 10.5, 3.3, true);
+    let target2: DataRadar = (String::from("Rusdiyansah"), 16.5, 3.3, false);
+
+    proses_radar(target1);
+    proses_radar(target2);
+
+
+}
 

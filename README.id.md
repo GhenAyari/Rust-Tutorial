@@ -22,7 +22,7 @@ Cargo adalah package manager bawaan dan build system di Rust. contoh penggunaan 
 
 1. untuk membuat proyek baru di rust, kita bisa menulis
 
-```
+```text
 cargo akan membuat struktur proyek seperti di bawah ini
 
 belajar_rust/
@@ -39,7 +39,7 @@ belajar_rust/
 
 2. bisa menjalankan program seperti yang ditunjukkan di bawah ini
 
-```
+```text
 cargo test
 ```
 
@@ -51,7 +51,7 @@ cargo test
 
 4. jika ingin mengukur performa atau merilis sebuah aplikasi
 
-```
+```text
 cargo build --release
 ```
 
@@ -71,7 +71,7 @@ atau pengujian performa
 Di Rust, satu proyek hanya bisa menggunakan satu fungsi main. saya akan menggunakan metode alternatif yaitu "unit test"
 unit test adalah kode yang secara khusus didedikasikan untuk pengujian.
 
-```
+```rust
 #[test]
 fn testing(){
     println!("nama saya ghen dan saat ini saya sedang belajar rust");
@@ -90,7 +90,7 @@ tapi, langkah pertama hanya akan menjalankan semua unit test dan tidak akan mena
 Variabel digunakan untuk menyimpan nilai data, untuk membuat atau mendeklarasikan variabel di rust, kita bisa menggunakan kata kunci "let".
 contoh penggunaannya ditunjukkan di bawah ini:
 
-```
+```rust
 #[test]
 fn variable(){
     let my_name = "Ghendida";
@@ -100,7 +100,7 @@ fn variable(){
 
 dan ouputnya
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test variable -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s                                                                                                           
@@ -116,7 +116,7 @@ test variable ... ok
 Di Rust, kita tidak bisa mengubah variabel yang sudah diberi nilai, yang biasanya disebut immutable (tidak dapat diubah). Namun,
 Rust memungkinkan kita untuk membuat variabel yang bisa diubah, yang dikenal sebagai mutable (dapat diubah), dan kata kuncinya adalah let mut.
 
-```
+```rust
 #[test]
 fn variable_mutable(){
     let mut age_in_2025: i8 = 18;
@@ -129,7 +129,7 @@ fn variable_mutable(){
 
 output
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test variable_mutable -- --nocapture
 Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
 Finished `test` profile [unoptimized + debuginfo] target(s) in 0.49s                                                                                                           
@@ -147,7 +147,7 @@ Rust adalah bahasa dengan tipe data statis (statically typed), artinya setiap ka
 tipenya tidak bisa diubah ke tipe lain.
 Berbeda dengan JavaScript dan PHP, hal ini tidak dimungkinkan, contohnya, mengubah dari string menjadi integer tidak akan berhasil di Rust
 
-```
+```rust
 #[test]
 fn static_type(){
     let mut my_github = "GhenAyari";
@@ -160,7 +160,7 @@ fn static_type(){
 
 dan outputnya akan menjadi
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test static_type -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
 error[E0308]: mismatched types                                                                                                                                                     
@@ -181,7 +181,7 @@ error: could not compile `basic_rust` (bin "basic_rust" test) due to 1 previous 
 Di Rust, kita bisa membuat variabel dengan nama yang sama, tetapi saat kita melakukannya, variabel sebelumnya akan tertutupi,
 atau yang disebut sebagai shadowing. praktik ini tidak ideal, tetapi masih diperbolehkan di Rust
 
-```
+```rust
 #[test]
 fn shadowing(){
     let name = "Ghendida";
@@ -197,7 +197,7 @@ fn shadowing(){
 
 dan outputnya akan menjadi
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test shadowing -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.52s                                                                                                           
@@ -223,7 +223,7 @@ secara otomatis mengenali tipe data yang digunakan. Namun, tetap memungkinkan ji
 
 contoh variabel eksplisit
 
-```
+```rust
 #[test]
 fn explicit_variable(){
     let age: i8 = 19;
@@ -236,7 +236,7 @@ fn explicit_variable(){
 
 output
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test explicit_variable -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s                                                                                                           
@@ -269,7 +269,7 @@ Contohnya, mencoba mengubah nilai 100.000 dari tipe i32 ke i8 akan memicu intege
 
 pertama, contoh dari tipe yang lebih kecil ke tipe yang lebih besar
 
-```
+```rust
 #[test]
 fn conversion(){
     let a: i8 = 19;
@@ -285,7 +285,7 @@ fn conversion(){
 
 outputnya akan menjadi
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test conversion -- --nocapture       
 Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
 Finished `test` profile [unoptimized + debuginfo] target(s) in 0.51s                                                                                                           
@@ -302,7 +302,7 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; fini
 
 dan contoh untuk tipe data besar ke kecil
 
-```
+```rust
 #[test]
 fn conversion_to_large(){
     let a: i64 = 1000000;
@@ -316,7 +316,7 @@ fn conversion_to_large(){
 
 outputnya menjadi
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test conversion_to_large -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.42s                                                                                                           
@@ -335,7 +335,7 @@ test conversion_to_large ... ok
 Operator numerik
 di bawah ini adalah contoh penggunaan operator numerik untuk studi kasus rumus luas trapesium
 
-```
+```rust
 #[test]
 fn operators_numeric(){
 
@@ -356,7 +356,7 @@ fn operators_numeric(){
 
 dan hasilnya adalah
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test operators_numeric -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.50s                                                                                                           
@@ -376,7 +376,7 @@ Operator perbandingan adalah simbol khusus dalam pemrograman yang digunakan untu
 selalu berupa nilai boolean—baik itu True atau False—yang biasanya digunakan dalam struktur pengambilan keputusan seperti if statement atau perulangan (loop)
 
 contoh untuk operator perbandingan
-```
+```rust
 #[test]
 fn comparison_operators(){
 
@@ -395,7 +395,7 @@ fn comparison_operators(){
 
 dan outputnya 
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test comparison_operators -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.57s                                                                                                           
@@ -426,7 +426,7 @@ contoh untuk operator boolean
 
 contoh kode di bawah
 
-```
+```rust
 #[test]
 fn boolean_operators(){
 
@@ -444,7 +444,7 @@ fn boolean_operators(){
 ```
 
 dan outputnya:
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test boolean_operators -- --nocapture
 Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
 Finished `test` profile [unoptimized + debuginfo] target(s) in 0.55s                                                                                                           
@@ -461,7 +461,7 @@ Tuple, sebuah Tuple adalah tipe data yang mengelompokkan sekumpulan tipe data.
 Jumlah elemen dalam sebuah tuple bersifat final dan tidak bisa diubah, dikurangi, atau ditambah. untuk membuat tuple, kita bisa menggunakan tanda kurung biasa ()
 
 contoh untuk tuple
-```
+```rust
 #[test]
 fn tuple(){
     let a: (i32, f64, &str) = (500, 6.4, "Hello");
@@ -482,7 +482,7 @@ fn tuple(){
 
 dan outputnya
 
-```
+```terminaloutput
 dan outputnya:
 
 S D:\Rust\basic_rust> cargo test tuple -- --nocapture
@@ -502,7 +502,7 @@ test tuple ... ok
 Secara teknis, kita masih bisa memodifikasi isi dari tuple dengan menjadikannya mutable tuple. Anda hanya perlu menambahkan kata kunci mut
 
 contoh untuk mutable tuple
-```
+```rust
 #[test]
 fn mutable_tuple(){
     let mut about_me: (&str, i8, &str) = ("Ghen", 19, "Universitas Mulawarman");
@@ -522,7 +522,7 @@ fn mutable_tuple(){
 
 dan outputnya
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test mutable_tuple -- --nocapture 
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s                                                                                                           
@@ -541,7 +541,7 @@ array Anda hanya bisa menggunakan satu tipe data, berbeda dengan tuple yang bisa
 
 contoh kodenya di bawah ini:
 
-```
+```rust
 #[test]
 fn array(){
 
@@ -560,7 +560,7 @@ fn array(){
 
 hasil output di bawah ini:
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test array -- --nocapture
 Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
 Finished `test` profile [unoptimized + debuginfo] target(s) in 0.58s                                                                                                           
@@ -577,7 +577,7 @@ test array ... ok
 kita bisa mengubah isi array dengan menggunakan kata kunci "mut".
 contoh kodenya di bawah ini
 
-```
+```rust
 #[test]
 fn mutable_array(){
 
@@ -596,7 +596,7 @@ fn mutable_array(){
 
 hasil output di bawah ini
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test mutable_array -- --nocapture
 Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
 Finished `test` profile [unoptimized + debuginfo] target(s) in 0.59s                                                                                                           
@@ -615,7 +615,7 @@ kita bisa membuat array di dalam array, yang biasa disebut sebagai array dua dim
 
 contoh kodenya di bawah ini
 
-```
+```rust
 #[test]
 fn two_dimensional_arrays(){
 
@@ -637,7 +637,7 @@ fn two_dimensional_arrays(){
 
 dan outputnya 
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test two_dimensional_array -- --nocapture
 Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
 Finished `test` profile [unoptimized + debuginfo] target(s) in 0.45s                                                                                                           
@@ -659,7 +659,7 @@ Konstanta adalah variabel yang tidak dapat diubah (immutable) yang menggunakan k
 
 contoh kode di bawah ini:
 
-```
+```rust
 const MAXIMUM: i16 = 37;
 #[test]
 fn const_variable() {
@@ -672,7 +672,7 @@ println!("Gunakan variabel konstan {}", MINIMUM);
 
 output-nya akan seperti di bawah ini:
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test const_variable -- --nocapture       
 Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
 Finished `test` profile [unoptimized + debuginfo] target(s) in 0.52s                                                                                                           
@@ -694,7 +694,7 @@ contoh kode di bawah ini:
 
 const UNIV_NAME: &str = "Mulawarman University"; // Variabel ini dapat digunakan karena berada di scope terluar sehingga fungsi apa pun dapat mengaksesnya
 
-```
+```rust
 #[test]
 fn scope() {
 // variabel name belum bisa digunakan di sini
@@ -713,7 +713,7 @@ println!("nama dia adalah {}", name);
 
 output di bawah ini:
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test scope -- --nocapture
 Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
 Finished `test` profile [unoptimized + debuginfo] target(s) in 0.57s                                                                                                           
@@ -888,7 +888,7 @@ String: Ukuran dinamis, dialokasikan di Heap. Bisa ditambah atau dikurangi teksn
 
 Contoh Penggunaan &str (Tanpa Alokasi Heap):
 
-```
+```rust
 #[test]
 fn string_slice() {
     let mut name: &str = "  Ghendida  "; // Pointer + Len disimpan di STACK
@@ -902,7 +902,7 @@ fn string_slice() {
 
 Contoh Penggunaan String (Menggunakan Heap):
 
-```
+```rust
 #[test]
 fn string_not_fixed_size() {
     let name: String = String::from("ghendida ayari");
@@ -988,7 +988,7 @@ Di Rust, if bukan sekadar pernyataan biasa, melainkan sebuah ekspresi yang menge
 
 Contoh If Expression:
 
-```
+```rust
 #[test]
 fn if_expression() {
     let a = 8;
@@ -1004,7 +1004,7 @@ fn if_expression() {
 
 ### Contoh Let Statement dengan If:
 
-```
+```rust
 #[test]
 fn let_statement () {
     let value = 80;
@@ -1035,7 +1035,7 @@ Di dalam Rust, kata kunci `loop` digunakan untuk membuat **perulangan abadi (inf
 
 contoh kode
 
-```
+```rust
 #[test]
 fn loop_expression() {
     let mut counter = 0; // dimulai dari 0
@@ -1057,7 +1057,7 @@ fn loop_expression() {
 
 hasilnya adalah
 
-```
+```terminaloutput
 /home/ghen/.cargo/bin/cargo test --color=always --package basic_rust --bin basic_rust --profile test --no-fail-fast --config target.x86_64-unknown-linux-gnu.runner=['/home/ghen/.local/share/JetBrains/Toolbox/apps/rustrover/bin/native-helper/intellij-rust-native-helper'] -- loop_expression --format=json --exact -Z unstable-options --show-output
 Testing started at 7:15 PM ...
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
@@ -1071,7 +1071,7 @@ Counter: 10
 
 dan contoh lain dari loop 
 
-```
+```rust
 #[test]
 fn loop_return_value() {
     let mut counter = 0; // angkanya adalah  0
@@ -1089,7 +1089,7 @@ fn loop_return_value() {
 
 dan hasilnya adalah
 
-```
+```terminaloutput
 /home/ghen/.cargo/bin/cargo test --color=always --package basic_rust --bin basic_rust --profile test --no-fail-fast --config target.x86_64-unknown-linux-gnu.runner=['/home/ghen/.local/share/JetBrains/Toolbox/apps/rustrover/bin/native-helper/intellij-rust-native-helper'] -- loop_return_value --format=json --exact -Z unstable-options --show-output
 Testing started at 7:16 PM ...
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
@@ -1105,7 +1105,7 @@ Bagian ini menjelaskan cara menggunakan perulangan bersarang (*nested loops*) da
 
 Struktur Kode
 
-```
+```rust
 #[test]
 fn loop_label() {
     let mut number = 1; // Angka pengali sebelah kiri (Variabel Luar)
@@ -1133,7 +1133,7 @@ fn loop_label() {
 
 output di bawah ini 
 
-```
+```terminaloutput
 1 X 1 = 1
 1 X 2 = 2
 1 X 3 = 3
@@ -2216,3 +2216,116 @@ fn test_kamera_tol() {
     cek_tilang(kendaraan_4);
 }
 ```
+
+---
+## Type Alias di Rust (`type`)
+
+## #📖 Apa itu Type Alias?
+**Type Alias** di Rust memungkinkanmu untuk memberikan nama baru (*nickname* atau nama panggilan kustom) pada tipe data yang sudah ada. Fitur ini **tidak** menciptakan tipe data yang benar-benar baru; ia hanya memberikan nama alternatif yang akan diperlakukan sama persis dengan tipe aslinya oleh *compiler* Rust.
+
+Kamu mendeklarasikannya menggunakan kata kunci `type`.
+
+### ⚙️ Cara Kerjanya (`type` vs `let`)
+Penting untuk memahami perbedaan antara membuat variabel dan membuat tipe data:
+*   Gunakan `let` untuk menyimpan **Data/Nilai** (Contoh: `let kecepatan = 100;`).
+*   Gunakan `type` untuk memberi nama **Cetakan/Tipe Data** (Contoh: `type Kecepatan = u32;`).
+
+### ⚖️ Aturan Main: Yang BISA dan TIDAK BISA Dilakukan
+
+**✅ Yang BISA kamu lakukan:**
+*   **Mencampur dengan tipe asli:** Karena alias hanyalah sebuah nama panggilan, kamu bisa mencampur alias dengan tipe aslinya secara aman. Nilai `u32` biasa bisa dimasukkan ke dalam fungsi yang meminta `type Kilometer = u32`.
+*   **Menyingkat tipe data yang panjang:** Kamu bisa membuat alias untuk Tuple yang panjang atau tipe data bersarang (seperti `Result<String, std::io::Error>`) menjadi satu kata yang bersih.
+*   **Memperjelas konteks (Domain Modeling):** Kamu bisa menggunakannya untuk memberikan makna dunia nyata pada angka primitif biasa, sehingga *programmer* lain langsung paham apa maksud angka tersebut.
+
+**❌ Yang TIDAK BISA kamu lakukan:**
+*   **TIDAK BISA memaksa keamanan tipe (*strict type safety*):** Karena alias identik dengan tipe aslinya, *compiler* tidak akan melarangmu jika kamu tidak sengaja menjumlahkan `Kilometer` (u32) dengan `Kilogram` (u32). (Jika kamu butuh isolasi mutlak, kamu harus menggunakan Tuple Struct, contoh: `struct Kilometer(u32);`).
+*   **TIDAK BISA menyimpan nilai nyata:** `type` murni hanya untuk mendefinisikan bentuk/wujud datanya, bukan untuk menyimpan isinya.
+
+---
+
+### 🚀 Contoh Penerapan & Kode
+
+### 1. Menyingkat Tuple
+Daripada harus menulis `(f64, f64)` di mana-mana di dalam kodemu, kamu bisa membuat satu alias. Ini membuat penulisan fungsimu jadi jauh lebih rapi.
+
+```rust
+// Kalau aku bilang 'TitikKordinat', Rust sudah tau maksudnya adalah tuple berisi 2 index f64
+type TitikKordinat = (f64, f64); 
+
+// Parameter fungsinya jadi jauh lebih mudah dibaca
+fn cetak_lokasi(lokasi: TitikKordinat) {
+    println!("Berada di titik kordinat {} dan {}", lokasi.0, lokasi.1);
+}
+
+#[test]
+fn test_titik_kordinat() {
+    let rumah: TitikKordinat = (15.73, 30.13);
+    cetak_lokasi(rumah);
+}
+```
+
+### 2. Memperjelas Konteks (Domain Modeling)
+Menggunakan alias memberikan makna semantik pada angkamu. Tanpa alias, sebuah fungsi yang menerima dua parameter u32 mungkin akan membuat bingung. Dengan alias, kodenya terbaca seperti bahasa manusia.
+
+```rust
+type JumlahBarang = u32;
+type Duit = u64;
+
+// Tanda tangan fungsi ini bercerita dengan jelas data apa yang ia butuhkan dan kembalikan
+fn hitung_omset(terjual: JumlahBarang, harga_satuan: Duit) -> Duit {
+    // Kita wajib melakukan casting (terjual as Duit) agar ukurannya sejajar dengan harga_satuan (u64)
+    let total = (terjual as Duit) * harga_satuan;
+    total // Tanpa titik koma agar nilainya dikembalikan (return)
+}
+
+#[test]
+fn test_omset_ukm() {
+    let kopi_terjual: JumlahBarang = 150;
+    // Menggunakan underscore '_' sebagai pemisah ribuan agar kode enak dibaca
+    let harga_kopi: Duit = 25_000; 
+    let total_pendapatan = hitung_omset(kopi_terjual, harga_kopi);
+    
+    println!("Total pendapatan ukm ini adalah Rp{}", total_pendapatan);
+
+    let kopi_terjual_2: JumlahBarang = 75;
+    let harga_kopi_2: Duit = 30_000;
+    let total_pendapatan_2 = hitung_omset(kopi_terjual_2, harga_kopi_2);
+    
+    println!("Total pendapatan ukm ini adalah Rp{}", total_pendapatan_2);
+}
+```
+
+
+### 3. Mempermudah Pattern Matching yang Kompleks
+Saat berhadapan dengan Tuple panjang yang menyimpan berbagai status, Type Alias yang digabungkan dengan match akan menciptakan sistem yang sangat tangguh dan mudah dibaca.
+
+```rust
+// Membuat alias Tuple 4 elemen: (Nama Objek, Kordinat X, Kordinat Y, Apakah Ancaman?)
+type DataRadar = (String, f64, f64, bool);
+
+fn proses_radar(target: DataRadar) {
+    // Membongkar alias Tuple menggunakan pattern matching
+    match target {
+        // Pola 1: Cocok mutlak jika boolean bernilai true (Ancaman)
+        (nama, x, y, true) => {
+            println!("AWAS! Objek {} terdeteksi di kordinat {}, {}. Ini adalah ancaman!", nama, x, y);
+        }
+        // Pola 2: Cocok mutlak jika boolean bernilai false (Aman)
+        (nama, x, y, false) => {
+            println!("Aman. Objek {} terpantau lewat di kordinat {} dan {}", nama, x, y);
+        }
+        // Kita tidak butuh catch-all ('_') karena tipe boolean HANYA bisa true atau false.
+        // Rust tahu bahwa match ini sudah tertangani 100% secara menyeluruh (exhaustive)!
+    }
+}
+
+#[test]
+fn test_sistem_radar() {
+    let target1: DataRadar = (String::from("Ambatukam"), 10.5, 3.3, true);
+    let target2: DataRadar = (String::from("Rusdiyansah"), 16.5, 3.3, false);
+
+    proses_radar(target1);
+    proses_radar(target2);
+}
+```
+

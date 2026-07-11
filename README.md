@@ -7,8 +7,7 @@
 ## How to write "Hello world in Rust"
 <br>
 
-```
-
+```rust
 fn main(){
     println!("Hello, world!");
 }
@@ -70,7 +69,7 @@ In Rust one project only can use one main function. i gonna use alternative meth
 <br>
 a unit test is a code specifically dedicated to testing.
 
-```
+```rust
 #[test]
 fn testing(){
     println!(my name's ghen and i currently learn rust);
@@ -88,7 +87,7 @@ this is output, we can run with "cargo test name_test_function -- --exact" or ca
 A variable is used to store data values, to create or declare a variable in rust, we can use "let" keyword.
 examples of its usage is shown below:
 
-```
+```rust
 #[test]
 fn variable(){
     let my_name = "Ghendida";
@@ -97,7 +96,7 @@ fn variable(){
 ```
 and the output:
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test variable -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s                                                                                                           
@@ -115,7 +114,7 @@ Rust allows us to create variables that can be changed, known as mutable, and th
 <br>
 examples for mutable variable is showns below
 
-```
+```rust
 #[test]
 fn variable_mutable(){
     let mut age_in_2025: i8 = 18;
@@ -128,7 +127,7 @@ fn variable_mutable(){
 
 and the output:
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test variable_mutable -- --nocapture
 Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
 Finished `test` profile [unoptimized + debuginfo] target(s) in 0.49s                                                                                                           
@@ -149,7 +148,7 @@ Unlike JavaScript and PHP, this is not possible for example, changing from a str
 <br>
 example for can't change data type
 
-```
+```rust
 #[test]
 fn static_type(){
     let mut my_github = "GhenAyari";
@@ -162,8 +161,7 @@ fn static_type(){
  
 and the output will be
 
-```
-
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test static_type -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
 error[E0308]: mismatched types                                                                                                                                                     
@@ -177,7 +175,6 @@ error[E0308]: mismatched types
 
 For more information about this error, try `rustc --explain E0308`.                                                                                                                
 error: could not compile `basic_rust` (bin "basic_rust" test) due to 1 previous error  
-
 ```
 
 ---
@@ -188,7 +185,7 @@ or what is called shadowing. this practice is not ideal, but it is still allowed
 <br>
 example for shadowing
 
-```
+```rust
 #[test]
 fn shadowing(){
     let name = "Ghendida";
@@ -204,7 +201,7 @@ fn shadowing(){
 
 and output will be
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test shadowing -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.52s                                                                                                           
@@ -231,7 +228,7 @@ automatically recognize the data type used. However, it is still possible if you
 <br>
 
 example an explicit variable
-```
+```rust
 #[test]
 fn explicit_variable(){
     let age: i8 = 19;
@@ -244,7 +241,7 @@ fn explicit_variable(){
 
 output:
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test explicit_variable -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s                                                                                                           
@@ -277,7 +274,7 @@ For example, trying to convert the value 100,000 from an i32 to an i8 will trigg
 
 first, example from smaller to larger types
 
-```
+```rust
 #[test]
 fn conversion(){
     let a: i8 = 19;
@@ -293,7 +290,7 @@ fn conversion(){
 
 the output will be
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test conversion -- --nocapture       
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.51s                                                                                                           
@@ -312,7 +309,7 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; fini
 
 and an example for large to small
 
-```
+```rust
 #[test]
 fn conversion_to_large(){
     let a: i64 = 1000000;
@@ -326,7 +323,7 @@ fn conversion_to_large(){
 
 the output
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test conversion_to_large -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.42s                                                                                                           
@@ -348,7 +345,7 @@ Operators numeric
 
 below for example operators numeric use case studies trapezoid area formula
 
-```
+```rust
 #[test]
 fn operators_numeric(){
 
@@ -369,7 +366,7 @@ fn operators_numeric(){
 
 and the result is:
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test operators_numeric -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.50s                                                                                                           
@@ -391,7 +388,7 @@ always a boolean value—either True or False—which is commonly used in decisi
 
 example for comparison operators
 
-```
+```rust
 #[test]
 fn comparison_operators(){
 
@@ -410,7 +407,7 @@ fn comparison_operators(){
 
 and the output:
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test comparison_operators -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.57s                                                                                                           
@@ -441,7 +438,7 @@ Operator ini berfungsi sebagai dasar pengendalian alur program dan penyaringan i
 
 an example for boolean operators
 
-```
+```rust
 #[test]
 fn boolean_operators(){
 
@@ -460,7 +457,7 @@ fn boolean_operators(){
 
 and the output: 
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test boolean_operators -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.55s                                                                                                           
@@ -480,7 +477,7 @@ The number of elements in a tuple is final and can't be modified, decreased, or 
 
 an example for tuple
 
-```
+```rust
 #[test]
 fn tuple(){
     let a: (i32, f64, &str) = (500, 6.4, "Hello");
@@ -501,7 +498,7 @@ fn tuple(){
 
 and the output:
 
-```
+```terminaloutput
 S D:\Rust\basic_rust> cargo test tuple -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.52s                                                                                                           
@@ -521,7 +518,7 @@ Technically, we can still modify the contents of a tuple by making it a mutable 
 
 an example for mutable tuple 
 
-```
+```rust
 #[test]
 fn mutable_tuple(){
     let mut about_me: (&str, i8, &str) = ("Ghen", 19, "Mulawarman University");
@@ -539,7 +536,7 @@ fn mutable_tuple(){
 }
 ```
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test mutable_tuple -- --nocapture 
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s                                                                                                           
@@ -559,7 +556,7 @@ array you can only use one data type, different from a tuple which can use many 
 
 example code below:
 
-```
+```rust
 #[test]
 fn array(){
 
@@ -578,7 +575,7 @@ fn array(){
 
 the output result below:
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test array -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.58s                                                                                                           
@@ -596,7 +593,7 @@ we can change contain of array with use "mut".
 
 example code below
 
-```
+```rust
 #[test]
 fn mutable_array(){
 
@@ -615,7 +612,7 @@ fn mutable_array(){
 
 the output result below
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test mutable_array -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.59s                                                                                                           
@@ -633,7 +630,7 @@ we can create an array inside an array, which is commonly referred to as a two-d
 
 example code below
 
-```
+```rust
 #[test]
 fn two_dimensional_arrays(){
 
@@ -655,7 +652,7 @@ fn two_dimensional_arrays(){
 
 and the output result below
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test two_dimensional_array -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.45s                                                                                                           
@@ -677,7 +674,7 @@ between const and let is that constants cannot be made mutable, and you must exp
 
 example code below
 
-```
+```rust
 const MAXIMUM: i16 = 37;
 #[test]
 fn const_variable() {
@@ -692,7 +689,7 @@ fn const_variable() {
 
 an output will be bellow
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test const_variable -- --nocapture       
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.52s                                                                                                           
@@ -712,7 +709,7 @@ be used inside the scope where the variable is located and in the inner scope, b
 
 example code below 
 
-```
+```rust
 const UNIV_NAME: &str = "Mulawarman University"; // This variable can be used because it is located in the outermost scope so any function can access it
 #[test]
 fn scope() {
@@ -732,7 +729,7 @@ fn scope() {
 
 the output below
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test scope -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.57s                                                                                                           
@@ -939,7 +936,7 @@ Rust is unique because it provides memory safety without requiring a Garbage Col
 
 example code below
 
-```
+```rust
 #[test]
 fn memory_management() {
 
@@ -1133,7 +1130,7 @@ When the owner goes out of scope, Rust automatically frees the associated heap m
 
 example code for &str is below
 
-```
+```rust
 #[test]
 fn string_slice() {
 
@@ -1177,7 +1174,7 @@ fn string_slice() {
 
 and the output
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test string_slice -- --nocapture         
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.50s                                                                                                           
@@ -1191,7 +1188,7 @@ test string_slice ... ok
 
 example code for String is below
 
-```
+```rust
 #[test]
 fn string_not_fixed_size() {
 
@@ -1211,7 +1208,7 @@ fn string_not_fixed_size() {
 
 the output will be
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test string_not_fixed_size -- --nocapture
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.06s
      Running unittests src\main.rs (target\debug\deps\basic_rust-4923d86b01c67cd4.exe)
@@ -1477,7 +1474,7 @@ Once the owner goes out of scope, Rust automatically triggers the drop process a
 
 example code below 
 
-```
+```rust
 #[test]
 fn ownership_scope() {
 
@@ -1496,7 +1493,7 @@ fn ownership_scope() {
 
 and output below
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test ownership_scope -- --nocapture      
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.53s                                                                                                           
@@ -1514,7 +1511,7 @@ test ownership_scope ... ok
 
 example code below
 
-```
+```rust
 #[test]
 fn data_copy() {
     let a = 16;
@@ -1527,7 +1524,7 @@ fn data_copy() {
 
 output below
 
-```
+```terminaloutput
 C:/Users/Asus/.cargo/bin/cargo.exe test --color=always --package basic_rust --bin basic_rust data_copy --profile test --no-fail-fast --config "target.x86_64-pc-windows-gnu.runner=['C:\Program Files\JetBrains\RustRover 2025.3.4\bin\native-helper\intellij-rust-native-helper.exe']" -- --format=json --exact -Z unstable-options --show-output
 Testing started at 7:05 PM ...
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
@@ -1571,7 +1568,7 @@ Once the transfer is complete, the old owner is automatically considered invalid
 
 example code below
 
-```
+```rust
 #[test]
 fn ownership_movement() {
 
@@ -1588,7 +1585,7 @@ fn ownership_movement() {
 
 and output below
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test ownership_movement -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.52s                                                                                                           
@@ -1619,7 +1616,7 @@ In Rust, almost all data types stored on the Heap implement the .clone() method
 
 example code is below
 
-```
+```rust
 #[test]
 fn clone() {
 
@@ -1635,7 +1632,7 @@ fn clone() {
 
 and the output
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test clone -- --nocapture             
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s                                                                                                           
@@ -1653,7 +1650,7 @@ If the condition is met, the if code block will be executed, but if it is not me
 
 example code below
 
-```
+```rust
 #[test]
 fn if_expression() {
 
@@ -1674,7 +1671,7 @@ fn if_expression() {
 
 and the output
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test if_expression -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.55s                                                                                                           
@@ -1695,7 +1692,7 @@ assign data to a variable. This is very useful because we don't need to separate
 
 example code below
 
-```
+```rust
 #[test]
 fn let_statement () {
 
@@ -1719,7 +1716,7 @@ fn let_statement () {
 
 and output is below
 
-```
+```terminaloutput
 PS D:\Rust\basic_rust> cargo test let_statement -- --nocapture
    Compiling basic_rust v0.1.0 (D:\Rust\basic_rust)
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.54s                                                                                                           
@@ -1744,7 +1741,7 @@ In Rust, the `loop` keyword is used to create an **infinite loop**. Unlike `whil
 
 ### Code Example
 
-```
+```rust
 #[test]
 fn loop_expression() {
     let mut counter = 0; // dimulai dari 0
@@ -1765,7 +1762,7 @@ fn loop_expression() {
 
 and output is below
 
-```
+```terminaloutput
 /home/ghen/.cargo/bin/cargo test --color=always --package basic_rust --bin basic_rust --profile test --no-fail-fast --config target.x86_64-unknown-linux-gnu.runner=['/home/ghen/.local/share/JetBrains/Toolbox/apps/rustrover/bin/native-helper/intellij-rust-native-helper'] -- loop_expression --format=json --exact -Z unstable-options --show-output
 Testing started at 7:11 PM ...
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
@@ -1779,7 +1776,7 @@ Counter: 10
 
 another example
 
-```
+```rust
 #[test]
 fn loop_return_value() {
     let mut counter = 0; // angkanya adalah  0
@@ -1797,7 +1794,7 @@ fn loop_return_value() {
 
 the output
 
-```
+```terminaloutput
 #[test]
 fn loop_return_value() {
     let mut counter = 0; // angkanya adalah  0
@@ -1820,7 +1817,7 @@ This section demonstrates how to use nested loops (a loop inside another loop) a
 
 Code Structure
 
-```
+```rust
 #[test]
 fn loop_label() {
     let mut number = 1; // Left-hand side multiplier (Outer Variable)
@@ -1848,7 +1845,7 @@ fn loop_label() {
 
 and output below
 
-```
+```terminaloutput
 /home/ghen/.cargo/bin/cargo test --color=always --package basic_rust --bin basic_rust --profile test --no-fail-fast --config target.x86_64-unknown-linux-gnu.runner=['/home/ghen/.local/share/JetBrains/Toolbox/apps/rustrover/bin/native-helper/intellij-rust-native-helper'] -- loop_label --format=json --exact -Z unstable-options --show-output
 Testing started at 3:17 PM ...
     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
@@ -3000,4 +2997,113 @@ fn test_kamera_tol() {
 }
 ```
 
+---
+## Type Aliases in Rust (`type`)
+
+### 📖 What is a Type Alias?
+A **Type Alias** in Rust allows you to give a new, custom name (a nickname) to an existing data type. It does **not** create a brand new data type; it simply provides an alternative name that the compiler treats exactly the same as the original type.
+
+You declare it using the `type` keyword.
+
+### ⚙️ How It Works (`type` vs `let`)
+It is important to understand the difference between creating a variable and creating a type:
+*   Use `let` to store **Data/Values** (e.g., `let speed = 100;`).
+*   Use `type` to name a **Data Blueprint/Type** (e.g., `type Speed = u32;`).
+
+### ⚖️ The Rules: What You CAN and CANNOT Do
+
+**✅ What you CAN do:**
+*   **Mix and match:** Because an alias is just a nickname, you can safely mix the alias with the original type. A `u32` value can be passed into a function expecting your custom `type Kilometer = u32`.
+*   **Shorten complex types:** You can alias long Tuples or deeply nested types (like `Result<String, std::io::Error>`) into a single, clean word.
+*   **Clarify intent (Domain Modeling):** You can use it to give real-world context to primitive numbers, so other developers understand what the number represents.
+
+**❌ What you CANNOT do:**
+*   **CANNOT enforce strict type safety:** Because an alias is identical to its original type, the compiler will not stop you from accidentally adding `Kilometer` (u32) and `Kilogram` (u32) together. (If you need strict isolation, you must use a Tuple Struct, e.g., `struct Kilometer(u32);`).
+*   **CANNOT store actual values:** `type` is only for defining the shape of the data, not for holding the data itself.
+
+---
+
+### 🚀 Common Use Cases & Code Examples
+
+### 1. Shortening Tuples
+Instead of writing `(f64, f64)` everywhere in your functions, you can create a single alias. This makes your function signatures much cleaner.
+
+```rust
+// When I say 'TitikKordinat', Rust knows I mean a tuple containing two f64 values.
+type TitikKordinat = (f64, f64); 
+
+// The parameter is much easier to read now
+fn cetak_lokasi(lokasi: TitikKordinat) {
+    println!("Berada di titik kordinat {} dan {}", lokasi.0, lokasi.1);
+}
+
+#[test]
+fn test_titik_kordinat() {
+    let rumah: TitikKordinat = (15.73, 30.13);
+    cetak_lokasi(rumah);
+}
+```
+
+### 2. Domain Modeling (Giving Context to Primitives)
+Using aliases gives semantic meaning to your numbers. Without aliases, a function taking two u32 arguments might confuse a developer. With aliases, it reads like human language.
+
+```rust
+type JumlahBarang = u32;
+type Duit = u64;
+
+// The function signature clearly tells a story about what data it needs and returns.
+fn hitung_omset(terjual: JumlahBarang, harga_satuan: Duit) -> Duit {
+    // We must cast 'terjual' (u32) to 'Duit' (u64) so they share the same memory size before multiplying.
+    let total = (terjual as Duit) * harga_satuan;
+    total // No semicolon here so the value is returned
+}
+
+#[test]
+fn test_omset_ukm() {
+    let kopi_terjual: JumlahBarang = 150;
+    // Using underscore '_' as a thousands separator makes the code highly readable.
+    let harga_kopi: Duit = 25_000; 
+    let total_pendapatan = hitung_omset(kopi_terjual, harga_kopi);
+    
+    println!("Total pendapatan ukm ini adalah Rp{}", total_pendapatan);
+
+    let kopi_terjual_2: JumlahBarang = 75;
+    let harga_kopi_2: Duit = 30_000;
+    let total_pendapatan_2 = hitung_omset(kopi_terjual_2, harga_kopi_2);
+    
+    println!("Total pendapatan ukm ini adalah Rp{}", total_pendapatan_2);
+}
+```
+
+### 3. Simplifying Complex Pattern Matching
+When dealing with long Tuples that hold various states, an alias combined with pattern matching creates an incredibly robust and readable system.
+```rust
+// Defining a 4-element Tuple representing: Object Name, X coordinate, Y coordinate, Is Threat?
+type DataRadar = (String, f64, f64, bool);
+
+fn proses_radar(target: DataRadar) {
+    // Destructuring the Tuple alias using pattern matching
+    match target {
+        // Pattern 1: Exact match when the boolean is true (Threat detected)
+        (nama, x, y, true) => {
+            println!("AWAS! Objek {} terdeteksi di kordinat {}, {}. Ini adalah ancaman!", nama, x, y);
+        }
+        // Pattern 2: Exact match when the boolean is false (Safe object)
+        (nama, x, y, false) => {
+            println!("Aman. Objek {} terpantau lewat di kordinat {} dan {}", nama, x, y);
+        }
+        // Notice we don't need a catch-all ('_') because a boolean can only be true or false.
+        // Rust knows this match is 100% exhaustive!
+    }
+}
+
+#[test]
+fn test_sistem_radar() {
+    let target1: DataRadar = (String::from("Ambatukam"), 10.5, 3.3, true);
+    let target2: DataRadar = (String::from("Rusdiyansah"), 16.5, 3.3, false);
+
+    proses_radar(target1);
+    proses_radar(target2);
+}
+```
 
