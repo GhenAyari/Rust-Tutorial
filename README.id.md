@@ -1947,3 +1947,113 @@ fn show_motor() {
     // ^ Baris ini sudah tidak bisa dijalankan lagi karena hancurkan_motor telah mengakhiri siklus hidup 'motor_saya'.
 }
 ```
+##  Enum
+**Enum** (singkatan dari Enumeration) adalah tipe data kustom di mana nilainya hanya boleh memilih *satu* dari daftar pilihan (varian) yang sudah disediakan. Jika `struct` menggunakan konsep **DAN** (Mobil punya mesin DAN roda), maka `enum` menggunakan konsep **ATAU** (Lampu lalu lintas menyala Merah ATAU Kuning ATAU Hijau).
+
+### Kapan Menggunakan Enum Dibanding Struct?
+*   **Gunakan `struct`** saat datamu memiliki banyak properti yang harus ada dalam satu waktu bersamaan (Contoh: `User` memiliki `nama` DAN `email`).
+*   **Gunakan `enum`** saat datamu merupakan sebuah pilihan pasti atau status yang berubah-ubah (Contoh: Status `Pembayaran` bisa berupa `Tunai` ATAU `Transfer`).
+
+### Aturan Main (Yang Bisa dan Tidak Bisa Dilakukan)
+
+**Enum:**
+*   ✅ **BISA** menyimpan tipe data yang berbeda-beda di setiap variannya (misal: satu varian kosong, varian lain membawa `String`).
+*   ✅ **BISA** memiliki fungsi dan perilakunya sendiri menggunakan blok `impl`.
+*   ❌ **TIDAK BISA** diambil datanya secara langsung menggunakan titik (contoh: `enumku.0`). Kamu *wajib* menggunakan Pattern Matching untuk membuka gembok datanya.
+
+**Pattern Matching (`match`):**
+*   ✅ **BISA** mengekstrak data dari dalam Enum dan mengikatnya (*binding*) ke dalam variabel baru secara instan.
+*   ❌ **TIDAK BISA** melupakan satu varian pun. Rust mewajibkan pengecekan secara menyeluruh (*Exhaustive*). Kalau ada 3 varian, ketiganya wajib dicek.
+*   ❌ **TIDAK BISA** kebablasan (*fall-through*). Berbeda dengan `switch` di bahasa lain, saat Rust menemukan kondisi yang cocok, ia langsung mengeksekusi dan keluar secara otomatis. Tidak butuh perintah `break;`.
+
+### Cara Menulis Variasi Enum dan Match
+
+```rust
+enum Contoh {
+    Kosong,              // Unit-like: Tanpa data
+    Teks(String),        // Tuple-like: 1 data
+    Kordinat(i32, i32),  // Tuple-like: 2 data
+}
+
+fn proses_contoh(data: Contoh) {
+    match data {
+        Contoh::Kosong => println!("Tidak ada apa-apa"),
+        Contoh::Teks(pesan) => println!("Pesannya: {}", pesan),
+        Contoh::Kordinat(x, y) => println!("Di posisi {}, {}", x, y),
+        // _ => println!("Gunakan _ (underscore) jika ingin mengabaikan sisa varian lainnya"),
+    }
+}
+```
+
+### Contoh Kode Lengkap (State Machine: Mesin Kopi)
+
+```rust
+// 1. DEKLARASI ENUM
+enum MesinKopi {
+    Mati,             // Varian tanpa data
+    Menyala(u32),     // Varian yang membawa 1 data angka (u32) sebagai stok
+}
+
+// 2. IMPLEMENTASI METHOD
+impl MesinKopi {
+    // Associated Function (Pabrik pencetak Enum)
+    fn mesin_baru() -> MesinKopi {
+        MesinKopi::Mati
+    }
+
+    // Method dengan &self (Membaca data saja, tidak bisa mengubah)
+    fn cek_status(&self) {
+        match self {
+            MesinKopi::Mati => {
+                println!("Mesin kopi mati");
+            }
+            // Menangkap data 'u32' dari dalam enum dan memberinya nama 'stok'
+            MesinKopi::Menyala(stok) => {
+                println!("Mesin kopi siap, sisa stok {} gelas", stok);
+            }
+        }
+    }
+
+    // Method dengan &mut self (Bisa membaca dan mengubah data/wujud enum)
+    fn isi_kopi(&mut self, tambahan: u32) {
+        match self {
+            MesinKopi::Mati => {
+                // Mengubah wujud enum dari 'Mati' menjadi 'Menyala'
+                // Tanda bintang (*) digunakan untuk menimpa nilai asli dari peminjaman (&mut)
+                *self = MesinKopi::Menyala(tambahan);
+                println!("Mesin otomatis dihidupkan dan diisi dengan tambahan {} gelas kopi", tambahan);
+            }
+            MesinKopi::Menyala(stok) => {
+                // Menambahkan angka ke dalam stok yang sudah ada
+                *stok += tambahan;
+                println!("Stok ditambah sekarang mesin memiliki stok {} gelas kopi", stok);
+            }
+        }
+    }
+
+    // Method dengan self (Merampas ownership / Menghanguskan data)
+    fn hancurkan_mesin(self) {
+        match self {
+            MesinKopi::Mati => {
+                println!("Mesin kopi mati dan dibuang ke rongsokan");
+            }
+            MesinKopi::Menyala(stok) => {
+                println!("Sayang sekali mesin dihancurkan padahal masih menyala dan memiliki stok {} gelas kopi di dalamnya", stok);
+            }
+        }
+        // Setelah batas fungsi ini tercapai, mesin akan dihapus (Drop) dari memori.
+    }
+}
+
+#[test]
+fn test_mesin_kopi() {
+    let mut mesin_kantor = MesinKopi::mesin_baru();
+
+    mesin_kantor.cek_status();      // Output: Mesin kopi mati
+    mesin_kantor.isi_kopi(15);      // Wujud berubah menjadi Menyala dengan stok 15
+    mesin_kantor.cek_status();      // Output: Mesin kopi siap...
+    mesin_kantor.isi_kopi(13);      // Stok bertambah menjadi 28
+    mesin_kantor.cek_status();      // Output: Mesin kopi siap, sisa stok 28 gelas
+    mesin_kantor.hancurkan_mesin(); // Kepemilikan dirampas, mesin hangus
+}
+```

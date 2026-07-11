@@ -2728,3 +2728,116 @@ fn show_motor() {
 ```
 
 
+---
+## Enum
+**Enum** (short for Enumeration) is a custom data type that allows you to define a type by enumerating its possible *variants*. While a `struct` uses the **AND** concept (a Car has wheels AND an engine), an `enum` uses the **OR** concept (a Traffic Light is Red OR Yellow OR Green).
+
+### When to Use Enum vs. Struct?
+*   **Use `struct`** when you need to group related pieces of data together simultaneously. (e.g., A `User` has a `name`, `email`, and `age` all at once).
+*   **Use `enum`** when a value can only be exactly *one* of several possible states or choices. (e.g., A `Connection` state is either `Connected` OR `Disconnected` OR `Connecting`).
+
+### The Rules (Do's and Don'ts)
+
+**Enum:**
+*   ✅ **CAN** store different types and amounts of data inside each variant (e.g., `VariantA`, `VariantB(String)`, `VariantC(i32, i32)`).
+*   ✅ **CAN** have its own behavior using `impl` blocks (Associated Functions and Methods).
+*   ❌ **CANNOT** extract its inner data directly using dot notation (e.g., `my_enum.0`). You *must* use Pattern Matching to unlock the data.
+
+**Pattern Matching (`match`):**
+*   ✅ **CAN** extract inner data and bind it to a new local variable instantly.
+*   ❌ **CANNOT** leave out any variant. Rust enforces **Exhaustive Matching**, meaning you must handle every single possible variant.
+*   ❌ **CANNOT** "fall-through". Unlike `switch` in other languages, once a match is found, it executes the block and exits automatically. No `break` keyword is needed.
+
+### Writing Enum and Match Variations
+
+```rust
+enum Example {
+    Empty,               // Unit-like: No data
+    Text(String),        // Tuple-like: 1 data
+    Position(i32, i32),  // Tuple-like: 2 data
+}
+
+fn handle_example(ex: Example) {
+    match ex {
+        Example::Empty => println!("Nothing here"),
+        Example::Text(msg) => println!("Message: {}", msg),
+        Example::Position(x, y) => println!("At {}, {}", x, y),
+        // _ => println!("Catch-all pattern if you want to ignore the rest"),
+    }
+}
+```
+
+### Example code
+
+```rust
+// 1. DEFINING THE ENUM
+enum MesinKopi {
+    Mati,             // Variant with no data
+    Menyala(u32),     // Variant holding a 'u32' data representing coffee stock
+}
+
+// 2. IMPLEMENTING BEHAVIOR
+impl MesinKopi {
+    // Associated Function (Factory/Constructor)
+    fn mesin_baru() -> MesinKopi {
+        MesinKopi::Mati
+    }
+
+    // Method with &self (Immutable Borrow - Reading data only)
+    fn cek_status(&self) {
+        match self {
+            MesinKopi::Mati => {
+                println!("Mesin kopi mati");
+            }
+            // Binding the inner 'u32' to a variable named 'stok'
+            MesinKopi::Menyala(stok) => {
+                println!("Mesin kopi siap, sisa stok {} gelas", stok);
+            }
+        }
+    }
+
+    // Method with &mut self (Mutable Borrow - Modifying enum state/data)
+    fn isi_kopi(&mut self, tambahan: u32) {
+        match self {
+            MesinKopi::Mati => {
+                // Mutating the enum from 'Mati' to 'Menyala' state
+                // We use '*' (dereference) to overwrite the actual borrowed value
+                *self = MesinKopi::Menyala(tambahan);
+                println!("Mesin otomatis dihidupkan dan diisi dengan tambahan {} gelas kopi", tambahan);
+            }
+            MesinKopi::Menyala(stok) => {
+                // Mutating the inner value of the current variant
+                *stok += tambahan;
+                println!("Stok ditambah sekarang mesin memiliki stok {} gelas kopi", stok);
+            }
+        }
+    }
+
+    // Method with self (Takes Ownership - Consumes the instance)
+    fn hancurkan_mesin(self) {
+        match self {
+            MesinKopi::Mati => {
+                println!("Mesin kopi mati dan dibuang ke rongsokan");
+            }
+            MesinKopi::Menyala(stok) => {
+                println!("Sayang sekali mesin dihancurkan padahal masih menyala dan memiliki stok {} gelas kopi di dalamnya", stok);
+            }
+        }
+        // After this function ends, the 'MesinKopi' instance is dropped from memory.
+    }
+}
+
+#[test]
+fn test_mesin_kopi() {
+    let mut mesin_kantor = MesinKopi::mesin_baru();
+
+    mesin_kantor.cek_status();      // Output: Mesin kopi mati
+    mesin_kantor.isi_kopi(15);      // Mutates state to Menyala(15)
+    mesin_kantor.cek_status();      // Output: Mesin kopi siap...
+    mesin_kantor.isi_kopi(13);      // Mutates inner value to 28
+    mesin_kantor.cek_status();      // Output: Mesin kopi siap, sisa stok 28 gelas
+    mesin_kantor.hancurkan_mesin(); // Consumes the machine
+}
+```
+
+

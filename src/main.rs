@@ -1078,3 +1078,166 @@ fn show_novel() {
     novel_baru.kirim_ke_penerbit();
 }
 
+#[allow(dead_code)] // agar compiler rust tidak marah marah karena ada isi dari enum yang tidak digunakan
+enum Arah{ // enum adalah singkatan dari Enumeration, kalau Struct konsepnya dan kalau enum konsepnya atau
+    Atas, // isi dari enum harus diawal dengan capital contoh Atas, tidak bisa jika atas
+    Bawah,
+    Kiri,
+    Kanan
+}
+
+#[test]
+fn show_enum_arah() {
+    // memilih salah satu varian
+    let _langkah_pertama = Arah::Atas; // tanda _ agar mengabaikan itu dipakai atau engga
+    let _langkah_kedua = Arah::Bawah;
+}
+
+enum Aktivitas{
+    Logout,
+
+    // untuk pesan obrolan
+    KirimPesan(String),
+
+    // untuk semisal String pindah kemana dan i32 untuk kordinatnya
+    PindahPosisi(String, i32),
+
+}
+
+// impl untuk enum Aktivitas
+impl Aktivitas{
+    // Asssociated Function
+    fn aktivitas_sekarang(isi_pesan: String) -> Aktivitas{
+        Aktivitas::KirimPesan(isi_pesan)
+    }
+
+    fn jalankan_aktivitas(&self) {
+        // melakukan match pada dirinya sendiri
+        match self {
+            Aktivitas::Logout => {
+                println!("User menekan tombol logout");
+            }
+            Aktivitas::KirimPesan(teks) => {
+                println!("Mengirim pesan rahasia berbunyi {} ", teks);
+            }
+            Aktivitas::PindahPosisi(arah, kordinat) => {
+                println!("Berjalan ke arah {} sejauh {} meter ", arah, kordinat);
+            }
+        }
+    }
+}
+
+#[test]
+fn show_aktivitas() {
+
+    let status_1 = Aktivitas::Logout;
+
+    let status_2 = Aktivitas::PindahPosisi(String::from("Ke arah timur"), 87567);
+
+    let status_3 = Aktivitas::aktivitas_sekarang(String::from("Aku sayang kamu hehehehe"));
+
+    status_1.jalankan_aktivitas();
+    status_2.jalankan_aktivitas();
+    status_3.jalankan_aktivitas();
+
+}
+
+enum Pembayaran {
+    Tunai,
+    Ewalllet(String),
+    TransferBank(String, u32)
+}
+
+impl Pembayaran {
+    fn pilih_transfer(nama_bank: String, jumlah: u32) -> Pembayaran {
+        Pembayaran::TransferBank(nama_bank, jumlah)
+    }
+    fn proses_bayar(&self) {
+        match self {
+            Pembayaran::Tunai => {
+                println!("Harap siapkan uang pas");
+            }
+            Pembayaran::Ewalllet(nama_ewallet) => {
+                println!("Masukkan nama Ewallet {} ", nama_ewallet);
+            }
+            Pembayaran::TransferBank(nama_bank, jumlah) => {
+                println!("nama Bank adalah {} dan nomor rekening {} ", nama_bank, jumlah);
+            }
+        }
+    }
+}
+
+#[test]
+fn test_pembayaran() {
+
+    let pembayaran_1 = Pembayaran::Tunai;
+    let pembayaran_2 = Pembayaran::Ewalllet(String::from("Gopay"));
+    let pembayaran_3 = Pembayaran::pilih_transfer(String::from("Mandiri"), 3000000);
+
+    pembayaran_1.proses_bayar();
+    pembayaran_2.proses_bayar();
+    pembayaran_3.proses_bayar();
+
+}
+
+enum MesinKopi {
+    Mati,
+    Menyala(u32)
+}
+
+impl MesinKopi {
+
+    fn mesin_baru() -> MesinKopi {
+        MesinKopi::Mati
+    }
+
+    fn cek_status(&self) {
+        match self {
+            MesinKopi::Mati => {
+                println!("Mesin kopi mati")
+            }
+            MesinKopi::Menyala(stok) => {
+                println!("Mesin kopi siap, sisa stok {} gelas ", stok);
+            }
+        }
+    }
+
+    fn isi_kopi(&mut self, tambahan: u32) {
+        match self {
+            MesinKopi::Mati => {
+                *self = MesinKopi::Menyala(tambahan);
+                println!("Mesin otomatis dihidupkan dan diisi dengan tambahan {} gekas kopi ", tambahan);
+            }
+             MesinKopi::Menyala(stok) => {
+                 *stok += tambahan;
+                 println!("stok ditambah sekarang mesin memiliki stok {} gelas kopi ", stok)
+            }
+        }
+    }
+    fn hancurkan_mesin(self) {
+        match self {
+            MesinKopi::Mati => {
+                println!("Mesin kopi mati dan dibuang ke rongsokan")
+            }
+            MesinKopi::Menyala(stok) => {
+                println!("Sayang sekali mesin dihancurkan padahal masih menyala dan memiliki stok {} gelas kopi di dalamnya", stok)
+            }
+        }
+
+    }
+}
+
+#[test]
+fn test_mesin_kopi() {
+
+    let mut mesin_kantor = MesinKopi::mesin_baru();
+
+    mesin_kantor.cek_status();
+    mesin_kantor.isi_kopi(15);
+    mesin_kantor.cek_status();
+    mesin_kantor.isi_kopi(13);
+    mesin_kantor.cek_status();
+    mesin_kantor.hancurkan_mesin();
+
+
+}
