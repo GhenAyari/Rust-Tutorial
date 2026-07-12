@@ -1,6 +1,29 @@
 use std::io;
 use std::io::Write;
 
+mod dapur;
+mod sccanner;
+
+use dapur::masak_ayam;
+use dapur::masak_nasi;
+#[test]
+fn test_daput() {
+    println!("Sistem restoran dimulai!");
+    masak_nasi(String::from("Briyani"));
+    masak_ayam(6);
+}
+
+use sccanner::LogJaringan;
+use sccanner::KatergoriMalware;
+#[test]
+fn test_keamanan_jaringan () {
+    let file_1 = LogJaringan::analisis_file(String::from("update_palu.exe"), String::from("192.167.93"),KatergoriMalware::Ransomware);
+    file_1.cetak_peringatan();
+    let file_2 = LogJaringan::analisis_file(String::from("Ambacong di desa oncong.mp3"), String::from("192.163.93"),KatergoriMalware::Aman);
+    file_2.cetak_peringatan();
+    let file_3 = LogJaringan::analisis_file(String::from("Ambalabu.mkv"), String::from("191.163.91"),KatergoriMalware::Spyware);
+    file_3.cetak_peringatan();
+}
 fn main(){
 
     print!("Inpur your name = ");
@@ -1483,6 +1506,126 @@ fn test_sistem_radar() {
     proses_radar(target1);
     proses_radar(target2);
 
-
 }
 
+mod restoran {
+
+pub type Jumlah = u32;
+    fn bumbu_rahasia(){
+
+        println!("Menyiapkan bumbu rahasia");
+
+    }
+    pub fn pesan_ayam_goreng(total: Jumlah){
+        println!("Kasir: Pesanan ayam goreng diterima dengan jumlah {} ayam, sedang diproses ", total );
+
+        bumbu_rahasia()
+    }
+}
+
+#[test]
+fn test_restoran() {
+    restoran::pesan_ayam_goreng(65);
+}
+
+mod bank {
+
+    pub type Teks = String;
+    pub type Angka = u64;
+    pub struct Rekening{
+        pub bank: Teks,
+        saldo: Angka,
+    }
+
+    impl Rekening {
+        pub fn buka_rekening(nama: Teks) -> Rekening {
+            Rekening{
+                bank: nama,
+                saldo: 0
+            }
+
+        }
+        pub fn cek_saldo(&self){
+            println!("Saldo milik {} adalah Rp{} ", self.bank, self.saldo )
+
+        }
+    }
+}
+
+use bank::Rekening as br;
+
+#[test]
+fn test_sistem_bank() {
+    let rekening_ambarusdi = br::buka_rekening(String::from("Ambarusdi"));
+    rekening_ambarusdi.cek_saldo();
+}
+
+mod ekspedisi{
+
+
+    pub type NomorResi = String;
+    pub type  BeratKg = f64;
+
+    pub enum StatusPengiriman{
+        Packing,
+        Dijalann(String),
+        Terkirim,
+        Nyasar
+    }
+
+    pub struct Paket{
+        pub resi: NomorResi,
+        pub tujuan: String,
+        berat: BeratKg,
+        status: StatusPengiriman
+    }
+
+   impl Paket {
+        pub fn terima_paket(resi: NomorResi, tujuan: String, berat: BeratKg) -> Paket {
+            Paket{
+                resi: resi,
+                tujuan: tujuan,
+                berat: berat,
+                status: StatusPengiriman::Packing
+
+            }
+        }
+        pub fn update_status(&mut self, status_baru: StatusPengiriman){
+            self.status = status_baru;
+        }
+        pub fn lacak(&self){
+            match &self.status {
+                StatusPengiriman::Packing => {
+                    println!("Paket {} tujuan {} sedang dipacking dengan berat {} kg", self.resi, self.tujuan, self.berat)
+                }
+                StatusPengiriman::Dijalann(nama_kurir) => {
+                    println!("Paket {} sedang dibawa oleh kurir {}", self.resi, nama_kurir)
+                }
+                StatusPengiriman::Terkirim => {
+                    println!("Mantap paket {} sudah datang, terima kasih sudah menggunakan jasa Ambarusdi", self.resi)
+                }
+                StatusPengiriman::Nyasar => {
+                    println!("paket {} nyasar hehehe", self.resi)
+                }
+            }
+        }
+    }
+}
+
+use ekspedisi::Paket as Barang;
+use crate::ekspedisi::StatusPengiriman;
+
+#[test]
+fn test_amba_rusdi_express() {
+    let mut paket_baru = Barang::terima_paket(String::from("Jmk33"), String::from("Ngawi"), 33.1);
+    paket_baru.lacak();
+    paket_baru.update_status(StatusPengiriman::Dijalann(String::from("Mas Amba")));
+    paket_baru.lacak();
+    paket_baru.update_status(StatusPengiriman::Nyasar);
+    paket_baru.lacak();
+    paket_baru.update_status(StatusPengiriman::Terkirim);
+    paket_baru.lacak();
+
+
+
+}
