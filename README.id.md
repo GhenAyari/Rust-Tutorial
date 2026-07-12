@@ -2441,3 +2441,74 @@ fn test_amba_rusdi_express() {
     paket_baru.lacak();
 }
 ```
+
+### 2. File Module (Di File Berbeda)
+   Saat kodemu mulai membesar, kamu bisa memindahkan module ke file terpisah. Nama file tersebut otomatis menjadi nama module-nya. Kamu tidak perlu membungkus kodenya dengan mod { ... } lagi di dalam file yang baru.
+
+File 1: scanner.rs
+(Letakkan file ini di dalam folder src, sejajar dengan main.rs)
+
+```rust
+// Karena berada di file scanner.rs, semua kode di sini otomatis menjadi milik module 'scanner'
+
+pub enum KatergoriMalware {
+    Ransomware,
+    Spyware,
+    Aman
+}
+
+pub struct LogJaringan {
+    pub nama_file: String,
+    pub ip_sumber: String,
+    status: KatergoriMalware // Field privat agar tidak bisa diubah sembarangan oleh peretas
+}
+
+impl LogJaringan {
+    // Fungsi pembuat (Constructor)
+    pub fn analisis_file(nama: String, ip: String, status: KatergoriMalware) -> LogJaringan {
+        LogJaringan {
+            nama_file: nama,
+            ip_sumber: ip,
+            status: status
+        }
+    }
+    
+    // Method untuk mengecek status menggunakan referensi/pinjaman (&self)
+    pub fn cetak_peringatan(&self) {
+        match &self.status {
+            KatergoriMalware::Ransomware => {
+                println!("Bahaya! {} dari {} terdeteksi sebagai ransomware. Segera blokir jaringan ", self.nama_file, self.ip_sumber);
+            }
+            KatergoriMalware::Spyware => {
+                println!("awas aktivitas mencurigakan dari file {} dengan ip {} terindikasi spyware ", self.nama_file, self.ip_sumber);
+            }
+            KatergoriMalware::Aman => {
+                println!("Jaringan aman!, file {} bersih ", self.nama_file);
+            }
+        }
+    }
+}
+```
+
+File 2: main.rs
+```rust
+// 1. Mendaftarkan module. Ini memberitahu compiler Rust untuk mencari file bernama 'scanner.rs'
+mod scanner;
+
+// 2. Mengimpor item spesifik yang dibutuhkan agar tidak perlu mengetik 'scanner::' terus-menerus
+use scanner::LogJaringan;
+use scanner::KatergoriMalware;
+
+#[test]
+fn test_keamanan_jaringan() {
+    let file_1 = LogJaringan::analisis_file(String::from("update_palu.exe"), String::from("192.167.93"), KatergoriMalware::Ransomware);
+    file_1.cetak_peringatan();
+    
+    let file_2 = LogJaringan::analisis_file(String::from("Ambacong di desa oncong.mp3"), String::from("192.163.93"), KatergoriMalware::Aman);
+    file_2.cetak_peringatan();
+    
+    let file_3 = LogJaringan::analisis_file(String::from("Ambalabu.mkv"), String::from("191.163.91"), KatergoriMalware::Spyware);
+    file_3.cetak_peringatan();
+}
+```
+

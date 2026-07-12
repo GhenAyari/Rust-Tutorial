@@ -3,6 +3,10 @@ use std::io::Write;
 
 mod dapur;
 mod sccanner;
+mod game_hero;
+mod guild_petualang;
+mod kendaraan_misteri;
+mod akademi_sihir;
 
 use dapur::masak_ayam;
 use dapur::masak_nasi;
@@ -1625,4 +1629,64 @@ fn test_amba_rusdi_express() {
     paket_baru.lacak();
     paket_baru.update_status(StatusPengiriman::Terkirim);
     paket_baru.lacak();
+}
+
+use game_hero::SkillBertarung;
+use crate::game_hero::{Magic, Ksatria};
+
+#[test]
+fn test_pertarungan() {
+    let hero = Ksatria {
+        nama: String::from("Ambarusdi"),
+        pedang: String::from("Pedang Ngawi")
+    };
+    let penyihir = Magic {
+        nama: String::from("muani"),
+        jumlah_mana: 30
+    };
+
+    hero.serang();
+    penyihir.serang();
+
+    hero.lari();
+    penyihir.lari();
+
+}
+
+use crate::guild_petualang::{PenjagaMalam, TukangSapu, lapor_ke_guild};
+
+#[test]
+fn test_guilt_petualang() {
+    let guild_1 = TukangSapu {
+        nama: String::from("Rusdiyansah"),
+        area: String::from("Pelataran ngawi"),
+    };
+    let guild_2 = PenjagaMalam {
+        nama: String::from("Suki Liar"),
+        durasi_jam: 17
+    };
+
+    lapor_ke_guild(&guild_1);
+    lapor_ke_guild(&guild_2);
+
+}
+
+use crate::kendaraan_misteri::*;
+#[test]
+fn show_kendaraan_misteri() {
+    let hadiah_rahasia = dapat_hadiah_giveaway();
+    hadiah_rahasia.gas_pol()
+
+}
+
+use crate::akademi_sihir::*;
+
+#[test]
+fn show_akademi_sihir() {
+    let penyihir = PenyihirSakti {
+        nama: String::from("Mas Fuad"),
+        level: 36
+    };
+    jalankan_ujian_elite(&penyihir);
+
 }
