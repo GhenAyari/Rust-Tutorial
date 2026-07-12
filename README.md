@@ -3107,3 +3107,185 @@ fn test_sistem_radar() {
 }
 ```
 
+---
+## Rust Module
+
+### What is a Module?
+In Rust, a **Module** (declared with the `mod` keyword) is a way to organize your code into separate namespaces. You can think of modules as **folders on your computer**, but for your code. They allow you to group related functions, structs, enums, and traits together, keeping your project structured and preventing name collisions.
+
+### When to Use Modules?
+*   **When your code gets too long:** If you have to scroll endlessly to find a function in `main.rs`, it's time to split it into modules.
+*   **Domain Separation:** When building complex systems, you can separate different logic (e.g., `mod database`, `mod user_interface`, `mod security`).
+*   **Team Collaboration:** Modules help prevent team members from accidentally modifying or relying on internal, unfinished code.
+
+### ⚙️ How Does It Work?
+The golden rule of Rust modules is **"Private by Default"**.
+Everything you put inside a module (functions, structs, fields) is strictly secret. Code from outside the module cannot see or use it unless you explicitly grant permission by adding the `pub` (public) keyword.
+
+### What You CAN and CANNOT Do
+
+**✅ What you CAN do:**
+*   **Hide Implementation Details (Encapsulation):** You can keep helper functions or sensitive data fields private while exposing a safe `pub` function to interact with them.
+*   **Prevent Name Clashes:** You can have a `hitung()` function in `mod pajak` and a `hitung()` function in `mod diskon` without any errors.
+*   **Nest Modules:** You can create modules inside modules (like folders inside folders).
+
+**❌ What you CANNOT do:**
+*   **You CANNOT instantiate a module:** Unlike Object-Oriented Programming (OOP) classes, you cannot create an "object" out of a module. It is purely an organizational container.
+*   **You CANNOT access private fields:** Even if a `struct` is `pub`, its internal fields remain private unless they also have the `pub` keyword.
+*   **You CANNOT use short names automatically:** Just declaring `mod name;` doesn't bring its contents into your current scope. You must use the `use` keyword to shorten the path.
+
+---
+
+### 1. Inline Module (Same File)
+Inline modules are defined using `mod name { ... }` within the same file. This is useful for short groupings or unit tests.
+
+```rust
+// Defining an inline module named 'ekspedisi'
+mod ekspedisi {
+    // Creating public Type Aliases
+    pub type NomorResi = String;
+    pub type BeratKg = f64;
+
+    // A public Enum for shipping status
+    pub enum StatusPengiriman {
+        Packing,
+        Dijalann(String), // Carries the courier's name
+        Terkirim,
+        Nyasar
+    }
+
+    // A public Struct with mixed privacy fields
+    pub struct Paket {
+        pub resi: NomorResi,       // Public: Anyone can see the receipt number
+        pub tujuan: String,        // Public: Anyone can see the destination
+        berat: BeratKg,            // Private: Internal data, cannot be accessed directly
+        status: StatusPengiriman   // Private: Can only be changed via official methods
+    }
+
+    impl Paket {
+        // Associated function (Constructor) to create a new Package
+        pub fn terima_paket(resi: NomorResi, tujuan: String, berat: BeratKg) -> Paket {
+            Paket {
+                resi: resi,
+                tujuan: tujuan,
+                berat: berat,
+                status: StatusPengiriman::Packing // Initial status is always 'Packing'
+            }
+        }
+
+        // Method to update the private 'status' field
+        pub fn update_status(&mut self, status_baru: StatusPengiriman) {
+            self.status = status_baru;
+        }
+
+        // Method to read data using borrowing (&self) to avoid moving ownership
+        pub fn lacak(&self) {
+            // Using &self.status to peek at the data without stealing it
+            match &self.status {
+                StatusPengiriman::Packing => {
+                    println!("Paket {} tujuan {} sedang dipacking dengan berat {} kg", self.resi, self.tujuan, self.berat)
+                }
+                StatusPengiriman::Dijalann(nama_kurir) => {
+                    println!("Paket {} sedang dibawa oleh kurir {}", self.resi, nama_kurir)
+                }
+                StatusPengiriman::Terkirim => {
+                    println!("Mantap paket {} sudah datang, terima kasih sudah menggunakan jasa Ambarusdi", self.resi)
+                }
+                StatusPengiriman::Nyasar => {
+                    println!("paket {} nyasar hehehe", self.resi)
+                }
+            }
+        }
+    }
+}
+
+// Importing the struct with an alias to make it shorter
+use ekspedisi::Paket as Barang;
+// Importing the enum from the crate root
+use crate::ekspedisi::StatusPengiriman; 
+
+#[test]
+fn test_amba_rusdi_express() {
+    // Creating a mutable instance so we can change its status later
+    let mut paket_baru = Barang::terima_paket(String::from("Jmk33"), String::from("Ngawi"), 33.1);
+    
+    paket_baru.lacak();
+    paket_baru.update_status(StatusPengiriman::Dijalann(String::from("Mas Amba")));
+    paket_baru.lacak();
+    paket_baru.update_status(StatusPengiriman::Nyasar);
+    paket_baru.lacak();
+    paket_baru.update_status(StatusPengiriman::Terkirim);
+    paket_baru.lacak();
+}
+```
+
+### 2. File Module (Different Files)
+   When your code grows, you can move modules into separate files. The file name automatically becomes the module name. You do not need to wrap the code in mod { } inside the new file.
+
+### File 1: scanner.rs
+(Place this file in the src directory, alongside main.rs)
+
+```rust
+// In a separate file, everything written here belongs to the 'scanner' module automatically.
+
+pub enum KatergoriMalware {
+    Ransomware,
+    Spyware,
+    Aman
+}
+
+pub struct LogJaringan {
+    pub nama_file: String,
+    pub ip_sumber: String,
+    status: KatergoriMalware // Private field to prevent unauthorized tampering
+}
+
+impl LogJaringan {
+    // Constructor function
+    pub fn analisis_file(nama: String, ip: String, status: KatergoriMalware) -> LogJaringan {
+        LogJaringan {
+            nama_file: nama,
+            ip_sumber: ip,
+            status: status
+        }
+    }
+    
+    // Method to check status using borrowing (&self)
+    pub fn cetak_peringatan(&self) {
+        match &self.status {
+            KatergoriMalware::Ransomware => {
+                println!("Bahaya! {} dari {} terdeteksi sebagai ransomware. Segera blokir jaringan ", self.nama_file, self.ip_sumber);
+            }
+            KatergoriMalware::Spyware => {
+                println!("awas aktivitas mencurigakan dari file {} dengan ip {} terindikasi spyware ", self.nama_file, self.ip_sumber);
+            }
+            KatergoriMalware::Aman => {
+                println!("Jaringan aman!, file {} bersih ", self.nama_file);
+            }
+        }
+    }
+}
+```
+
+### File 2: main.rs
+
+```rust
+// 1. Register the module. This tells Rust to look for a file named 'scanner.rs'
+mod scanner;
+
+// 2. Import the specific items we need so we don't have to type 'scanner::' everywhere
+use scanner::LogJaringan;
+use scanner::KatergoriMalware;
+
+#[test]
+fn test_keamanan_jaringan() {
+    let file_1 = LogJaringan::analisis_file(String::from("update_palu.exe"), String::from("192.167.93"), KatergoriMalware::Ransomware);
+    file_1.cetak_peringatan();
+    
+    let file_2 = LogJaringan::analisis_file(String::from("Ambacong di desa oncong.mp3"), String::from("192.163.93"), KatergoriMalware::Aman);
+    file_2.cetak_peringatan();
+    
+    let file_3 = LogJaringan::analisis_file(String::from("Ambalabu.mkv"), String::from("191.163.91"), KatergoriMalware::Spyware);
+    file_3.cetak_peringatan();
+}
+```

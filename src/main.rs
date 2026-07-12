@@ -1613,7 +1613,7 @@ mod ekspedisi{
 }
 
 use ekspedisi::Paket as Barang;
-use crate::ekspedisi::StatusPengiriman;
+use crate::ekspedisi::StatusPengiriman; // bisa juga menggunakan crate
 
 #[test]
 fn test_amba_rusdi_express() {
@@ -1625,7 +1625,4 @@ fn test_amba_rusdi_express() {
     paket_baru.lacak();
     paket_baru.update_status(StatusPengiriman::Terkirim);
     paket_baru.lacak();
-
-
-
 }

@@ -2329,3 +2329,115 @@ fn test_sistem_radar() {
 }
 ```
 
+---
+
+## Module di Rust
+
+### Apa itu Module?
+Di Rust, **Module** (dideklarasikan dengan kata kunci `mod`) adalah cara untuk mengatur kodemu ke dalam ruang lingkup (*namespace*) yang terpisah. Kamu bisa membayangkan module seperti **folder di dalam komputer**, tapi khusus untuk kodemu. Module memungkinkanmu mengelompokkan fungsi, *struct*, *enum*, dan *trait* yang saling berhubungan, menjaga proyek tetap terstruktur, dan mencegah bentrok nama antar fungsi.
+
+### Kapan Module Digunakan?
+*   **Saat kode mulai panjang:** Jika kamu harus *scroll* berkali-kali untuk mencari sebuah fungsi di `main.rs`, itu adalah tanda bahwa kodemu perlu dipecah ke dalam module.
+*   **Pemisahan Domain (*Domain Separation*):** Saat membangun sistem yang kompleks, kamu bisa memisahkan logika yang berbeda (misalnya, `mod database`, `mod antarmuka_pengguna`, `mod keamanan`).
+*   **Kolaborasi Tim:** Module membantu mencegah anggota tim lain secara tidak sengaja mengubah atau menggunakan kode internal yang belum selesai atau rahasia.
+
+### ⚙️ Bagaimana Cara Kerjanya?
+Aturan emas dari module Rust adalah **"Privasi secara Default"** (*Private by Default*).
+Semua yang kamu masukkan ke dalam sebuah module (fungsi, *struct*, *field*) secara otomatis bersifat sangat rahasia. Kode dari luar module tidak bisa melihat atau menggunakannya, kecuali kamu secara eksplisit memberikan izin dengan menambahkan kata kunci `pub` (*public*).
+
+### Apa yang BISA dan TIDAK BISA Dilakukan
+
+**✅ Yang BISA dilakukan:**
+*   **Menyembunyikan Detail (Enkapsulasi):** Kamu bisa merahasiakan fungsi bantuan atau data sensitif, sembari menyediakan fungsi `pub` yang aman sebagai pintu masuk untuk berinteraksi dengan data tersebut.
+*   **Mencegah Bentrok Nama:** Kamu bisa memiliki fungsi `hitung()` di `mod pajak` dan fungsi `hitung()` di `mod diskon` tanpa menyebabkan *error*.
+*   **Module Bersarang (*Nested Modules*):** Kamu bisa membuat module di dalam module (seperti folder di dalam folder).
+
+**❌ Yang TIDAK BISA dilakukan:**
+*   **TIDAK BISA di-instansiasi:** Berbeda dengan *Class* pada Pemrograman Berorientasi Objek (OOP), kamu tidak bisa membuat "objek" dari sebuah module. Module murni hanya sebagai wadah pengelompokan.
+*   **TIDAK BISA mengakses field rahasia:** Meskipun sebuah `struct` sudah diberi label `pub`, isi di dalamnya (*field*) tetap rahasia kecuali *field* tersebut juga diberi kata kunci `pub`.
+*   **TIDAK otomatis mengimpor nama pendek:** Hanya mendeklarasikan `mod nama;` tidak langsung membawa isinya ke ruang lingkupmu saat ini. Kamu harus menggunakan kata kunci `use` untuk mempersingkat jalurnya.
+
+---
+
+### Inline Module (Di Dalam Satu File)
+*Inline module* dibuat menggunakan format `mod nama { ... }` di dalam *file* yang sama. Sangat cocok untuk mengelompokkan kode yang masih pendek atau untuk blok pengujian (*unit tests*).
+
+```rust
+// Mendefinisikan inline module bernama 'ekspedisi'
+mod ekspedisi {
+    // Membuat Type Alias publik agar bisa dipakai di luar
+    pub type NomorResi = String;
+    pub type BeratKg = f64;
+
+    // Enum publik untuk status pengiriman
+    pub enum StatusPengiriman {
+        Packing,
+        Dijalann(String), // Membawa data teks (nama kurir)
+        Terkirim,
+        Nyasar
+    }
+
+    // Struct publik dengan campuran hak akses
+    pub struct Paket {
+        pub resi: NomorResi,       // Publik: Siapapun bisa melihat resi
+        pub tujuan: String,        // Publik: Siapapun bisa melihat tujuan
+        berat: BeratKg,            // Privat: Data internal, tidak bisa diakses langsung dari luar
+        status: StatusPengiriman   // Privat: Hanya bisa diubah melalui metode resmi (fungsi update)
+    }
+
+    impl Paket {
+        // Associated function (Constructor) untuk membuat paket baru
+        pub fn terima_paket(resi: NomorResi, tujuan: String, berat: BeratKg) -> Paket {
+            Paket {
+                resi: resi,
+                tujuan: tujuan,
+                berat: berat,
+                status: StatusPengiriman::Packing // Status awal selalu 'Packing'
+            }
+        }
+
+        // Method untuk mengubah data 'status' yang privat
+        pub fn update_status(&mut self, status_baru: StatusPengiriman) {
+            self.status = status_baru;
+        }
+
+        // Method untuk membaca data. Menggunakan 'borrowing' (&self) agar data tidak tercuri (move)
+        pub fn lacak(&self) {
+            // Menggunakan &self.status untuk mengintip data tanpa mengambil kepemilikannya
+            match &self.status {
+                StatusPengiriman::Packing => {
+                    println!("Paket {} tujuan {} sedang dipacking dengan berat {} kg", self.resi, self.tujuan, self.berat)
+                }
+                StatusPengiriman::Dijalann(nama_kurir) => {
+                    println!("Paket {} sedang dibawa oleh kurir {}", self.resi, nama_kurir)
+                }
+                StatusPengiriman::Terkirim => {
+                    println!("Mantap paket {} sudah datang, terima kasih sudah menggunakan jasa Ambarusdi", self.resi)
+                }
+                StatusPengiriman::Nyasar => {
+                    println!("paket {} nyasar hehehe", self.resi)
+                }
+            }
+        }
+    }
+}
+
+// Mengimpor struct dengan nama alias (Barang) agar lebih singkat
+use ekspedisi::Paket as Barang;
+// Mengimpor enum dari ujung akar proyek (crate)
+use crate::ekspedisi::StatusPengiriman; 
+
+#[test]
+fn test_amba_rusdi_express() {
+    // Membuat variabel 'mut' (mutable) karena statusnya akan kita ubah-ubah
+    let mut paket_baru = Barang::terima_paket(String::from("Jmk33"), String::from("Ngawi"), 33.1);
+    
+    paket_baru.lacak();
+    paket_baru.update_status(StatusPengiriman::Dijalann(String::from("Mas Amba")));
+    paket_baru.lacak();
+    paket_baru.update_status(StatusPengiriman::Nyasar);
+    paket_baru.lacak();
+    paket_baru.update_status(StatusPengiriman::Terkirim);
+    paket_baru.lacak();
+}
+```
