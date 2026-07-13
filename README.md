@@ -3628,4 +3628,203 @@ impl KirimPesan<Sms> for SistemKeamanan {
 }
 ```
 
+---
+
+## Rust Overloadable Operators 
+
+### What are Overloadable Operators?
+In Rust, you cannot just use math symbols like `+`, `-`, or `*` on your own custom `struct` or `enum` right out of the box. The compiler won't know how to add or multiply them.
+
+**Operator Overloading** is the feature that allows you to define custom behavior for these standard operators. In Rust, this is simply done by implementing specific **Generic Traits** provided in the `std::ops` and `std::cmp` modules.
+
+---
+
+### What You CAN Do
+*   **Use Math Symbols on Custom Structs:** You can make your code much cleaner by typing `struct_a * struct_b` instead of `struct_a.multiply(struct_b)`.
+*   **Cross-Type Operations:** You can multiply/add two *different* types together (e.g., multiplying a `Salary` struct by a `Days` struct).
+*   **Define Custom Return Types:** By using the `type Output` inside the trait, you get to decide exactly what type of data is produced after the operation.
+
+### What You CANNOT Do
+*   **Create New Operator Symbols:** You cannot invent new symbols like `$$`, `<->`, or `@`. You can only overload existing Rust operators.
+*   **Change Operator Precedence:** You cannot change the rule of mathematics. Multiplication (`*`) will always be evaluated before Addition (`+`), even on your custom structs.
+*   **Overload Short-Circuiting Operators:** You cannot overload `&&` (AND) and `||` (OR).
+*   **Violate the Orphan Rule:** You cannot redefine how `i32 + i32` works, or how `String == String` works. You can only overload operators if the `struct` or the `trait` belongs to you.
+
+---
+
+### Types of Overloadable Operators
+Here are the most common traits you can import from `std::ops` (and `std::cmp`):
+
+| Operator Symbol | Trait Name | Module | Example Usage |
+| :--- | :--- | :--- | :--- |
+| `+` | `Add` | `std::ops::Add` | `a + b` |
+| `-` | `Sub` | `std::ops::Sub` | `a - b` |
+| `*` | `Mul` | `std::ops::Mul` | `a * b` |
+| `/` | `Div` | `std::ops::Div` | `a / b` |
+| `%` | `Rem` | `std::ops::Rem` | `a % b` (Remainder/Modulo) |
+| `==` / `!=` | `PartialEq` | `std::cmp::PartialEq`| `a == b` |
+| `+=` | `AddAssign`| `std::ops::AddAssign` | `a += b` |
+
+---
+
+### Code Example: Salary Calculation System
+
+```rust
+// 1. IMPORT THE TRAIT
+// We need the 'Mul' (Multiply) trait to unlock the '*' symbol.
+use std::ops::Mul;
+
+// 2. DEFINE THE STRUCTS (No magic #[derive] used here!)
+pub struct GajiHarian {
+    pub upah: i32
+}
+
+pub struct HariKerja {
+    pub hari: i32
+}
+
+pub struct GajiTotal{
+    pub total: i32
+}
+
+// 3. IMPLEMENT THE OPERATOR OVERLOADING
+// Meaning: "Allow GajiHarian to be multiplied by HariKerja"
+impl Mul<HariKerja> for GajiHarian {
+    // Associated Type: We tell Rust that the final result of this multiplication 
+    // will be a brand new struct called 'GajiTotal'.
+    type Output = GajiTotal;
+
+    // 'self' is the Left-Hand Side (GajiHarian).
+    // 'rhs' (Right-Hand Side) is the parameter on the right of the '*' symbol (HariKerja).
+    fn mul(self, rhs: HariKerja) -> GajiTotal {
+        // We multiply the raw integers inside the structs, 
+        // and wrap the result inside the new GajiTotal struct.
+        GajiTotal {
+            total: self.upah * rhs.hari
+        }
+    }
+}
+
+// Assume this is imported properly in your module structure
+// use crate::penggajian_karyawan::*;
+
+#[test]
+fn test_hitung_gaji() {
+    let gaji_karyawan = GajiHarian { upah: 150_000 };
+    let absen_bulan_ini = HariKerja { hari: 20 };
+
+    // 4. THE MAGIC HAPPENS HERE! 
+    // We multiply two completely different structs using the standard '*' symbol.
+    // Behind the scenes, Rust calls the 'mul(self, rhs)' function we defined above.
+    let slip_gaji = gaji_karyawan * absen_bulan_ini;
+
+    // Verify the result is exactly 3.000.000 (150.000 x 20)
+    assert_eq!(slip_gaji.total, 3_000_000);
+
+    // Because we didn't use #[derive(Debug)], we print the inner field manually
+    println!("Total gaji yang harus dibayar: Rp {}", slip_gaji.total);
+}
+```
+
+---
+## Rust Optional Values (`Option<T>`) 📦
+
+### What is `Option<T>`?
+In many programming languages (like Java, C++, or PHP), trying to access missing data returns `null`. If your program forgets to check for `null`, it crashes instantly (this is known as the "Billion Dollar Mistake").
+
+Rust **does not have `null`**. Instead, it uses an Enum called `Option<T>` to represent a value that might be there, or might be empty.
+
+Under the hood, it looks like this:
+```rust
+enum Option<T> {
+    None,      // The box is empty (No data)
+    Some(T),   // The box has something inside (Contains data of type T)
+}
+```
+
+### What You CAN Do
+1. Prevent Crashes: By using Option, the Rust compiler forces you to handle the empty (None) scenario before you can use the data. This makes NullPointerExceptions impossible.
+
+2. Provide Default Values: You can easily say, "If the data is missing, just use this default number instead."
+
+3. Chain Operations: You can manipulate the data inside the box safely without opening it using methods like .map() or .and_then().
+
+
+### What You CANNOT Do
+* **Use the Value Directly: You cannot do math or operations directly on an Option. For example, Some(5) + 10 will result in an error. You MUST open the box first.**
+
+* **Ignore the Empty Case in a match: If you use a match block to open an Option, you cannot only write the Some case. The compiler will force you to also write the None case (Exhaustive Checking).**
+
+* **Ways to Unpack an Option  There are several ways to extract the data from inside the Option box:**
+
+* **match: The safest and most explicit way. Handles both Some and None comprehensively.**
+
+* **if let: A shortcut when you only care about the Some case and want to ignore the None case silently.**
+
+* **unwrap_or(default): Extracts the value, but if it is None, it replaces it with a default value you provide.**
+
+* **unwrap() / expect("msg"): The dangerous way. Forces the box open. If it's None, the program instantly crashes (Panics).**
+
+### Code Example: Warehouse Inventory System
+
+```rust
+// 1. FUNCTION RETURNING OPTION
+// Returns Option<i32> because the item might exist (Some), or it might not (None).
+fn cari_stok_barang(nama_barang: &str) -> Option<i32> {
+if nama_barang == "Laptop" {
+Some(50) // Box contains 50
+} else if nama_barang == "Keyboard" {
+Some(90) // Box contains 90
+} else {
+None     // Box is empty
+}
+}
+
+#[test]
+fn test_stok_gudang() {
+// SCENARIO 1: The item EXISTS
+let barang_1 = "Laptop";
+let pencarian_1 = cari_stok_barang(barang_1);
+
+    // Unpacking with 'match' (Safest method)
+    match pencarian_1 {
+        Some(barang) => {
+            // We successfully extract the number into 'barang'
+            println!("Stok barang laptop adalah {}", barang);
+        },
+        None => {
+            print!("Tidak ada barang yang dicari");
+        }
+    }
+
+    // SCENARIO 2: The item EXISTS (Different branch)
+    let barang_2 = "Keyboard";
+    let pencarian_2 = cari_stok_barang(barang_2);
+
+    match pencarian_2 {
+        Some(barang) => {
+            // Fixed typo: changed 'laptop' to 'keyboard' for clarity
+            println!("Stok barang keyboard adalah {}", barang);
+        },
+        None => {
+            print!("Tidak ada barang yang dicari");
+        }
+    }
+
+    // SCENARIO 3: The item DOES NOT EXIST
+    let barang_3 = "Sempak"; // Not in our database!
+    let pencarian_3 = cari_stok_barang(barang_3);
+
+    match pencarian_3 {
+        Some(barang) => {
+            // Fixed typo: changed 'laptop' to 'sempak' for clarity
+            println!("Stok barang sempak adalah {}", barang);
+        },
+        None => {
+            // Program safely executes this block instead of crashing!
+            print!("Tidak ada barang yang dicari");
+        }
+    }
+}
+```
 

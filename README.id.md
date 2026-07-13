@@ -2850,3 +2850,202 @@ impl KirimPesan<Sms> for SistemKeamanan {
     }
 }
 ```
+
+---
+## Rust Overloadable Operators 
+
+### Apa itu Overloadable Operators?
+Secara bawaan, kamu tidak bisa langsung menggunakan simbol matematika seperti `+`, `-`, atau `*` pada `struct` buatanmu sendiri. *Compiler* tidak akan mengerti bagaimana cara menjumlahkan atau mengalikan dua buah meja atau dua buah entitas gaji.
+
+**Operator Overloading** adalah fitur yang mengizinkanmu mendefinisikan sendiri cara kerja simbol-simbol standar tersebut untuk tipe datamu. Di Rust, ini **bukanlah ilmu hitam**, melainkan murni hanya menggunakan **Generic Trait** bawaan yang ada di dalam modul `std::ops` (Operations) dan `std::cmp` (Comparisons).
+
+---
+
+### Apa yang BISA Dilakukan
+*   **Menggunakan Simbol Matematika pada Struct:** Kode akan terlihat jauh lebih bersih dan natural. Daripada menulis `struct_a.kalikan(struct_b)`, kamu cukup menulis `struct_a * struct_b`.
+*   **Operasi Lintas Tipe Data:** Kamu bisa menambahkan/mengalikan dua *struct* yang berbeda (Contoh: *Struct* Gaji dikalikan dengan *Struct* Hari).
+*   **Menentukan Wujud Hasil Akhir:** Dengan `type Output`, kamu memiliki kendali penuh untuk menentukan tipe data apa yang akan dihasilkan setelah perhitungan selesai.
+
+### Apa yang TIDAK BISA Dilakukan
+*   **Membuat Simbol Operator Baru:** Kamu tidak bisa iseng menciptakan simbol seperti `$$`, `<->`, atau `@@`. Kamu hanya bisa menimpa (*overload*) simbol yang sudah disediakan Rust.
+*   **Mengubah Hirarki/Kekuatan Operator (Precedence):** Aturan matematika dasar tidak bisa diubah. Perkalian (`*`) akan SELALU dieksekusi lebih dulu daripada penjumlahan (`+`), meskipun itu diterapkan pada *struct* buatanmu.
+*   **Menimpa Operator Logika Singkat (Short-Circuit):** Kamu tidak bisa melakukan *overloading* pada `&&` (DAN) dan `||` (ATAU).
+*   **Melanggar Aturan Yatim Piatu (Orphan Rule):** Kamu tidak bisa mengubah cara kerja `1 + 1` pada tipe angka bawaan (`i32`). Minimal salah satu (Trait-nya atau Struct-nya) harus buatanmu sendiri.
+
+---
+
+### Jenis-Jenis Trait Operator
+Berikut adalah trait yang paling sering digunakan dari modul `std::ops` (dan `std::cmp`):
+
+| Simbol Operator | Nama Trait | Modul Asal | Contoh Pemakaian |
+| :--- | :--- | :--- | :--- |
+| `+` | `Add` | `std::ops::Add` | `a + b` |
+| `-` | `Sub` | `std::ops::Sub` | `a - b` |
+| `*` | `Mul` | `std::ops::Mul` | `a * b` |
+| `/` | `Div` | `std::ops::Div` | `a / b` |
+| `%` | `Rem` | `std::ops::Rem` | `a % b` (Sisa bagi/Modulo) |
+| `==` / `!=` | `PartialEq` | `std::cmp::PartialEq`| `a == b` |
+| `+=` | `AddAssign`| `std::ops::AddAssign` | `a += b` |
+
+---
+
+### Contoh Kode: Sistem Kalkulasi Penggajian
+
+```rust
+// 1. IMPORT TRAIT
+// Kita butuh trait 'Mul' (Multiply/Perkalian) untuk membuka segel simbol '*'.
+use std::ops::Mul;
+
+// 2. DEFINISI STRUCT (Polos, tanpa #[derive])
+pub struct GajiHarian {
+    pub upah: i32
+}
+
+pub struct HariKerja {
+    pub hari: i32
+}
+
+pub struct GajiTotal{
+    pub total: i32
+}
+
+// 3. IMPLEMENTASI OPERATOR OVERLOADING
+// Cara baca: "Izinkan GajiHarian untuk dikalikan dengan HariKerja"
+impl Mul<HariKerja> for GajiHarian {
+    // Associated Type: Kita memberitahu Rust bahwa hasil akhir dari perkalian ini 
+    // akan melahirkan wujud/struct baru yang bernama 'GajiTotal'.
+    type Output = GajiTotal;
+
+    // 'self' adalah Sisi Kiri (GajiHarian).
+    // 'rhs' (Right-Hand Side) adalah Sisi Kanan dari simbol '*' (HariKerja).
+    fn mul(self, rhs: HariKerja) -> GajiTotal {
+        // Kita mengalikan angka asli di dalam struct masing-masing, 
+        // lalu membungkus hasilnya ke dalam cetakan struct GajiTotal yang baru.
+        GajiTotal {
+            total: self.upah * rhs.hari
+        }
+    }
+}
+
+// Asumsi: di-import dengan benar pada struktur modulmu
+// use crate::penggajian_karyawan::*;
+
+#[test]
+fn test_hitung_gaji() {
+    let gaji_karyawan = GajiHarian { upah: 150_000 };
+    let absen_bulan_ini = HariKerja { hari: 20 };
+
+    // 4. KEAJAIBAN TERJADI DI SINI! 
+    // Kita mengalikan dua struct yang benar-benar berbeda menggunakan simbol '*' biasa.
+    // Di belakang layar, Rust memanggil fungsi 'mul(self, rhs)' yang kita buat di atas.
+    let slip_gaji = gaji_karyawan * absen_bulan_ini;
+
+    // Pastikan hasilnya akurat 3.000.000 (150.000 x 20)
+    assert_eq!(slip_gaji.total, 3_000_000);
+
+    // Karena kita tidak pakai #[derive(Debug)], kita ekstrak dan cetak angkanya secara manual
+    println!("Total gaji yang harus dibayar: Rp {}", slip_gaji.total);
+}
+```
+
+---
+
+## Rust Optional Values (Option<T>) 📦
+
+### Apa itu Option<T>?
+Di banyak bahasa pemrograman (seperti Java, C++, atau PHP), jika kamu mencoba mengakses data yang tidak ada, program akan mengembalikan nilai null. Jika kamu lupa mengecek null ini, aplikasimu akan langsung mati mendadak (crash/NullPointerException).
+Rust TIDAK PUNYA null. Sebagai gantinya, Rust menggunakan Enum bernama Option<T> untuk merepresentasikan data yang "mungkin ada, mungkin juga kosong".
+
+### Bentuk aslinya di dalam Rust seperti ini:
+```rust
+enum Option<T> {
+None,      // Kotaknya kosong (Tidak ada data)
+Some(T),   // Kotaknya ada isinya (Berisi data bertipe T)
+}
+```
+
+### Apa yang BISA Dilakukan
+
+1. Mencegah Aplikasi Crash: Dengan menggunakan Option, compiler Rust memaksamu untuk memikirkan dan menangani skenario data kosong (None) sebelum kamu bisa memakai data tersebut. Ini membuat aplikasi Rust sangat aman.
+
+2. Memberikan Nilai Bawaan (Default): Kamu bisa dengan mudah mengatur, "Kalau datanya kosong, pakai angka 0 saja."
+
+3. Merantai Operasi: Kamu bisa memanipulasi data di dalam kotak secara aman tanpa harus membongkarnya terlebih dahulu menggunakan method seperti .map() atau .and_then().
+
+### Apa yang TIDAK BISA Dilakukan
+1. Memakai Nilainya Secara Langsung: Kamu tidak bisa melakukan operasi matematika langsung pada Option. Misalnya, Some(5) + 10 akan menghasilkan error. Kamu WAJIB membongkar kotaknya terlebih dahulu.
+
+2. Mengabaikan Skenario Kosong pada match: Jika kamu membongkar Option menggunakan blok match, kamu tidak boleh hanya menuliskan kondisi untuk Some saja. Rust memaksamu menuliskan skenario untuk None juga (Exhaustive Checking).
+
+### Cara / Jenis Membongkar Kotak Option
+1. Ada beberapa cara untuk mengeluarkan data asli dari dalam kotak Option:
+
+2. match: Cara paling aman dan paling jelas. Memaksa kita menangani skenario Some maupun None.
+
+3. if let: Jalan pintas jika kita hanya peduli saat datanya ada (Some), dan diam saja jika datanya kosong (None).
+
+3. unwrap_or(nilai_default): Mengeluarkan isi kotak, tapi kalau kotaknya ternyata kosong, nilainya otomatis diganti dengan angka default yang kita tentukan.
+
+4. unwrap() / expect("pesan"): Jalur ekstrem. Memaksa kotak terbuka. Jika ternyata isinya None, aplikasi akan langsung CRASH mati total (Panic).
+
+### Contoh Kode: Sistem Pengecekan Stok Gudang
+```rust
+// 1. FUNGSI MENGEMBALIKAN OPTION
+// Mengembalikan Option<i32> karena barangnya bisa jadi ada (Some), atau tidak ada (None).
+fn cari_stok_barang(nama_barang: &str) -> Option<i32> {
+    if nama_barang == "Laptop" {
+        Some(50) // Kotak berisi angka 50
+    } else if nama_barang == "Keyboard" {
+        Some(90) // Kotak berisi angka 90
+    } else {
+        None     // Kotak kosong
+    }
+}
+
+#[test]
+fn test_stok_gudang() {
+    // SKENARIO 1: Barang TERSEDIA
+    let barang_1 = "Laptop";
+    let pencarian_1 = cari_stok_barang(barang_1);
+
+    // Membongkar kotak dengan 'match' (Cara paling aman)
+    match pencarian_1 {
+        Some(barang) => {
+            // Berhasil mengekstrak angka ke dalam variabel 'barang'
+            println!("Stok barang laptop adalah {}", barang);
+        },
+        None => {
+            print!("Tidak ada barang yang dicari");
+        }
+    }
+
+    // SKENARIO 2: Barang TERSEDIA (Cabang lain)
+    let barang_2 = "Keyboard";
+    let pencarian_2 = cari_stok_barang(barang_2);
+
+    match pencarian_2 {
+        Some(barang) => {
+            // Typo diperbaiki: kata 'laptop' diganti 'keyboard'
+            println!("Stok barang keyboard adalah {}", barang);
+        },
+        None => {
+            print!("Tidak ada barang yang dicari");
+        }
+    }
+
+    // SKENARIO 3: Barang TIDAK TERSEDIA
+    let barang_3 = "Sempak"; // Tidak ada di database!
+    let pencarian_3 = cari_stok_barang(barang_3);
+
+    match pencarian_3 {
+        Some(barang) => {
+            // Typo diperbaiki: kata 'laptop' diganti 'sempak'
+            println!("Stok barang sempak adalah {}", barang);
+        },
+        None => {
+            // Karena barangnya None, program mengeksekusi blok ini dengan aman tanpa crash!
+            print!("Tidak ada barang yang dicari");
+        }
+    }
+}
+```
