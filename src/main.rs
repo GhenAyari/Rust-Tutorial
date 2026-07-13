@@ -2104,3 +2104,29 @@ fn test_latihan_level_1() {
     // [Status: Terkirim] Berat: 5.5kg
     println!("{paket}Kg");
 }
+
+struct Monster {
+    nama: String,
+    hp: i32,
+    nama_user: String
+}
+
+impl fmt::Debug for Monster {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Monster")
+            .field("Monster", &self.nama)
+            .field("Memiliki HP", &self.hp)
+            .field("Nama user dirahasiakan", &"SENSOR")
+            .finish()
+    }
+}
+
+#[test]
+fn test_monster() {
+    let monster = Monster {
+        nama: String::from("Goblin"),
+        hp: 30,
+        nama_user: String::from("Alden")
+    };
+    println!("{:?}", monster)
+}
