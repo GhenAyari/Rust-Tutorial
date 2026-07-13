@@ -1966,3 +1966,63 @@ fn test_rekomendasi_produk() {
         println!("produk c masih kalah");
     }
 }
+
+#[test]
+fn string_manipulation() {
+    // KODE ASLIMU:
+    let name: String = String::from("Ghendida");
+    println!("1. Teks Asli: {}", name);
+
+    // ==========================================
+    // 1. MENGUBAH WUJUD (CASING)
+    // Membuat String baru dengan huruf besar dan kecil
+    // ==========================================
+    let nama_kapital = name.to_uppercase();
+    let nama_kecil = name.to_lowercase();
+    println!("2. Uppercase: {}", nama_kapital);
+    println!("   Lowercase: {}", nama_kecil);
+
+    // ==========================================
+    // 2. MENCARI & MENGGANTI (REPLACE)
+    // Mengganti bagian tertentu (Membuat String baru)
+    // ==========================================
+    let nama_samaran = name.replace("Ghen", "Kan");
+    println!("3. Replace ('Ghen' jadi 'Kan'): {}", nama_samaran);
+
+    // ==========================================
+    // 3. MEMOTONG STRING (SLICING)
+    // Mengambil rentang byte ke-0 sampai sebelum ke-4
+    // ==========================================
+    let potongan_nama = &name[0..4];
+    println!("4. Slicing (Byte 0-4): {}", potongan_nama); // Output: Ghen
+
+    // ==========================================
+    // 4. MENGAMBIL KARAKTER DENGAN AMAN
+    // Karena kita tidak bisa pakai name[0], kita pakai .chars()
+    // ==========================================
+    let huruf_pertama = name.chars().nth(0).unwrap_or('?');
+    let huruf_terakhir = name.chars().last().unwrap_or('?');
+    println!("5. Karakter Pertama: {}", huruf_pertama);
+    println!("   Karakter Terakhir: {}", huruf_terakhir);
+
+    // ==========================================
+    // 5. MENAMBAH TEKS (APPENDING)
+    // Syarat: Variabel harus `mut` (Mutable).
+    // Kita buat salinan mutable dari `name` agar teks aslinya tidak rusak.
+    // ==========================================
+    let mut nama_lengkap = name.clone();
+    nama_lengkap.push(' ');               // push() untuk 1 karakter (petik tunggal)
+    nama_lengkap.push_str("Rust Developer"); // push_str() untuk kata/kalimat (petik ganda)
+    println!("6. Appending (Ditambah teks): {}", nama_lengkap);
+
+    // ==========================================
+    // 6. MEMECAH STRING (SPLITTING)
+    // Kita pecah `nama_lengkap` berdasarkan spasi (' ').
+    // Hasilnya kita kumpulkan (.collect) menjadi Array/Vector.
+    // ==========================================
+    let kata_per_kata: Vec<&str> = nama_lengkap.split(' ').collect();
+    println!("7. Splitting (Dipecah per spasi):");
+    println!("   - Kata 1: {}", kata_per_kata[0]); // Ghendida
+    println!("   - Kata 2: {}", kata_per_kata[1]); // Rust
+    println!("   - Kata 3: {}", kata_per_kata[2]); // Developer
+}

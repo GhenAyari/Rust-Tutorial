@@ -3129,3 +3129,60 @@ fn test_rekomendasi_produk() {
     }
 }
 ```
+
+---
+## Manipulasi String di Rust 🧵
+
+### Aturan Emas: String di Rust adalah UTF-8
+Di banyak bahasa pemrograman lain (seperti PHP atau C), sebuah *string* hanyalah sebuah *array* berisi huruf di mana 1 huruf pasti memakan 1 byte. Di Rust, String menggunakan sistem **UTF-8**. Ini berarti satu karakter bisa memakan antara 1 hingga 4 byte memori (sebagai contoh, huruf Latin standar memakan 1 byte, tetapi emoji seperti "🔥" memakan 4 byte).
+
+Karena struktur yang fleksibel ini, Rust menangani String dengan sangat hati-hati dan ketat untuk mencegah kerusakan memori atau teks yang cacat (*corrupt*).
+
+---
+
+### Apa yang TIDAK BISA Dilakukan 🚫
+**Kamu TIDAK BISA mengambil karakter menggunakan indeks *array* secara langsung.**
+
+Di bahasa seperti JavaScript atau Python, kamu bisa mengambil huruf pertama dari sebuah kata dengan menulis `name[0]`. Di Rust, mencoba melakukan ini akan langsung menyebabkan **Error saat Compile**.
+Rust melarang keras hal ini karena mesin tidak tahu apakah indeks `0` itu berisi satu huruf utuh, atau hanya seperempat bagian byte dari sebuah emoji. Memaksa memotong byte akan membuat datanya hancur.
+
+```rust
+// ILEGAL DAN HARAM DI RUST:
+// let huruf_pertama = name[0]; // ERROR!
+```
+
+### Apa yang BISA Dilakukan 
+1. Sebagai gantinya, Rust menyediakan method-method bawaan yang sangat aman dan tangguh untuk memanipulasi teks:
+
+2. Menambah Teks (Appending): Menambahkan karakter baru pada String yang sifatnya bisa diubah (mut) tanpa harus menyewa memori baru. (.push(), .push_str())
+
+3. Mengubah Wujud (Casing & Trimming): Membuat String baru dengan ukuran huruf yang berbeda atau menghapus spasi yang tidak perlu. (.to_uppercase(), .to_lowercase(), .trim())
+
+4. Mencari & Mengganti (Search & Replace): Mencari potongan kata dan menimpanya dengan teks baru. (.contains(), .replace())
+
+5. Memotong (Slicing): Meminjam sebagian rentang byte dari sebuah String (&str). (&name[awal..akhir])
+
+6. Memecah (Splitting): Memecah teks panjang menjadi array atau Vector berisi kata-kata. (.split())
+
+7. Ekstraksi Karakter Aman: Mengambil huruf pada urutan tertentu menggunakan sistem iterator. (.chars().nth())
+
+### Contoh Kode: Teknik Manipulasi String Lengkap
+
+```rust
+Apa yang BISA Dilakukan ✅
+Sebagai gantinya, Rust menyediakan method-method bawaan yang sangat aman dan tangguh untuk memanipulasi teks:
+
+Menambah Teks (Appending): Menambahkan karakter baru pada String yang sifatnya bisa diubah (mut) tanpa harus menyewa memori baru. (.push(), .push_str())
+
+Mengubah Wujud (Casing & Trimming): Membuat String baru dengan ukuran huruf yang berbeda atau menghapus spasi yang tidak perlu. (.to_uppercase(), .to_lowercase(), .trim())
+
+Mencari & Mengganti (Search & Replace): Mencari potongan kata dan menimpanya dengan teks baru. (.contains(), .replace())
+
+Memotong (Slicing): Meminjam sebagian rentang byte dari sebuah String (&str). (&name[awal..akhir])
+
+Memecah (Splitting): Memecah teks panjang menjadi array atau Vector berisi kata-kata. (.split())
+
+Ekstraksi Karakter Aman: Mengambil huruf pada urutan tertentu menggunakan sistem iterator. (.chars().nth())
+
+Contoh Kode: Teknik Manipulasi String Lengkap
+```

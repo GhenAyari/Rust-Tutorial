@@ -3908,3 +3908,102 @@ fn test_rekomendasi_produk() {
     }
 }
 ```
+
+---
+## Rust String Manipulation 🧵
+
+### The Golden Rule: Rust Strings are UTF-8
+In many other languages, a string is just an array of letters where 1 letter = 1 byte. In Rust, Strings are **UTF-8 encoded**. This means a single character can take anywhere from 1 to 4 bytes of memory (for example, standard Latin letters take 1 byte, but emojis like "🔥" take 4 bytes).
+
+Because of this, Rust handles Strings very carefully to prevent memory corruption and invalid text rendering.
+
+---
+
+### What You CANNOT Do 🚫
+**You CANNOT use direct array indexing to get a character.**
+
+In languages like JavaScript or Python, you can get the first letter by writing `name[0]`. In Rust, doing this will cause a **Compile Error**.
+Rust blocks this because it doesn't know if index `0` is a full character or just one-quarter of an emoji byte. Slicing a byte in half corrupts the data.
+
+```rust
+// ILLEGAL IN RUST:
+// let first_letter = name[0]; // ERROR!
+```
+### What CAN Do 
+1. Rust provides safe and powerful methods to manipulate strings. Here are the most common operations:
+
+2. Appending (Adding Text): Modifying a mutable (mut) String in place without allocating new memory. (.push(), .push_str())
+
+3. Casing & Trimming: Creating a new String with different capitalization or removing whitespaces. (.to_uppercase(), .to_lowercase(), .trim())
+
+4. Search & Replace: Finding substrings and replacing them. (.contains(), .replace())
+
+5. Slicing: Safely taking a reference (&str) of a specific byte range. (&name[start..end])
+
+6. Splitting: Breaking a string into an array/Vector of words. (.split())
+
+7. Character Extraction: Safely getting a specific letter using iterators. (.chars().nth())
+
+### Code Example: The Ultimate String Manipulation
+```rust
+#[test]
+fn string_manipulation() {
+    // THE ORIGINAL STRING
+    let name: String = String::from("Ghendida");
+    println!("1. Original Text: {}", name);
+
+    // ==========================================
+    // 1. CASING (Changing text format)
+    // This allocates new Strings in memory.
+    // ==========================================
+    let name_upper = name.to_uppercase();
+    let name_lower = name.to_lowercase();
+    println!("2. Uppercase: {}", name_upper);
+    println!("   Lowercase: {}", name_lower);
+
+    // ==========================================
+    // 2. SEARCH & REPLACE
+    // Replaces all matches and creates a new String.
+    // ==========================================
+    let alias_name = name.replace("Ghen", "Kan");
+    println!("3. Replace ('Ghen' to 'Kan'): {}", alias_name);
+
+    // ==========================================
+    // 3. SLICING
+    // Borrowing a chunk of the string (bytes 0 up to 4).
+    // WARNING: Must be done on exact character byte boundaries!
+    // ==========================================
+    let name_slice = &name[0..4]; 
+    println!("4. Slicing (Byte 0-4): {}", name_slice); // Output: Ghen
+
+    // ==========================================
+    // 4. SAFE CHARACTER EXTRACTION
+    // Because name[0] is illegal, we iterate through characters.
+    // We use .unwrap_or() to provide a fallback just in case the string is empty.
+    // ==========================================
+    let first_char = name.chars().nth(0).unwrap_or('?');
+    let last_char = name.chars().last().unwrap_or('?');
+    println!("5. First Char: {}", first_char);
+    println!("   Last Char: {}", last_char);
+
+    // ==========================================
+    // 5. APPENDING (Adding to the string)
+    // The variable MUST be mutable (`mut`).
+    // We clone it first so we don't destroy the original 'name' variable.
+    // ==========================================
+    let mut full_name = name.clone();
+    full_name.push(' ');               // .push() is for a single character (char, uses single quotes '')
+    full_name.push_str("Rust Developer"); // .push_str() is for strings (&str, uses double quotes "")
+    println!("6. Appending: {}", full_name);
+
+    // ==========================================
+    // 6. SPLITTING
+    // Split the text by spaces (' ') and collect the results into a Vector (array).
+    // ==========================================
+    let words: Vec<&str> = full_name.split(' ').collect();
+    println!("7. Splitting (by space):");
+    println!("   - Word 1: {}", words[0]); // Ghendida
+    println!("   - Word 2: {}", words[1]); // Rust
+    println!("   - Word 3: {}", words[2]); // Developer
+}
+```
