@@ -1944,3 +1944,25 @@ fn test_stok_gudang() {
         }
     }
 }
+
+#[derive(PartialEq, PartialOrd, Debug)]
+struct Produk {
+    rating: i32,
+    terjual: i32
+}
+
+#[test]
+fn test_rekomendasi_produk() {
+    let produk_a = Produk {rating: 50, terjual: 90};
+    let produk_b = Produk {rating: 3, terjual: 30};
+    let produk_c = Produk {rating: 4, terjual: 190};
+
+    if produk_a == produk_b {
+        println!("Produk identik")
+    }
+    if produk_b > produk_c{
+        println!("Produk b masih kalah")
+    } else {
+        println!("produk c masih kalah");
+    }
+}

@@ -3828,3 +3828,83 @@ let pencarian_1 = cari_stok_barang(barang_1);
 }
 ```
 
+---
+
+## Rust Comparison (Equality & Ordering) ⚖️
+
+### What is Comparison?
+Comparison in Rust is the process of evaluating two values to see if they are identical, or if one is greater or lesser than the other.
+
+In Rust, comparison is not built into the core language syntax by magic. Instead, mathematical operators like `==`, `!=`, `>`, and `<` are powered by **Traits** from the `std::cmp` (Compare) module.
+
+###How it Works
+When you type `a == b` or `a > b`, the Rust compiler looks for specific traits:
+1.  **`PartialEq` (Partial Equality):** Unlocks the `==` and `!=` operators.
+2.  **`PartialOrd` (Partial Ordering):** Unlocks the `<`, `>`, `<=`, and `>=` operators.
+
+For custom `structs` or `enums`, you have two ways to make these operators work:
+1.  **The Automatic Way:** Add `#[derive(PartialEq, PartialOrd)]` above your struct. Rust will generate the comparison logic for you in the background.
+2.  **The Manual Way:** Write `impl PartialEq for YourStruct` (Operator Overloading) if you want custom logic.
+
+*Note: If you use the `derive` macro, Rust compares fields **top-to-bottom**. It checks the first field; if they are a tie, it moves to the second field, and so on.*
+
+### When to Use It
+*   **Filtering & Logic:** Checking if a user's input matches a specific value or password.
+*   **Ranking & Sorting:** Finding the highest score in a leaderboard or determining which product is better.
+*   **Data Validation:** Ensuring a numerical value is within a safe range (e.g., `CPU_temp < 90`).
+
+---
+
+### What You CAN Do
+*   **Compare Primitive Types Directly:** You can compare numbers (`i32`), booleans (`bool`), and even text (`String`) right out of the box without any setup. (Alphabetically, `"Z" > "A"` is true).
+*   **Write Clean Logic for Structs:** Instead of writing long `if a.rating > b.rating` statements, you can directly write `if a > b` to compare entire objects at once.
+*   **Unlock High-Level Features:** Implementing comparison traits allows you to use powerful built-in methods like `.sort()` on arrays and vectors.
+
+### What You CANNOT Do
+*   **Compare Structs Without Traits:** You cannot use `==` or `>` on a custom `struct` if you haven't implemented `PartialEq` or `PartialOrd` (either via `derive` or manually). The compiler will throw a hard error.
+*   **Compare Different Data Types:** You cannot compare an `i32` with a `String`, or an `i32` with an `f64`. Rust is strictly typed; `5 == "5"` is illegal. You must cast or convert them to the same type first.
+*   **Use `=` for Comparison:** A single `=` is strictly for assigning values to variables. You must use `==` to check for equality.
+
+---
+
+### Code Example: E-Commerce Product Recommendation
+
+```rust
+// 1. THE MAGIC MACRO (Automatic Trait Implementation)
+// - PartialEq: Teaches Rust how to use '==' and '!=' for this struct.
+// - PartialOrd: Teaches Rust how to use '<' and '>' for this struct.
+// - Debug: Allows us to print the struct using {:?}
+#[derive(PartialEq, PartialOrd, Debug)]
+struct Produk {
+    // 2. THE ORDER MATTERS!
+    // Because 'rating' is at the top, Rust prioritizes it. 
+    // It will only look at 'terjual' if the ratings are exactly identical.
+    rating: i32,
+    terjual: i32
+}
+
+#[test]
+fn test_rekomendasi_produk() {
+    // Instantiating three different products
+    let produk_a = Produk { rating: 50, terjual: 90 };
+    let produk_b = Produk { rating: 3, terjual: 30 };
+    let produk_c = Produk { rating: 4, terjual: 190 };
+
+    // 3. EQUALITY CHECK (Powered by PartialEq)
+    // Rust compares produk_a.rating with produk_b.rating.
+    // If they were equal, it would then compare the 'terjual' field.
+    if produk_a == produk_b {
+        println!("Produk identik");
+    }
+    
+    // 4. ORDERING CHECK (Powered by PartialOrd)
+    // Rust compares produk_b (rating: 3) with produk_c (rating: 4).
+    // Because 3 is NOT greater than 4, it falls into the 'else' block.
+    // (Note: The printed text logic is a bit funny, but the Rust syntax execution is 100% flawless!)
+    if produk_b > produk_c {
+        println!("Produk b masih kalah"); 
+    } else {
+        println!("produk c masih kalah");
+    }
+}
+```

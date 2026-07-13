@@ -3049,3 +3049,83 @@ fn test_stok_gudang() {
     }
 }
 ```
+
+---
+## Perbandingan di Rust (Kesamaan & Urutan) ⚖️
+
+### Apa itu Comparison?
+Perbandingan (Comparison) di Rust adalah proses mengevaluasi dua nilai untuk melihat apakah mereka sama persis, atau apakah yang satu lebih besar/lebih kecil dari yang lain.
+
+Di Rust, perbandingan bukanlah fitur sintaks bawaan yang terjadi secara ajaib. Alih-alih demikian, simbol matematika seperti `==`, `!=`, `>`, dan `<` sebenarnya ditenagai oleh **Traits** dari modul `std::cmp` (Compare).
+
+### Bagaimana Cara Kerjanya?
+Saat kamu mengetik `a == b` atau `a > b`, *compiler* Rust akan mencari trait spesifik:
+1.  **`PartialEq` (Partial Equality):** Membuka kunci (mengaktifkan) operator `==` dan `!=`.
+2.  **`PartialOrd` (Partial Ordering):** Membuka kunci (mengaktifkan) operator `<`, `>`, `<=`, dan `>=`.
+
+Untuk tipe data kustom seperti `struct` atau `enum`, kamu punya dua cara agar operator ini bisa bekerja:
+1.  **Cara Otomatis:** Tambahkan `#[derive(PartialEq, PartialOrd)]` di atas *struct*-mu. Rust akan otomatis membuatkan logika perbandingannya di belakang layar.
+2.  **Cara Manual:** Tulis `impl PartialEq for StructMu` (Operator Overloading) jika kamu butuh logika perbandingan yang spesifik atau tidak biasa.
+
+*Catatan: Jika kamu menggunakan jalan pintas `derive`, Rust akan membandingkan isi field **dari atas ke bawah**. Ia mengecek field pertama; jika nilainya sama (seri), barulah ia lanjut mengecek field kedua, dan begitu seterusnya.*
+
+### Kapan Menggunakannya?
+*   **Filter & Logika Bersyarat:** Mengecek apakah input dari pengguna sama dengan nilai yang diharapkan (misalnya: mengecek kata sandi).
+*   **Peringkat & Pengurutan:** Mencari skor tertinggi di papan peringkat (*leaderboard*) atau menentukan produk mana yang paling bagus.
+*   **Validasi Data:** Memastikan sebuah nilai angka berada di batas yang aman (contoh: `suhu_cpu < 90`).
+
+---
+
+### Apa yang BISA Dilakukan
+*   **Membandingkan Tipe Bawaan Secara Langsung:** Kamu bisa langsung membandingkan angka (`i32`), boolean (`bool`), dan bahkan teks (`String`) tanpa perlu repot melakukan pengaturan (Secara alfabetis, `"Z" > "A"` akan bernilai *true*).
+*   **Menulis Logika Struct yang Bersih:** Daripada menulis kondisi panjang seperti `if a.rating > b.rating`, kamu bisa langsung menulis `if a > b` untuk membandingkan objek secara utuh.
+*   **Membuka Fitur Tingkat Lanjut:** Jika struct-mu punya trait perbandingan, kamu jadi bisa menggunakan *method* bawaan yang canggih seperti `.sort()` untuk mengurutkan isi Array atau Vector.
+
+### Apa yang TIDAK BISA Dilakukan
+*   **Membandingkan Struct Tanpa Trait:** Kamu tidak bisa menggunakan `==` atau `>` pada `struct` buatan sendiri jika belum memiliki `PartialEq` atau `PartialOrd` (baik lewat `derive` maupun manual). *Compiler* akan mengeluarkan *error* mutlak.
+*   **Membandingkan Tipe Data yang Berbeda:** Kamu tidak bisa membandingkan `i32` dengan `String`, atau `i32` dengan `f64`. Rust sangat ketat soal tipe data; `5 == "5"` adalah tindakan ilegal. Kamu harus menyamakan (*casting*) tipe datanya terlebih dahulu.
+*   **Menggunakan `=` untuk Membandingkan:** Simbol sama dengan tunggal (`=`) murni hanya untuk memasukkan nilai ke variabel. Kamu WAJIB menggunakan sama dengan ganda (`==`) untuk mengecek kesamaan.
+
+---
+
+### Contoh Kode: Rekomendasi Produk E-Commerce
+
+```rust
+// 1. JALAN PINTAS (Implementasi Trait Otomatis dengan Macro)
+// - PartialEq: Mengajari Rust cara memakai '==' dan '!=' untuk struct ini.
+// - PartialOrd: Mengajari Rust cara memakai '<' dan '>' untuk struct ini.
+// - Debug: Mengizinkan kita mencetak wujud struct menggunakan {:?}
+#[derive(PartialEq, PartialOrd, Debug)]
+struct Produk {
+    // 2. URUTAN SANGAT BERPENGARUH!
+    // Karena 'rating' ada di posisi paling atas, Rust memprioritaskannya.
+    // Rust HANYA akan mengecek 'terjual' JIKA nilai rating-nya sama persis (seri).
+    rating: i32,
+    terjual: i32
+}
+
+#[test]
+fn test_rekomendasi_produk() {
+    // Mencetak tiga wujud produk yang berbeda
+    let produk_a = Produk { rating: 50, terjual: 90 };
+    let produk_b = Produk { rating: 3, terjual: 30 };
+    let produk_c = Produk { rating: 4, terjual: 190 };
+
+    // 3. PENGECEKAN KESAMAAN (Ditenagai oleh PartialEq)
+    // Rust membandingkan produk_a.rating dengan produk_b.rating.
+    // Jika nilainya sama, barulah Rust membandingkan field 'terjual'.
+    if produk_a == produk_b {
+        println!("Produk identik");
+    }
+    
+    // 4. PENGECEKAN URUTAN (Ditenagai oleh PartialOrd)
+    // Rust membandingkan produk_b (rating: 3) dengan produk_c (rating: 4).
+    // Karena 3 TIDAK LEBIH BESAR dari 4, kondisinya False, sehingga blok 'else' yang dieksekusi.
+    // (Catatan: Teks logikanya agak lucu, tapi secara sintaks eksekusi Rust berjalan 100% sempurna!)
+    if produk_b > produk_c {
+        println!("Produk b masih kalah"); 
+    } else {
+        println!("produk c masih kalah");
+    }
+}
+```
