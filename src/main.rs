@@ -2026,3 +2026,81 @@ fn string_manipulation() {
     println!("   - Kata 2: {}", kata_per_kata[1]); // Rust
     println!("   - Kata 3: {}", kata_per_kata[2]); // Developer
 }
+
+#[test]
+fn test_formatting() {
+    // ==========================================
+    // 1. BASIC DISPLAY & DEBUG
+    // ==========================================
+    let nama = "Fuad";
+    println!("Tampilan Display : Halo, {}!", nama); // Halo, Fuad!
+    println!("Tampilan Debug   : Halo, {:?}!", nama); // Halo, "Fuad"! (Ada tanda kutipnya)
+
+    // ==========================================
+    // 2. POSITIONAL & NAMED ARGUMENTS
+    // Berguna kalau satu variabel mau dipakai berkali-kali
+    // ==========================================
+
+    // Positional (Memakai indeks, dimulai dari 0)
+    println!("{0} suka makan {1}, dan {0} juga suka minum {2}", "Rusdi", "Sate", "Kopi");
+
+    // Named (Memakai nama variabel langsung)
+    println!("{pelaku} meretas server {target}", pelaku="Anon", target="NASA");
+
+    // Rust modern (Bisa langsung panggil variabel di dalam kurung kurawal)
+    let skor = 100;
+    println!("Skor saat ini: {skor}");
+
+    // ==========================================
+    // 3. NUMBER FORMATTING (Basis Angka & Desimal)
+    // ==========================================
+    let angka = 255;
+    println!("Angka Desimal    : {}", angka);
+    println!("Angka Biner      : {:b}", angka); // 11111111 (Format Binary)
+    println!("Angka Hexa Kecil : {:x}", angka); // ff (Format Hexadecimal)
+    println!("Angka Hexa Besar : {:X}", angka); // FF
+
+    let pi = 3.1415926535;
+    println!("Nilai Pi (2 desimal): {:.2}", pi); // 3.14
+
+    // ==========================================
+    // 4. ALIGNMENT & PADDING (Meratakan Teks)
+    // ==========================================
+    let id_karyawan = 42;
+
+    // Padding dengan angka 0 di sebelah kiri sampai total lebarnya 5 karakter
+    println!("ID Karyawan      : {:0>5}", id_karyawan); // 00042
+
+    let status = "OK";
+    // Rata Kiri (Lebar 10)
+    println!("Status Kiri      : |{:<10}|", status);    // |OK        |
+    // Rata Kanan (Lebar 10)
+    println!("Status Kanan     : |{:>10}|", status);    // |        OK|
+    // Rata Tengah (Lebar 10, sisa spasi diisi karakter '-')
+    println!("Status Tengah    : |{:-^10}|", status);   // |----OK----|
+}
+
+use std::fmt;
+
+struct Paket {
+    status_pengiriman: String,
+    berat: f32
+}
+
+impl fmt::Display for Paket {
+    fn fmt(&self, format: &mut fmt::Formatter) -> fmt::Result {
+        write!(format, "Status {} dan berat {} ", self.status_pengiriman, self.berat)
+    }
+}
+
+#[test]
+fn test_latihan_level_1() {
+    let paket = Paket {
+        status_pengiriman: String::from("Terkirim"),
+        berat: 5.5,
+    };
+
+    // Saat kode ini dijalankan, output terminal HARUS menampilkan:
+    // [Status: Terkirim] Berat: 5.5kg
+    println!("{paket}Kg");
+}
