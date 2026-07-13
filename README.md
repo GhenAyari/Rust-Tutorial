@@ -3289,3 +3289,343 @@ fn test_keamanan_jaringan() {
     file_3.cetak_peringatan();
 }
 ```
+
+---
+## Rust Traits: Defining Shared Behavior
+
+### What is a Trait?
+In Rust, a **Trait** is a collection of methods defined for an unknown type: `Self`. You can think of it as a "contract" or an "interface" (if you are familiar with OOP languages like Java or C#). If a struct wants to have a certain ability, it must implement the trait and fulfill the contract by writing the logic for those methods.
+
+---
+
+### What Traits CAN Do
+*   **Define Shared Behavior:** You can define a standard set of actions that multiple different structs must be able to perform.
+*   **Default Implementations:** You can provide a default body for a method inside the trait. If a struct implements the trait, it can use the default behavior or override it.
+*   **Trait Inheritance (Supertraits):** You can force a trait to depend on another trait. (e.g., To be an Advanced Wizard, you MUST first be a Basic Wizard).
+*   **Act as Type Bounds:** You can restrict Generic functions to only accept types that have specific abilities (e.g., `fn attack<T: Weapon>(item: T)`).
+*   **Polymorphism (Dynamic Dispatch):** Using `Box<dyn Trait>`, you can store different structs in the same collection as long as they implement the same trait.
+
+### What Traits CANNOT Do
+*   **Cannot Store Data (State):** Traits cannot have fields or attributes. They only define *behavior* (methods). You must use a `struct` or `enum` to hold data.
+*   **Cannot Violate the Orphan Rule:** You cannot implement an external trait (like `Display` from standard library) on an external type (like `String`). Either the trait or the struct must be created by you in your own code.
+
+---
+
+### Types of Traits (Concepts)
+1.  **Basic Traits:** A simple list of methods a struct must implement.
+2.  **Supertraits:** A trait that requires another trait to be implemented first (used in your code below).
+3.  **Generic Traits:** Traits that accept a generic type parameter (e.g., `trait CanEat<T>`).
+4.  **Marker Traits:** Traits that have no methods at all (like `Send`, `Sync`, or `Copy`). They just act as a "tag" to tell the Rust compiler that a type has a certain property.
+
+---
+
+### Code Example: The Magic Academy 🪄
+
+Below is a demonstration of Basic Traits, Supertraits, and Trait as Function Parameters (`impl Trait`).
+
+```rust
+// 1. BASIC TRAIT
+// Defines a fundamental ability that any wizard must have.
+pub trait SihirDasar {
+    fn keluarkan_cahaya(&self);
+}
+
+// 2. SUPERTRAIT (Trait Inheritance)
+// To implement 'SihirTingkatLanjut', a struct MUST ALSO implement 'SihirDasar'.
+// You cannot cast advanced magic if you don't know basic magic!
+pub trait SihirTingkatLanjut: SihirDasar {
+    fn panggil_meteor(&self);
+}
+
+// 3. THE STRUCT (Data/State)
+// This holds the actual data. Traits cannot hold data, only structs can.
+pub struct PenyihirSakti {
+    pub nama: String,
+    pub level: i32,
+}
+
+// 4. IMPLEMENTING THE BASIC TRAIT
+// Fulfilling the contract for 'SihirDasar'
+impl SihirDasar for PenyihirSakti {
+    fn keluarkan_cahaya(&self) {
+        println!("Penyihir {} mengeluarkan bola cahaya dari tongkatnya dan levelnya sekarang {}", self.nama, self.level);
+    }
+}
+
+// 5. IMPLEMENTING THE SUPERTRAIT
+// Fulfilling the contract for 'SihirTingkatLanjut'.
+// Rust allows this because PenyihirSakti already implemented SihirDasar above.
+impl SihirTingkatLanjut for PenyihirSakti {
+    fn panggil_meteor(&self) {
+        println!("Penyihir {} berhasil memanggil meteor dan levelnya sekarang {}", self.nama, self.level);
+    }
+}
+
+// 6. TRAIT AS A PARAMETER (impl Trait)
+// This function accepts ANY struct, as long as it has the 'SihirTingkatLanjut' trait.
+// Because it requires the Supertrait, we can safely call BOTH basic and advanced methods.
+pub fn jalankan_ujian_elite(lulus: &impl SihirTingkatLanjut) {
+    println!("========= Ujian dimulai ===========");
+    
+    // Calling the basic magic method (inherited)
+    lulus.keluarkan_cahaya();
+    
+    // Calling the advanced magic method
+    lulus.panggil_meteor();
+    
+    println!("Penyihir lulus dan kini menjadi penyihir sakti");
+}
+
+// 7. MAIN EXECUTION
+fn show_akademi_sihir() {
+    // Instantiating the struct
+    let penyihir = PenyihirSakti {
+        nama: String::from("Mas Fuad"),
+        level: 36,
+    };
+    
+    // Passing the struct by reference to the function that requires the trait
+    jalankan_ujian_elite(&penyihir);
+}
+```
+
+---
+
+## Rust Generics: The Ultimate Shape-Shifter 
+
+### What are Generics?
+In Rust, **Generics** are a way to write code that can handle multiple data types without having to copy-paste or duplicate the logic for each type. Instead of hardcoding a specific type like `i32` or `String`, we use a placeholder (usually `<T>`, `<U>`, etc.).
+
+Rust replaces these placeholders with the actual data types at compile time. This process is called **Monomorphization**, which means using Generics in Rust has **Zero-Cost Abstraction** (it doesn't slow down your program at all).
+
+---
+
+### Types of Generics
+1.  **Generic Structs:** Structs that can store fields of any data type.
+2.  **Generic Functions:** Functions that can accept arguments or return values of any data type.
+3.  **Generic Enums:** Enums that can hold variants with flexible data types (like `Option<T>` and `Result<T, E>`).
+4.  **Generic Methods (`impl`):** Methods attached to generic structs that can even change the generic type during execution.
+5.  **Generic Type Bounds (Trait Bounds):** Restricting a generic `<T>` so it MUST have a specific ability (Trait) using `:` or `where`.
+6.  **Generic Traits:** Traits that accept a generic parameter, allowing a struct to implement the same trait multiple times for different targets.
+
+---
+
+### What Generics CAN Do
+*   **Prevent Code Duplication:** Write a function or struct once, use it for strings, integers, floats, or custom structs.
+*   **Ensure Type Safety:** If you declare a generic collection of `<String>`, the compiler will immediately block you if you try to insert an `i32`.
+*   **Flexible APIs:** Create highly adaptable systems (like network payloads or database connections) that work with any data format.
+
+### What Generics CANNOT Do
+*   **Perform Operations Without Bounds:** You **cannot** use operators like `+`, `-`, `>`, `==`, or call methods on a raw `<T>`. Why? Because Rust doesn't know if `<T>` is a number, a string, or a table! You *must* use Trait Bounds (like `<T: PartialOrd>`) to unlock those operations.
+*   **Mix Types in a Single Variable:** If you create a `Vec<T>`, and the first item is `i32`, the entire Vector is now locked to `i32`. You cannot suddenly add a `String` to it. (To mix types, you need Trait Objects like `Box<dyn Trait>`, not Generics).
+
+---
+
+### Code Examples (Categorized & Commented)
+
+### 1. Generic Structs
+*Using placeholders to allow a struct to hold various data types.*
+
+```rust
+#[derive(Debug)]
+#[allow(dead_code)]
+// CATEGORY: Generic Struct
+// We use 3 different placeholders: T, Ttahun, and Tstatus.
+// This means each field can be a completely different data type.
+struct KapsulWaktu <T, Tstatus, Ttahun,> {
+    isi: T,
+    tahun_dibuka: Ttahun,
+    diserahkan: Tstatus
+}
+
+#[test]
+fn test_kapsul_waktu() {
+    // Rust automatically detects that T=String, Ttahun=i32, and Tstatus=&str
+    let kapsul_rusdi = KapsulWaktu {
+        isi: String::from("Uget uget boyolali"),
+        tahun_dibuka: 2026,
+        diserahkan: "Y"
+    };
+    println!("{:?}", kapsul_rusdi);
+}
+```
+
+### 2. Generic Functions
+Functions that accept and return flexible types
+
+```rust
+// CATEGORY: Generic Function
+// Accepts two generic parameters (T and U).
+// Returns a tuple where their positions (and types) are swapped.
+fn tukar_posisi<T,U>(kiri: T, kanan: U) -> (U,T) {
+    (kanan, kiri)
+}
+
+#[test]
+fn test_tukar_posisi() {
+    // T is String, U is i32. The return will be (i32, String).
+    let posisi = tukar_posisi(String::from("Rusdiyansah tukar posisi ke kordinat"), 30 );
+    println!("{:?}", posisi);
+}
+```
+
+### 3. Generic Enums
+Enums that can hold different types of data in their variants
+
+```rust
+#[allow(dead_code)]
+// CATEGORY: Generic Enum (Single Generic)
+// This is exactly how Rust's built-in 'Option' works!
+enum Value<T> {
+    NONE,
+    VALUE(T)
+}
+
+#[test]
+fn test_value() {
+    let value: Value<i32> = Value::VALUE(30);
+
+    match value {
+        Value::NONE => println!("NONE"),
+        Value::VALUE(val) => println!("VALUE = {}", val),
+    }
+}
+
+// CATEGORY: Generic Enum (Multiple Generics)
+// Aman holds type T, Diserang holds type U, Maintenance holds nothing.
+enum StatusServer<T, U> {
+    Aman(T),
+    Diserang(U),
+    Maintenance
+}
+
+// Function accepting a specific realization of the Generic Enum
+fn sinyal_server(s: StatusServer<String, i32>) {
+    match s {
+        StatusServer::Aman(teks) => println!("Status server saat ini {}", teks),
+        StatusServer::Diserang(ip) => println!("Status server diserang, ping saat ini {}", ip),
+        StatusServer::Maintenance => println!("Sedang maintenance")
+    }
+}
+
+#[test]
+fn test_status_server() {
+    let status_server: StatusServer<String, i32> = StatusServer::Aman(String::from("Aman"));
+    let status_server2: StatusServer<String, i32> = StatusServer::Diserang(300);
+    let status_server3: StatusServer<String, i32> = StatusServer::Maintenance;
+    
+    sinyal_server(status_server);
+    sinyal_server(status_server2);
+    sinyal_server(status_server3);
+}
+```
+
+### 4. Generic Methods (Typestate Pattern)
+Implementing methods for a generic struct, and using generics to change the struct's type.
+
+```rust
+struct PaketJaringan<T>{
+    payload: T
+}
+
+// CATEGORY: Generic Methods
+// We must declare <T> after impl so Rust knows T is a generic placeholder.
+impl<T> PaketJaringan<T> {
+    fn baca_payload(&self) -> &T {
+        &self.payload
+    }
+    
+    // CATEGORY: Method-Level Generic (Changing State)
+    // This method takes ownership of the current struct (self),
+    // and returns a BRAND NEW struct with a DIFFERENT generic type <U>.
+    fn ganti_protokol<U>(self, payload_baru: U) -> PaketJaringan<U> {
+        PaketJaringan {
+            payload: payload_baru
+        }
+    }
+}
+
+#[test]
+fn test_paket_jaringan() {
+    let paket_awal = PaketJaringan { payload: String::from("GET /admin_panel") }; // T is String
+    println!("Payload awal: {}", paket_awal.baca_payload());
+
+    // paket_awal is consumed. paket_enkripsi is born where U is i32.
+    let paket_enkripsi = paket_awal.ganti_protokol(8080); 
+    println!("Payload setelah enkripsi: {}", paket_enkripsi.baca_payload());
+}
+```
+
+### 5. Generic Type Bounds (where clause)
+Restricting generics so they can use specific operators or methods.
+
+```rust
+// CATEGORY: Generic Type Bounds (Using 'where')
+// Without bounds, we cannot use '>' or println!("{}", ...).
+// We restrict T: it MUST be printable (Display) AND comparable (PartialOrd).
+fn cetak_yang_tertinggi<T>(sensor_a: T, sensor_b: T)
+    where T: std::fmt::Display + std::cmp::PartialOrd 
+{
+    if sensor_a > sensor_b {
+        println!("Peringatan! nilai tertinggi! {} ", sensor_a)
+    } else {
+        println!("Peringatan! nilai tertinggi {}", sensor_b)
+    }
+}
+```
+
+### 6. Generic Type Bounds (Direct Syntax)
+Using your own custom traits to restrict a generic function.
+
+```rust
+pub trait BisaMenyala {
+    fn hidupkan(&self);
+}
+
+pub struct Lampu;
+pub struct KipasAngin;
+
+impl BisaMenyala for Lampu {
+    fn hidupkan(&self) { println!("Lampu menyala terang") }
+}
+impl BisaMenyala for KipasAngin {
+    fn hidupkan(&self) { println!("Kipas Angin berputar mantap") }
+}
+
+// CATEGORY: Generic Type Bounds (Direct Syntax: <T: Trait>)
+// T can be anything, AS LONG AS it has the 'BisaMenyala' trait.
+pub fn tombol_pintar<T: BisaMenyala>(alat: T) {
+    alat.hidupkan(); 
+}
+```
+
+### 7. Generic Traits
+A trait that takes a generic parameter, allowing a struct to implement it multiple times.
+
+```rust
+// CATEGORY: Generic Trait
+// The Trait itself has a placeholder <T>.
+pub trait KirimPesan<T> {
+    fn kirim(&self, tujuan: T, pesan: String);
+}
+
+pub struct SistemKeamanan;
+pub struct Email { pub email: String }
+pub struct Sms { pub nomor: String }
+
+// Implementing the trait where T = Email
+impl KirimPesan<Email> for SistemKeamanan {
+    fn kirim(&self, tujuan: Email, pesan: String ){
+        println!("Mengirim email ke {} dengan pesan {}", tujuan.email, pesan);
+    }
+}
+
+// Implementing the EXACT SAME trait where T = Sms
+impl KirimPesan<Sms> for SistemKeamanan {
+     fn kirim(&self, tujuan: Sms, pesan: String) {
+        print!("Mengirim sms darurat ke nomor {} dengan pesan {}", tujuan.nomor, pesan);
+    }
+}
+```
+
+
