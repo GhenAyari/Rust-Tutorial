@@ -1,40 +1,52 @@
 use std::io;
 use std::io::Write;
-
+mod akademi_sihir;
 mod dapur;
-mod sccanner;
 mod game_hero;
 mod guild_petualang;
 mod kendaraan_misteri;
-mod akademi_sihir;
+mod sccanner;
 
 use dapur::masak_ayam;
 use dapur::masak_nasi;
 #[test]
-fn test_daput() {
+fn test_dapur() {
     println!("Sistem restoran dimulai!");
     masak_nasi(String::from("Briyani"));
     masak_ayam(6);
 }
 
-use sccanner::LogJaringan;
 use sccanner::KatergoriMalware;
+use sccanner::LogJaringan;
 #[test]
-fn test_keamanan_jaringan () {
-    let file_1 = LogJaringan::analisis_file(String::from("update_palu.exe"), String::from("192.167.93"),KatergoriMalware::Ransomware);
+fn test_keamanan_jaringan() {
+    let file_1 = LogJaringan::analisis_file(
+        String::from("update_palu.exe"),
+        String::from("192.167.93"),
+        KatergoriMalware::Ransomware,
+    );
     file_1.cetak_peringatan();
-    let file_2 = LogJaringan::analisis_file(String::from("Ambacong di desa oncong.mp3"), String::from("192.163.93"),KatergoriMalware::Aman);
+    let file_2 = LogJaringan::analisis_file(
+        String::from("Ambacong di desa oncong.mp3"),
+        String::from("192.163.93"),
+        KatergoriMalware::Aman,
+    );
     file_2.cetak_peringatan();
-    let file_3 = LogJaringan::analisis_file(String::from("Ambalabu.mkv"), String::from("191.163.91"),KatergoriMalware::Spyware);
+    let file_3 = LogJaringan::analisis_file(
+        String::from("Ambalabu.mkv"),
+        String::from("191.163.91"),
+        KatergoriMalware::Spyware,
+    );
     file_3.cetak_peringatan();
 }
-fn main(){
-
+fn main() {
     print!("Inpur your name = ");
     io::stdout().flush().unwrap();
 
     let mut nama = String::new();
-    io::stdin().read_line(&mut nama).expect("Failed to read line");
+    io::stdin()
+        .read_line(&mut nama)
+        .expect("Failed to read line");
 
     print!("input your age = ");
     io::stdout().flush().unwrap();
@@ -49,18 +61,18 @@ fn main(){
 }
 
 #[test]
-fn testing(){
+fn testing() {
     println!("my name's ghen and i currently learn rust");
 }
 
 #[test]
-fn variable(){
+fn variable() {
     let my_name = "Ghendida";
     println!("Hallo {} ", my_name);
 }
 
 #[test]
-fn variable_mutable(){
+fn variable_mutable() {
     let mut age_in_2025: i8 = 18;
     println!("my age in 2025 is {} ", age_in_2025);
 
@@ -78,7 +90,7 @@ fn variable_mutable(){
 // }
 
 #[test]
-fn shadowing(){
+fn shadowing() {
     let name = "Ghendida";
     println!("Hallo {} ", name);
 
@@ -90,7 +102,7 @@ fn shadowing(){
 }
 
 #[test]
-fn explicit_variable(){
+fn explicit_variable() {
     let age: i8 = 19;
     println!("My age is {} ", age);
 
@@ -99,30 +111,28 @@ fn explicit_variable(){
 }
 
 #[test]
-fn conversion(){
+fn conversion() {
     let a: i8 = 19;
     println!("my number {} ", a);
 
     let b: i16 = a as i16;
     println!("his number is {} ", b);
 
-    let c : i32 = a as i32;
+    let c: i32 = a as i32;
     println!("my number {} ", c);
 }
 
 #[test]
-fn conversion_to_large(){
+fn conversion_to_large() {
     let a: i64 = 1000000;
     println!("number {} ", a);
 
     let b: i8 = a as i8;
     println!("number {} ", b);
-
 }
 
 #[test]
-fn operators_numeric(){
-
+fn operators_numeric() {
     let height = 3.0;
 
     let a = 5.0;
@@ -133,13 +143,14 @@ fn operators_numeric(){
 
     let result = l * (a + b) * height;
 
-    println!("result = {}, ({} + {}), X {}, = {} ", l, a, b, height, result);
-
+    println!(
+        "result = {}, ({} + {}), X {}, = {} ",
+        l, a, b, height, result
+    );
 }
 
 #[test]
-fn comparison_operators(){
-
+fn comparison_operators() {
     let a = 15 > 10;
     let b = 10 >= 10;
     let c = 15 < 10;
@@ -149,12 +160,10 @@ fn comparison_operators(){
     println!("is the number 10 than same as 10? = {}", b);
     println!("is the number 15 less than 10? = {}", c);
     println!("is the number 10 same as 10? = {}", d);
-
 }
 
 #[test]
-fn boolean_operators(){
-
+fn boolean_operators() {
     let age = 20;
     let height = 170;
 
@@ -164,11 +173,10 @@ fn boolean_operators(){
     let result = category && height;
 
     println!("is he an adult man? {}", result);
-
 }
 
 #[test]
-fn tuple(){
+fn tuple() {
     let a: (i32, f64, &str) = (500, 6.4, "Hello");
 
     println!("Here is tuple = {:?} ", a);
@@ -181,11 +189,11 @@ fn tuple(){
 
     // or we can also do Destructing tuple
     let (a, b, _) = a; // use _ if don't wanna ose one of them
-    println!("Use desctructing tuple = {}, {}",a, b );
+    println!("Use desctructing tuple = {}, {}", a, b);
 }
 
 #[test]
-fn mutable_tuple(){
+fn mutable_tuple() {
     let mut about_me: (&str, i8, &str) = ("Ghen", 19, "Mulawarman University");
 
     let (a, b, c) = about_me;
@@ -197,25 +205,28 @@ fn mutable_tuple(){
     about_me.2 = "From mulawarman university";
 
     println!("{:?}", about_me);
-
 }
 
-
 #[test]
-fn tuple_practice(){
+fn tuple_practice() {
     let mut me: (&str, i8, i16, &str) = ("Ghen", 19, 2006, "Mulawarman University");
 
-    println!("my name's {}, my age is {}, i was born in {}, and currently i'm student in {} ", me.0, me.1, me.2, me.3 );
+    println!(
+        "my name's {}, my age is {}, i was born in {}, and currently i'm student in {} ",
+        me.0, me.1, me.2, me.3
+    );
 
     me.0 = "Ghendida";
     me.1 = 20;
 
-    println!("my name's is {}, my age is {}, i was born in {}, and currently i'm student in {} ", me.0, me.1, me.2, me.3 );
+    println!(
+        "my name's is {}, my age is {}, i was born in {}, and currently i'm student in {} ",
+        me.0, me.1, me.2, me.3
+    );
 }
 
 #[test]
-fn array(){
-
+fn array() {
     let array_list: [i8; 3] = [10, 20, 30];
     println!("here are some array = {:?}", array_list);
 
@@ -224,12 +235,10 @@ fn array(){
     let c = array_list[2];
 
     println!("{}, {}, {}", a, b, c);
-
 }
 
 #[test]
-fn mutable_array(){
-
+fn mutable_array() {
     let mut array_can_change: [&str; 3] = ["Ramli", "Ruger", "Razi"];
 
     println!("{:?}", array_can_change);
@@ -238,26 +247,21 @@ fn mutable_array(){
     array_can_change[1] = "Raditya";
     array_can_change[2] = "Roslan";
 
-    println!("{}, {}, {}" , array_can_change[0], array_can_change[1], array_can_change[2]);
-
+    println!(
+        "{}, {}, {}",
+        array_can_change[0], array_can_change[1], array_can_change[2]
+    );
 }
 
 #[test]
-fn two_dimensional_arrays(){
-
-    let array: [[i32; 3];3] = [
-        [13, 16, 6],
-        [10, 08, 09],
-        [10, 06, 30]
-
-    ];
+fn two_dimensional_arrays() {
+    let array: [[i32; 3]; 3] = [[13, 16, 6], [10, 08, 09], [10, 06, 30]];
 
     println!("{:?}", array);
 
     println!("{}", array[1][1]);
     println!("{}", array[0][1]);
     println!("{}", array[0][0]);
-
 }
 
 const MAXIMUM: i16 = 37;
@@ -267,8 +271,6 @@ fn const_variable() {
     println!("Use constant variable {}", MINIMUM);
 
     println!("We can use variable out of scope {}", MAXIMUM);
-
-
 }
 
 const UNIV_NAME: &str = "Mulawarman University"; // This variable can be used because it is located in the outermost scope so any function can access it
@@ -278,7 +280,8 @@ fn scope() {
     let name = "Ghendida"; // variable name can used start here
     println!("he's name is {}", name);
 
-    { // inner scope
+    {
+        // inner scope
         println!("he's name middle name is Gantari and first name {}", name);
         let age: i8 = 19;
         println!("he's {} years old and from {} ", age, UNIV_NAME);
@@ -289,7 +292,6 @@ fn scope() {
 
 #[test]
 fn memory_management() {
-
     // When function_a() is called,
     // Rust creates a stack frame for function_a
     function_a();
@@ -302,8 +304,7 @@ fn memory_management() {
     function_b();
 }
 
-fn function_a(){
-
+fn function_a() {
     // age is an i32
     // its size is fixed (4 bytes)
     // stored directly on the STACK
@@ -328,11 +329,7 @@ fn function_a(){
     // stored on the STACK
     let year: i32 = year_of_birth.parse().unwrap();
 
-    println!(
-        "Ghen is {} years old and born in {}",
-        age,
-        year
-    );
+    println!("Ghen is {} years old and born in {}", age, year);
 
     // function_a finishes here
 
@@ -345,8 +342,7 @@ fn function_a(){
     // the "2006" data stored on the HEAP
 }
 
-fn function_b(){
-
+fn function_b() {
     // The variable name is stored on the STACK
     //
     // The actual String data "Ghendida"
@@ -359,8 +355,7 @@ fn function_b(){
 
     println!(
         "my name is {} and i entered this university in {}",
-        name,
-        entry_year
+        name, entry_year
     );
 
     // function_b finishes here
@@ -375,7 +370,6 @@ fn function_b(){
 
 #[test]
 fn string_slice() {
-
     // name is a string slice (&str)
     //
     // STACK:
@@ -415,23 +409,28 @@ fn string_slice() {
 
 #[test]
 fn string_not_fixed_size() {
-
     let name: String = String::from("ghendida ayari");
-    println!("{}\n",name.to_lowercase());
+    println!("{}\n", name.to_lowercase());
 
-    let mut list_name: (String, String, String) = (String::new(), String::from("satrio"), String::from("Rusman"));
+    let mut list_name: (String, String, String) = (
+        String::new(),
+        String::from("satrio"),
+        String::from("Rusman"),
+    );
     println!("{:?}", list_name);
 
     list_name.0.push_str("Akmal");
 
-    println!("\n{}, {}, {} ", list_name.0.to_uppercase() , list_name.1.to_uppercase(), list_name.2.replace("Rusman", "Ramli").to_uppercase());
-
-
+    println!(
+        "\n{}, {}, {} ",
+        list_name.0.to_uppercase(),
+        list_name.1.to_uppercase(),
+        list_name.2.replace("Rusman", "Ramli").to_uppercase()
+    );
 }
 
 #[test]
 fn ownership_scope() {
-
     // let a variable can't access in here because out of scope and hasn't been created in this line
     let a = 10; // can access start here
 
@@ -441,7 +440,6 @@ fn ownership_scope() {
     } // variable name can't accesss start here because already out of scope
 
     println!("{}", a); // can access in here because still in scope
-
 } // variable a can't access or ended in here bcs already out of scope
 
 #[test]
@@ -450,12 +448,10 @@ fn data_copy() {
     let b = a;
 
     println!("{}, {}", a, b);
-
 }
 
 #[test]
 fn ownership_movement() {
-
     let name: String = String::from("Ghendida");
 
     // ownership name has move to name_2
@@ -463,24 +459,20 @@ fn ownership_movement() {
     // name variable has can't access because ownership move to name_2
 
     println!("{}", name_2);
-
 }
 
 #[test]
 fn clone() {
-
     let name: String = String::from("Ghendida");
 
     let name2 = name.clone();
 
     println!("{}, {}", name, name2); // This is known as a clone.
     // If the string data is 10 MB, Rust will perform a clone of the same size, which is 10 MB
-
 }
 
 #[test]
 fn if_expression() {
-
     let a = 8;
 
     if a >= 9 {
@@ -492,16 +484,14 @@ fn if_expression() {
     } else {
         println!("shit")
     }
-
 }
 
 #[test]
-fn let_statement () {
-
+fn let_statement() {
     let value = 80;
     let result: &str;
 
-    if value >= 80{
+    if value >= 80 {
         result = "Good";
     } else if value >= 70 {
         result = "Not Bad";
@@ -512,7 +502,6 @@ fn let_statement () {
     }
 
     println!("{}", result);
-
 }
 
 #[test]
@@ -536,18 +525,19 @@ fn let_statement_simple() {
 fn loop_expression() {
     let mut counter = 0; // dimulai dari 0
 
-    loop{
+    loop {
         counter += 1; // anggka akan ditambah 1 terus menerus
 
-        if counter == 11 { // jika counternya sudah mencapai 11
+        if counter == 11 {
+            // jika counternya sudah mencapai 11
             break; // hentikan
-        } else if counter % 2 == 1 { // jika counter dimodulus 2 hasilnya 1 maka buang atau tidak perlu tampilkan
+        } else if counter % 2 == 1 {
+            // jika counter dimodulus 2 hasilnya 1 maka buang atau tidak perlu tampilkan
             continue; // continue akan mengabaikan atau skip dan langsung ke perulangan berikutnya
         }
 
         println!("Counter: {}", counter);
     }
-    
 }
 
 #[test]
@@ -556,29 +546,31 @@ fn loop_return_value() {
 
     let result = loop {
         counter += 1; // perulangan akan dilakukan dan akan ditambah 1 terus
-        if counter >= 10 { // jika lebih dari sama dengan 10
+        if counter >= 10 {
+            // jika lebih dari sama dengan 10
             break counter * 3; //break atau hentikan lalu dikali 3. jadi 3x10
         }
     };
     println!("{}", result); // memanggil perulangan
-
 }
-
 
 #[test]
 fn loop_label() {
     let mut number = 1; // number sama dengan 1
 
-    'luar: loop { // loop paling luar
+    'luar: loop {
+        // loop paling luar
         let mut i = 1; // variable baru i sama dengan 1
 
         loop {
-            if number > 10 { // jika number lebih dari 10
+            if number > 10 {
+                // jika number lebih dari 10
                 break 'luar; // hentikan
             }
             println!("{} X {} = {}", number, i, number * i); // memanggil number dan i = number x i
             i += 1; // i akan ditambahkan 1 terus
-            if i > 10 { // jika i lebih dari 10
+            if i > 10 {
+                // jika i lebih dari 10
                 break; // hentikan
             }
         }
@@ -589,11 +581,12 @@ fn loop_label() {
 
 #[test]
 fn while_loop() {
-
     let mut number = 0; // number dimulai dari 0
 
-    while number <= 15 { // selama number kurang dari sama degan 15 maka jalankan terus
-        if number % 2 == 1 { // jika number dimodulus 1 menghasilkan 1 (agar memunculkan yang ganjil aja)
+    while number <= 15 {
+        // selama number kurang dari sama degan 15 maka jalankan terus
+        if number % 2 == 1 {
+            // jika number dimodulus 1 menghasilkan 1 (agar memunculkan yang ganjil aja)
             println!("{}", number); // munculkan number
         }
         number += 1; // number akan ditambah 1 terus
@@ -602,7 +595,6 @@ fn while_loop() {
 
 #[test]
 fn while_array() {
-
     let arrayy: [&str; 5] = ["Ambatukam", "Rusman", "Rusdiyansah", "Marlan", "Zuki"];
     let mut index = 0;
 
@@ -614,7 +606,6 @@ fn while_array() {
 
 #[test]
 fn loop_tuple_tapi_tidak_bisa() {
-
     // untuk di tuple itu tidak bisa menggunakan perulangan, yang bisa hanya di array
 
     let tuple: (i8, i8, &str) = (16, 10, "Ambatukam");
@@ -624,15 +615,14 @@ fn loop_tuple_tapi_tidak_bisa() {
     println!("Nilai 1 = {}", index1);
     println!("Nilai 2 = {}", index2);
     println!("Nilai 3 = {}", index3);
-
 }
 
 #[test]
 fn loop_array() {
-
     let arrayy: [&str; 5] = ["Ambatukam", "Rusman", "Rusdiyansah", "Marlan", "Zuki"]; // membuat array
 
-    for value in arrayy  { // value adalah variable baru dan di dalam array
+    for value in arrayy {
+        // value adalah variable baru dan di dalam array
         print!(" {} ", value); // memanggil value
     }
 }
@@ -646,7 +636,6 @@ fn range_exclude() {
     println!("Range start {} ", range.start);
     println!("Range end {} ", range.end);
 
-
     for i in range {
         println!("Nama = {} ", i);
     }
@@ -654,7 +643,6 @@ fn range_exclude() {
 
 #[test]
 fn range_array_exclude() {
-
     // range exclude
     let range = 0..5;
 
@@ -667,7 +655,6 @@ fn range_array_exclude() {
 
 #[test]
 fn range_array_inclusive() {
-
     let mut angka = 0;
     // range exclude
     let range = 0..=4; // karena ini range inclusive maka 4nya akan muncul beda sama exclude, kalau pakai exclude angka 4 ga masuk
@@ -680,7 +667,7 @@ fn range_array_inclusive() {
     }
 }
 
-fn test_funcion(){
+fn test_funcion() {
     let absen: (&str, i32, i8) = ("Ghen", 2006, 16);
 
     let (tuple1, tuple2, tuple3) = absen;
@@ -694,10 +681,10 @@ fn call_test_function() {
     test_funcion();
 }
 
-fn say_hello(first_name: &str, last_name: &str) { // memberikan parameter di functionnya agar nanti ketika memanggil function tinggal memberikan parameter
+fn say_hello(first_name: &str, last_name: &str) {
+    // memberikan parameter di functionnya agar nanti ketika memanggil function tinggal memberikan parameter
 
     println!("Hallo {} dan {}", first_name, last_name);
-
 }
 
 #[test]
@@ -706,16 +693,18 @@ fn call_say_hello() {
     say_hello("Nolan", "Alerick");
 }
 
-fn factorial_loop(a: i32) -> i32 { // membuat parameter dengan nilai i32 dan membuat janji akan menghasilkan nilai i32 juga
+fn factorial_loop(a: i32) -> i32 {
+    // membuat parameter dengan nilai i32 dan membuat janji akan menghasilkan nilai i32 juga
 
     if a < 1 {
-        return 0;  // jika a kurang dari 1, user memasukkan kurang dari 1 atau negatif
+        return 0; // jika a kurang dari 1, user memasukkan kurang dari 1 atau negatif
     } // maka hasilnya 0 dan tidak menghasilkann apa ap
 
     let mut result = 1; // membuat variable hasil yaitu 1
-    for i in 1..=a{ // variable i dari 1 sampai a,misal memasukkan angka 5 di parameter artinya 1 sampai 5
-       result *= i; // akan menghasilkan angka result dikali dengan i
-   }
+    for i in 1..=a {
+        // variable i dari 1 sampai a,misal memasukkan angka 5 di parameter artinya 1 sampai 5
+        result *= i; // akan menghasilkan angka result dikali dengan i
+    }
     result // Implicit Return atau Expression misal memasukkan factorial_loop(3) maka akan menghasilkan atau mengeluarkan 6 dari 1x2x3 (berdasarkan pemrograman)
 }
 
@@ -727,11 +716,13 @@ fn call_factorial_loop() {
     println!("hasil {}", hasil); // membuat println! untuk memanggil function dan mencetak hasil dari function
 }
 
-fn factorial_recursive(a: i32) -> i32 { // contoh faktorial menggunakan recursive function
-    if a <= 1{ // jika a atau isi parameternya kurang dari sama dengan 1
+fn factorial_recursive(a: i32) -> i32 {
+    // contoh faktorial menggunakan recursive function
+    if a <= 1 {
+        // jika a atau isi parameternya kurang dari sama dengan 1
         return 1; // hasilnya 1
     }
-    a * factorial_recursive(a-1)
+    a * factorial_recursive(a - 1)
     // Memanggil dirinya sendiri dengan parameter yang dikurangi 1 (a - 1).
     // Komputer akan menumpuk perkaliannya secara bertahap:
     // Misal parameter 3, alurnya: 3 * (2 * (1)) sehingga menghasilkan 6.
@@ -743,14 +734,14 @@ fn call_factorial_recursive() {
     println!("hasil {}", hasil);
 }
 
-fn function_recursive(name: String, times: u32){ //
-    if times == 0{
+fn function_recursive(name: String, times: u32) {
+    //
+    if times == 0 {
         return;
     } else {
         println!("{}", name);
     }
     function_recursive(name, times - 1);
-
 }
 
 #[test]
@@ -758,12 +749,12 @@ fn call_function_recursive() {
     function_recursive(String::from("Baskoro"), 3);
 }
 
-fn number_function(number: i16){
+fn number_function(number: i16) {
     println!("umur = {}", number);
-
 }
 
-fn name(name: String) -> String{ // funcntion ini berjanji menghasilkan String
+fn name(name: String) -> String {
+    // funcntion ini berjanji menghasilkan String
 
     format!("nama {}", name) // format! mirip println! bedanya kalau format tidak langsung memunculkannya ia menyimpan terlebih dahulu menjadi variable
 }
@@ -779,8 +770,7 @@ fn show_name_number() {
     println!("{}", name(String::from("Amba"))); // ini bisa dan tidak perlu menggunakan {:?} karena tadi di function name pakai format!
 }
 
-fn full_name(first_name: String, last_name: String)-> String {
-
+fn full_name(first_name: String, last_name: String) -> String {
     format!("{} {}", first_name, last_name)
 }
 
@@ -826,13 +816,12 @@ fn show_full_name_return_function() {
     println!("{} ", c); // Mencetak: Ezra Arden
 }
 
-fn full_name_references(first_name: &String, last_name: &String)-> String{
+fn full_name_references(first_name: &String, last_name: &String) -> String {
     format!("{} {}", first_name, last_name)
 }
 
 #[test]
 fn show_full_name_references() {
-
     let first_name = String::from("Caleum");
     let last_name = String::from("Lucien");
 
@@ -841,10 +830,9 @@ fn show_full_name_references() {
     println!("{}", first_name);
     println!("{} ", last_name);
     println!("{} ", name);
-
 }
 
-fn change_value(value: &mut String){
+fn change_value(value: &mut String) {
     value.push_str(" Testing");
 }
 
@@ -853,7 +841,6 @@ fn test_change_value() {
     let mut value = String::from("Rusdiyansah");
     change_value(&mut value);
     println!("{}", value);
-    
 }
 
 // 1. REFERENCE (Tipe Data)
@@ -872,20 +859,21 @@ fn test_perbedaan() {
     baca_buku(&buku);
 }
 
-fn ubah_buku(teks: &mut String, jumlah_tetap: &mut i32){
+fn ubah_buku(teks: &mut String, jumlah_tetap: &mut i32) {
     teks.push_str("Edisi terbaru");
     *jumlah_tetap += 10; // untuk tipe data number yang mutable references, wajib menggunakan *nama_variable
 }
 
 #[test]
 fn test_ubah_buku() {
-
     let mut buku = String::from("Pemrograman Rust ");
     let mut jumlah_sementara = 15;
 
     ubah_buku(&mut buku, &mut jumlah_sementara);
-    println!("{} dan jumlahnya digabung jumlah sementara dan jumlah tetap adalah {}", buku, jumlah_sementara);
-
+    println!(
+        "{} dan jumlahnya digabung jumlah sementara dan jumlah tetap adalah {}",
+        buku, jumlah_sementara
+    );
 }
 #[test]
 fn slice_references() {
@@ -902,12 +890,10 @@ fn slice_references() {
 
     let slice4: &[i16] = &angka[..5];
     println!("slice4: {:?}", slice4);
-
 }
 
 #[test]
 fn string_slice_references() {
-
     let name: String = String::from("Ghen Ayari");
     let first_name: &str = &name[..4];
     println!("{}", first_name);
@@ -916,49 +902,44 @@ fn string_slice_references() {
     println!("{}", last_name);
 }
 
-
 struct Person {
     first_name: String,
     middle_name: String,
     last_name: String,
-    age: u8
+    age: u8,
 }
 
 #[test]
 fn struct_person() {
-
     let person: Person = Person {
         first_name: String::from("Ghendida"),
         last_name: String::from("Ayari"),
         middle_name: String::from("Gantari"),
-        age: 20
+        age: 20,
     };
 
     println!("{}", person.first_name);
     println!("{}", person.middle_name);
     println!("{}", person.last_name);
     println!("{}", person.age);
-
 }
 
-fn print_person(person: &Person) { // struct bisa  juga ditaruh di parameter sebuah function
+fn print_person(person: &Person) {
+    // struct bisa  juga ditaruh di parameter sebuah function
 
     println!("Nama depan = {}", person.first_name);
     println!("Nama Tengah = {}", person.middle_name);
     println!("Nama Belakang = {}", person.last_name);
     println!("Usia = {}", person.age);
-
-
 }
 
 #[test]
 fn show_print_person() {
-
     let person: Person = Person {
         first_name: String::from("Ghendida"),
         last_name: String::from("Ayari"),
         middle_name: String::from("Gantari"),
-        age: 16
+        age: 16,
     };
 
     print_person(&person);
@@ -966,7 +947,6 @@ fn show_print_person() {
 
 #[test]
 fn struct_init_shorthand() {
-
     let first_name: String = String::from("Ghendida");
     let last_name: String = String::from("Ayari");
     let age: u8 = 21;
@@ -975,7 +955,7 @@ fn struct_init_shorthand() {
         first_name, // bisa menyingkat menjadi seperti ini tapi ownership first_name sekarang berubah kepemilikan menjadi milik person
         middle_name: String::from("Gantari"),
         last_name, // ini juga sama
-        age // sama seperti tadi
+        age,       // sama seperti tadi
     };
 
     // println!("{}", first_name); ini sudah tidak bisa digunakan lagi karena ownership sudah berpindah
@@ -983,11 +963,11 @@ fn struct_init_shorthand() {
     print_person(&person);
 
     let person2: Person = Person {
-
         first_name: person.first_name.clone(),
         middle_name: person.middle_name.clone(),
         last_name: person.last_name.clone(),
-        ..person};
+        ..person
+    };
 
     print_person(&person2);
     print_person(&person);
@@ -1000,7 +980,6 @@ fn tuple_struct() {
     let geo_point = GeoPoint(-656.73, 314.431);
     println!("lat = {} ", geo_point.0);
     println!("let = {} ", geo_point.1);
-
 }
 
 struct Nothing;
@@ -1008,26 +987,28 @@ struct Nothing;
 #[test]
 fn test_nothing() {
     let _notihing1 = Nothing;
-    let _nothing2 = Nothing{};
+    let _nothing2 = Nothing {};
 }
 
-struct Motor{
+struct Motor {
     nama: String,
     warna: String,
     no_rangka: u32,
-    bensin: u8
+    bensin: u8,
 }
 
-impl Motor { // membuat method dari motor menggunakan kata kuncni "Impl" dan namanya harus sama dengan nama struct
+impl Motor {
+    // membuat method dari motor menggunakan kata kuncni "Impl" dan namanya harus sama dengan nama struct
 
     /*
     1. Yang BISA dilakukan: bisa membuat lebih dari satu blok impl untuk Struct yang sama (Rust akan menggabungkannya otomatis saat kompilasi).
     2. Yang TIDAK BISA dilakukan:  tidak bisa menaruh variabel/field data baru di dalam blok impl. Ruangan ini khusus untuk fungsi dan konstanta saja.
     */
 
-    fn motor_baru(nama_merek: String, warna_motor: String) -> Motor{ // ini namanya associated function, fungsi ini ibarat pabrik tugasnya hanya mencetak wujud dari struct
+    fn motor_baru(nama_merek: String, warna_motor: String) -> Motor {
+        // ini namanya associated function, fungsi ini ibarat pabrik tugasnya hanya mencetak wujud dari struct
         // seperti di sini tugasnya mencetak motor, function ini juga tidak ada &self (membaca), &mut self (membaca mengubah), self (mengambil ownership)
-        Motor{
+        Motor {
             nama: nama_merek,
             warna: warna_motor,
             bensin: 0,
@@ -1035,25 +1016,31 @@ impl Motor { // membuat method dari motor menggunakan kata kuncni "Impl" dan nam
         }
     }
 
-
-    fn keluar_pabrik_cek_status(&self) { // function ini menggunakan &self untuk membaca saja
-        println!("Motor dengan nomor rangka {} keluar pabrik dan sekarang bensinnya {} ", self.no_rangka, self.bensin);
+    fn keluar_pabrik_cek_status(&self) {
+        // function ini menggunakan &self untuk membaca saja
+        println!(
+            "Motor dengan nomor rangka {} keluar pabrik dan sekarang bensinnya {} ",
+            self.no_rangka, self.bensin
+        );
     }
 
-    fn isi_bensin(&mut self, tambah_bensin: u8){ // fungsi ini mengguanakn &mut self untuk membaca dan mengubah/mengedit
+    fn isi_bensin(&mut self, tambah_bensin: u8) {
+        // fungsi ini mengguanakn &mut self untuk membaca dan mengubah/mengedit
         self.bensin += tambah_bensin; // seperti di sini menambah bensin dengan bensin ditambah variable baru yang akan diisi nantinya
-        println!("Motor dengan nomor rangka {} dan warna {} sudah isi bensin menjadi {} liter ", self.no_rangka, self.warna, self.bensin);
+        println!(
+            "Motor dengan nomor rangka {} dan warna {} sudah isi bensin menjadi {} liter ",
+            self.no_rangka, self.warna, self.bensin
+        );
     }
 
-    fn hancurkan_motor(self){ // mengambil ownership, kepemilikan sekarang berpindah,semua tentang Motor telah menjad milik hancurkan_motor
+    fn hancurkan_motor(self) {
+        // mengambil ownership, kepemilikan sekarang berpindah,semua tentang Motor telah menjad milik hancurkan_motor
         println!("Hancurkan motor menjadi rongsokan {} ", self.nama);
     }
-
 }
 
 #[test]
 fn show_motor() {
-
     let mut motor_saya = Motor::motor_baru(String::from("Yamaha"), String::from("Hitam")); // cara memanggil associated function
 
     motor_saya.keluar_pabrik_cek_status(); // cara memanggil fucntion lain dengan associatedfuncton.namafunctionain()
@@ -1065,38 +1052,48 @@ fn show_motor() {
     // motor_saya.keluar_pabrik_cek_status();  sudah tidak bisa lagi karena hancurkan_motor telah dipanggil/berakhir artinya yang lain sudah tidak bisa dipanggil
 }
 
-struct Novel{
+struct Novel {
     judul: String,
     genre: String,
-    halaman: u32
+    halaman: u32,
 }
 
 impl Novel {
-    fn mulai_menulis(judul_naskah: String, genre_naskah: String) -> Novel{
-        Novel{
+    fn mulai_menulis(judul_naskah: String, genre_naskah: String) -> Novel {
+        Novel {
             judul: judul_naskah,
             genre: genre_naskah,
-            halaman: 6
+            halaman: 6,
         }
     }
 
-    fn cek_progress(&self){
-        println!("Naskah {} bergenre {} saat ini memiliki {} halaman awal ", self.judul, self.genre, self.halaman);
+    fn cek_progress(&self) {
+        println!(
+            "Naskah {} bergenre {} saat ini memiliki {} halaman awal ",
+            self.judul, self.genre, self.halaman
+        );
     }
 
-    fn tambah_halaman(&mut self, menambah_halaman: u32){
+    fn tambah_halaman(&mut self, menambah_halaman: u32) {
         self.halaman += menambah_halaman;
-        println!("Sekarang halaman {} memiliki {} halaman setelah ditambah ", self.judul, self.halaman);
+        println!(
+            "Sekarang halaman {} memiliki {} halaman setelah ditambah ",
+            self.judul, self.halaman
+        );
     }
 
-    fn kirim_ke_penerbit(self){
-        println!("Naskah dengan judul {} telah dikirim ke penerbit, sudah tidak dimiliki lagi ", self.judul);
+    fn kirim_ke_penerbit(self) {
+        println!(
+            "Naskah dengan judul {} telah dikirim ke penerbit, sudah tidak dimiliki lagi ",
+            self.judul
+        );
     }
 }
 
 #[test]
 fn show_novel() {
-    let mut novel_baru = Novel::mulai_menulis(String::from("Obsession"), String::from("Thriller, Romance"));
+    let mut novel_baru =
+        Novel::mulai_menulis(String::from("Obsession"), String::from("Thriller, Romance"));
 
     novel_baru.cek_progress();
 
@@ -1106,11 +1103,12 @@ fn show_novel() {
 }
 
 #[allow(dead_code)] // agar compiler rust tidak marah marah karena ada isi dari enum yang tidak digunakan
-enum Arah{ // enum adalah singkatan dari Enumeration, kalau Struct konsepnya dan kalau enum konsepnya atau
+enum Arah {
+    // enum adalah singkatan dari Enumeration, kalau Struct konsepnya dan kalau enum konsepnya atau
     Atas, // isi dari enum harus diawal dengan capital contoh Atas, tidak bisa jika atas
     Bawah,
     Kiri,
-    Kanan
+    Kanan,
 }
 
 #[test]
@@ -1120,7 +1118,7 @@ fn show_enum_arah() {
     let _langkah_kedua = Arah::Bawah;
 }
 
-enum Aktivitas{
+enum Aktivitas {
     Logout,
 
     // untuk pesan obrolan
@@ -1128,13 +1126,12 @@ enum Aktivitas{
 
     // untuk semisal String pindah kemana dan i32 untuk kordinatnya
     PindahPosisi(String, i32),
-
 }
 
 // impl untuk enum Aktivitas
-impl Aktivitas{
+impl Aktivitas {
     // Asssociated Function
-    fn aktivitas_sekarang(isi_pesan: String) -> Aktivitas{
+    fn aktivitas_sekarang(isi_pesan: String) -> Aktivitas {
         Aktivitas::KirimPesan(isi_pesan)
     }
 
@@ -1156,7 +1153,6 @@ impl Aktivitas{
 
 #[test]
 fn show_aktivitas() {
-
     let status_1 = Aktivitas::Logout;
 
     let status_2 = Aktivitas::PindahPosisi(String::from("Ke arah timur"), 87567);
@@ -1166,13 +1162,12 @@ fn show_aktivitas() {
     status_1.jalankan_aktivitas();
     status_2.jalankan_aktivitas();
     status_3.jalankan_aktivitas();
-
 }
 
 enum Pembayaran {
     Tunai,
     Ewalllet(String),
-    TransferBank(String, u32)
+    TransferBank(String, u32),
 }
 
 impl Pembayaran {
@@ -1188,7 +1183,10 @@ impl Pembayaran {
                 println!("Masukkan nama Ewallet {} ", nama_ewallet);
             }
             Pembayaran::TransferBank(nama_bank, jumlah) => {
-                println!("nama Bank adalah {} dan nomor rekening {} ", nama_bank, jumlah);
+                println!(
+                    "nama Bank adalah {} dan nomor rekening {} ",
+                    nama_bank, jumlah
+                );
             }
         }
     }
@@ -1196,7 +1194,6 @@ impl Pembayaran {
 
 #[test]
 fn test_pembayaran() {
-
     let pembayaran_1 = Pembayaran::Tunai;
     let pembayaran_2 = Pembayaran::Ewalllet(String::from("Gopay"));
     let pembayaran_3 = Pembayaran::pilih_transfer(String::from("Mandiri"), 3000000);
@@ -1204,16 +1201,14 @@ fn test_pembayaran() {
     pembayaran_1.proses_bayar();
     pembayaran_2.proses_bayar();
     pembayaran_3.proses_bayar();
-
 }
 
 enum MesinKopi {
     Mati,
-    Menyala(u32)
+    Menyala(u32),
 }
 
 impl MesinKopi {
-
     fn mesin_baru() -> MesinKopi {
         MesinKopi::Mati
     }
@@ -1233,11 +1228,17 @@ impl MesinKopi {
         match self {
             MesinKopi::Mati => {
                 *self = MesinKopi::Menyala(tambahan);
-                println!("Mesin otomatis dihidupkan dan diisi dengan tambahan {} gekas kopi ", tambahan);
+                println!(
+                    "Mesin otomatis dihidupkan dan diisi dengan tambahan {} gekas kopi ",
+                    tambahan
+                );
             }
-             MesinKopi::Menyala(stok) => {
-                 *stok += tambahan;
-                 println!("stok ditambah sekarang mesin memiliki stok {} gelas kopi ", stok)
+            MesinKopi::Menyala(stok) => {
+                *stok += tambahan;
+                println!(
+                    "stok ditambah sekarang mesin memiliki stok {} gelas kopi ",
+                    stok
+                )
             }
         }
     }
@@ -1247,16 +1248,17 @@ impl MesinKopi {
                 println!("Mesin kopi mati dan dibuang ke rongsokan")
             }
             MesinKopi::Menyala(stok) => {
-                println!("Sayang sekali mesin dihancurkan padahal masih menyala dan memiliki stok {} gelas kopi di dalamnya", stok)
+                println!(
+                    "Sayang sekali mesin dihancurkan padahal masih menyala dan memiliki stok {} gelas kopi di dalamnya",
+                    stok
+                )
             }
         }
-
     }
 }
 
 #[test]
 fn test_mesin_kopi() {
-
     let mut mesin_kantor = MesinKopi::mesin_baru();
 
     mesin_kantor.cek_status();
@@ -1265,30 +1267,26 @@ fn test_mesin_kopi() {
     mesin_kantor.isi_kopi(13);
     mesin_kantor.cek_status();
     mesin_kantor.hancurkan_mesin();
-
 }
 
 // contoh match sebagai expression
 #[test]
 fn match_sebagai_expression() {
-
     let umur = 7; // variable umur bertipe i32
 
     let kategori = match umur {
         17 => "Baru dapat ktp",
         18 => "Agak gedean dikit",
         19 => "Bolehlah",
-        _  => "Umur lainnya" // membuang angka yang lainnya karena i32 bisa mencetak angka sampai ribuan jadi menggunakan _
+        _ => "Umur lainnya", // membuang angka yang lainnya karena i32 bisa mencetak angka sampai ribuan jadi menggunakan _
     };
 
     println!("umur dia adalah {} dan kategorinya {}", umur, kategori);
-    
 }
 
 // menggunakan range untuk match
 #[test]
 fn match_dengan_range() {
-
     let nilai_ujian = 19;
 
     match nilai_ujian {
@@ -1300,7 +1298,7 @@ fn match_dengan_range() {
 
         50..=79 => println!("Baik"),
 
-        80 | 90  => println!("Baik"), // bisa juga seperti ini dengan menggunakan | (atau)
+        80 | 90 => println!("Baik"), // bisa juga seperti ini dengan menggunakan | (atau)
 
         81..=89 => println!("Baik"),
 
@@ -1308,17 +1306,15 @@ fn match_dengan_range() {
 
         100 => println!("Luar biasa"),
 
-        _ => println!("Angka tidak tersedia")
+        _ => println!("Angka tidak tersedia"),
     };
 
     println!("nilai ujian {} ", nilai_ujian);
-
 }
 
 // match untuk membongkar tuple
 #[test]
 fn match_security() {
-
     let pengunjung = (true, true); // (bawa id?, bawa tas?)
 
     match pengunjung {
@@ -1328,7 +1324,8 @@ fn match_security() {
         (true, true) => {
             println!("Silahkan masuk tapi tasnya kami lihat dulu");
         }
-        (false, _) => { // tanda _ untuk mengabaikan atau membuang atau tidak peduli kemungkinan lain
+        (false, _) => {
+            // tanda _ untuk mengabaikan atau membuang atau tidak peduli kemungkinan lain
             println!("maaf tidak boleh masuk karena tidak membawa id card");
         }
     }
@@ -1338,7 +1335,6 @@ fn match_security() {
 
 #[test]
 fn match_player() {
-
     let player = (50, 70); // (nyawa?, peluru)
 
     match player {
@@ -1352,22 +1348,23 @@ fn match_player() {
             println!("nyawa masih {} tapi pelurumu ga ada bjir ", n)
         }
         (n, p) => {
-            println!("Terus berjuang dengan sisa nyawa {} dan sisa peluru {}", n, p)
+            println!(
+                "Terus berjuang dengan sisa nyawa {} dan sisa peluru {}",
+                n, p
+            )
         }
-
     }
 }
 
 // contoh match untuk membongkar struct
 
-struct Karyawan{
+struct Karyawan {
     nama: String,
     divisi: String,
 }
 
 #[test]
 fn match_karyawan() {
-
     let budi = Karyawan {
         nama: String::from("Budi"),
         divisi: String::from("IT"),
@@ -1390,22 +1387,28 @@ fn match_karyawan() {
 enum Kendaraan {
     Motor(u32),
     Mobil(u32),
-    Truk(u32)
+    Truk(u32),
 }
 
 fn cek_tilang(target: Kendaraan) {
     match target {
-        Kendaraan::Mobil(kecepatan)
-        if kecepatan > 100 => {
-            println!("Kilat!, Mobil melaju dengan kecepatan {}/jam!. Tilang! ", kecepatan)
+        Kendaraan::Mobil(kecepatan) if kecepatan > 100 => {
+            println!(
+                "Kilat!, Mobil melaju dengan kecepatan {}/jam!. Tilang! ",
+                kecepatan
+            )
         }
-        Kendaraan::Motor(kecepatan)
-        if kecepatan > 70 => {
-            println!("Anak Amor!, Tilang, karena membahayakan. berjalan dengan kecepatan {}/jam ", kecepatan)
+        Kendaraan::Motor(kecepatan) if kecepatan > 70 => {
+            println!(
+                "Anak Amor!, Tilang, karena membahayakan. berjalan dengan kecepatan {}/jam ",
+                kecepatan
+            )
         }
-        Kendaraan::Truk(kecepatan)
-        if kecepatan > 60 => {
-            println!("Anak Amor!, Tilang, karena membahayakan. berjalan dengan kecepatan {}/jam ", kecepatan)
+        Kendaraan::Truk(kecepatan) if kecepatan > 60 => {
+            println!(
+                "Anak Amor!, Tilang, karena membahayakan. berjalan dengan kecepatan {}/jam ",
+                kecepatan
+            )
         }
         _ => {
             println!("Kecepatan aman silahkan jalan")
@@ -1415,7 +1418,6 @@ fn cek_tilang(target: Kendaraan) {
 
 #[test]
 fn test_kamera_tol() {
-
     let kendaraan_1 = Kendaraan::Mobil(110);
     let kendaraan_2 = Kendaraan::Mobil(60);
     let kendaraan_3 = Kendaraan::Motor(75);
@@ -1425,14 +1427,13 @@ fn test_kamera_tol() {
     cek_tilang(kendaraan_2);
     cek_tilang(kendaraan_3);
     cek_tilang(kendaraan_4);
-    
 }
 
 type Kilometer = u32; // mulai sekarang alau aku bilang Kilometer, Rust tahu bahwa itu maksudnya tipe data u32
 type Rupiah = u64; // mulai sekarang kalau aku bilang Rupiah, Rust tahu bahwa itu maksudnya tipe data u64
 
 fn hitung_ongkos(jarak: Kilometer) -> Rupiah {
-                // Biasanya kan pakai jarak: u32, sekarang menggunakan jarak: Kilometer, artinya == jarak: u32
+    // Biasanya kan pakai jarak: u32, sekarang menggunakan jarak: Kilometer, artinya == jarak: u32
 
     let tarif_per_km: Rupiah = 3000;
     // ini artinya tarif_per_km: u64
@@ -1441,17 +1442,17 @@ fn hitung_ongkos(jarak: Kilometer) -> Rupiah {
     let total = (jarak as Rupiah) * tarif_per_km;
 
     total
-
 }
 
 #[test]
 fn test_hitung_ongkos() {
-
     let jarak_rumah_ke_kantor: Kilometer = 15;
     let ongkos_hari_ini: Rupiah = hitung_ongkos(jarak_rumah_ke_kantor);
 
-    println!(" jarak rumah ke kantor {} km dengan ongkos {}K", jarak_rumah_ke_kantor, ongkos_hari_ini);
-
+    println!(
+        " jarak rumah ke kantor {} km dengan ongkos {}K",
+        jarak_rumah_ke_kantor, ongkos_hari_ini
+    );
 }
 
 // type juga bisa untuk menyingkat tuple yang panjang
@@ -1465,7 +1466,6 @@ fn cetak_lokasi(lokasi: TitikKordinat) {
 fn test_titik_kordinat() {
     let rumah: TitikKordinat = (15.73, 30.13);
     cetak_lokasi(rumah);
-
 }
 
 type JumlahBarang = u32;
@@ -1489,15 +1489,21 @@ fn test_omset_ukm() {
     println!("Total pendapatan ukm ini adalah {} ", total_pendapatan);
 }
 
-type DataRadar =(String, f64, f64, bool);
+type DataRadar = (String, f64, f64, bool);
 
 fn proses_radar(target: DataRadar) {
     match target {
         (nama, x, y, true) => {
-            println!("Awas objek {} terdeteksi di kordinat {} {} ini adalah ancaman! ", nama, x, y);
+            println!(
+                "Awas objek {} terdeteksi di kordinat {} {} ini adalah ancaman! ",
+                nama, x, y
+            );
         }
         (nama, x, y, false) => {
-            println!("Aman objek {} terpantau lewat di kordinasi {} dan {} ", nama, x, y);
+            println!(
+                "Aman objek {} terpantau lewat di kordinasi {} dan {} ",
+                nama, x, y
+            );
         }
     }
 }
@@ -1509,19 +1515,19 @@ fn test_sistem_radar() {
 
     proses_radar(target1);
     proses_radar(target2);
-
 }
 
 mod restoran {
 
-pub type Jumlah = u32;
-    fn bumbu_rahasia(){
-
+    pub type Jumlah = u32;
+    fn bumbu_rahasia() {
         println!("Menyiapkan bumbu rahasia");
-
     }
-    pub fn pesan_ayam_goreng(total: Jumlah){
-        println!("Kasir: Pesanan ayam goreng diterima dengan jumlah {} ayam, sedang diproses ", total );
+    pub fn pesan_ayam_goreng(total: Jumlah) {
+        println!(
+            "Kasir: Pesanan ayam goreng diterima dengan jumlah {} ayam, sedang diproses ",
+            total
+        );
 
         bumbu_rahasia()
     }
@@ -1536,22 +1542,20 @@ mod bank {
 
     pub type Teks = String;
     pub type Angka = u64;
-    pub struct Rekening{
+    pub struct Rekening {
         pub bank: Teks,
         saldo: Angka,
     }
 
     impl Rekening {
         pub fn buka_rekening(nama: Teks) -> Rekening {
-            Rekening{
+            Rekening {
                 bank: nama,
-                saldo: 0
+                saldo: 0,
             }
-
         }
-        pub fn cek_saldo(&self){
-            println!("Saldo milik {} adalah Rp{} ", self.bank, self.saldo )
-
+        pub fn cek_saldo(&self) {
+            println!("Saldo milik {} adalah Rp{} ", self.bank, self.saldo)
         }
     }
 }
@@ -1564,49 +1568,56 @@ fn test_sistem_bank() {
     rekening_ambarusdi.cek_saldo();
 }
 
-mod ekspedisi{
-
+mod ekspedisi {
 
     pub type NomorResi = String;
-    pub type  BeratKg = f64;
+    pub type BeratKg = f64;
 
-    pub enum StatusPengiriman{
+    pub enum StatusPengiriman {
         Packing,
         Dijalann(String),
         Terkirim,
-        Nyasar
+        Nyasar,
     }
 
-    pub struct Paket{
+    pub struct Paket {
         pub resi: NomorResi,
         pub tujuan: String,
         berat: BeratKg,
-        status: StatusPengiriman
+        status: StatusPengiriman,
     }
 
-   impl Paket {
+    impl Paket {
         pub fn terima_paket(resi: NomorResi, tujuan: String, berat: BeratKg) -> Paket {
-            Paket{
+            Paket {
                 resi: resi,
                 tujuan: tujuan,
                 berat: berat,
-                status: StatusPengiriman::Packing
-
+                status: StatusPengiriman::Packing,
             }
         }
-        pub fn update_status(&mut self, status_baru: StatusPengiriman){
+        pub fn update_status(&mut self, status_baru: StatusPengiriman) {
             self.status = status_baru;
         }
-        pub fn lacak(&self){
+        pub fn lacak(&self) {
             match &self.status {
                 StatusPengiriman::Packing => {
-                    println!("Paket {} tujuan {} sedang dipacking dengan berat {} kg", self.resi, self.tujuan, self.berat)
+                    println!(
+                        "Paket {} tujuan {} sedang dipacking dengan berat {} kg",
+                        self.resi, self.tujuan, self.berat
+                    )
                 }
                 StatusPengiriman::Dijalann(nama_kurir) => {
-                    println!("Paket {} sedang dibawa oleh kurir {}", self.resi, nama_kurir)
+                    println!(
+                        "Paket {} sedang dibawa oleh kurir {}",
+                        self.resi, nama_kurir
+                    )
                 }
                 StatusPengiriman::Terkirim => {
-                    println!("Mantap paket {} sudah datang, terima kasih sudah menggunakan jasa Ambarusdi", self.resi)
+                    println!(
+                        "Mantap paket {} sudah datang, terima kasih sudah menggunakan jasa Ambarusdi",
+                        self.resi
+                    )
                 }
                 StatusPengiriman::Nyasar => {
                     println!("paket {} nyasar hehehe", self.resi)
@@ -1616,8 +1627,8 @@ mod ekspedisi{
     }
 }
 
-use ekspedisi::Paket as Barang;
-use crate::ekspedisi::StatusPengiriman; // bisa juga menggunakan crate
+use crate::ekspedisi::StatusPengiriman;
+use ekspedisi::Paket as Barang; // bisa juga menggunakan crate
 
 #[test]
 fn test_amba_rusdi_express() {
@@ -1631,18 +1642,18 @@ fn test_amba_rusdi_express() {
     paket_baru.lacak();
 }
 
+use crate::game_hero::{Ksatria, Magic};
 use game_hero::SkillBertarung;
-use crate::game_hero::{Magic, Ksatria};
 
 #[test]
 fn test_pertarungan() {
     let hero = Ksatria {
         nama: String::from("Ambarusdi"),
-        pedang: String::from("Pedang Ngawi")
+        pedang: String::from("Pedang Ngawi"),
     };
     let penyihir = Magic {
         nama: String::from("muani"),
-        jumlah_mana: 30
+        jumlah_mana: 30,
     };
 
     hero.serang();
@@ -1650,7 +1661,6 @@ fn test_pertarungan() {
 
     hero.lari();
     penyihir.lari();
-
 }
 
 use crate::guild_petualang::{PenjagaMalam, TukangSapu, lapor_ke_guild};
@@ -1663,12 +1673,11 @@ fn test_guilt_petualang() {
     };
     let guild_2 = PenjagaMalam {
         nama: String::from("Suki Liar"),
-        durasi_jam: 17
+        durasi_jam: 17,
     };
 
     lapor_ke_guild(&guild_1);
     lapor_ke_guild(&guild_2);
-
 }
 
 use crate::kendaraan_misteri::*;
@@ -1676,7 +1685,6 @@ use crate::kendaraan_misteri::*;
 fn show_kendaraan_misteri() {
     let hadiah_rahasia = dapat_hadiah_giveaway();
     hadiah_rahasia.gas_pol()
-
 }
 
 use crate::akademi_sihir::*;
@@ -1685,8 +1693,38 @@ use crate::akademi_sihir::*;
 fn show_akademi_sihir() {
     let penyihir = PenyihirSakti {
         nama: String::from("Mas Fuad"),
-        level: 36
+        level: 36,
     };
     jalankan_ujian_elite(&penyihir);
+}
 
+// struct Kardus <T> {
+//     isi: T
+// }
+//
+// #[test]
+// fn test_kardus() {
+//     let kardus_sepatu = Kardus {isi: 30};
+//     let kardus_ac = Kardus {isi: String::from("Daikin")};
+//     let kardus_tv = Kardus {isi: 25.5};
+// }
+
+#[derive(Debug)]
+struct KapsulWaktu <T, Ttahun, Tstatus> {
+    isi: T,
+    tahun_dibuka: Ttahun,
+    diserahkan: Tstatus
+}
+
+#[test]
+fn test_kapsul_waktu() {
+    let kapsul_rusdi = KapsulWaktu {
+        isi: String::from("Uget uget boyolali"),
+        tahun_dibuka: 2026,
+        diserahkan: "Y"
+    };
+    println!("{:?}", kapsul_rusdi);
+    println!("{:?}", kapsul_rusdi.isi);
+    println!("{:?}", kapsul_rusdi.tahun_dibuka);
+    println!("{:?}", kapsul_rusdi.diserahkan);
 }
