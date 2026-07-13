@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use std::io;
 use std::io::Write;
 mod akademi_sihir;
@@ -6,6 +7,9 @@ mod game_hero;
 mod guild_petualang;
 mod kendaraan_misteri;
 mod sccanner;
+mod smart_home;
+mod sistem_keamanan;
+mod penggajian_karyawan;
 
 use dapur::masak_ayam;
 use dapur::masak_nasi;
@@ -39,6 +43,7 @@ fn test_keamanan_jaringan() {
     );
     file_3.cetak_peringatan();
 }
+
 fn main() {
     print!("Inpur your name = ");
     io::stdout().flush().unwrap();
@@ -1710,6 +1715,7 @@ fn show_akademi_sihir() {
 // }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 struct KapsulWaktu <T, Ttahun, Tstatus> {
     isi: T,
     tahun_dibuka: Ttahun,
@@ -1724,7 +1730,217 @@ fn test_kapsul_waktu() {
         diserahkan: "Y"
     };
     println!("{:?}", kapsul_rusdi);
-    println!("{:?}", kapsul_rusdi.isi);
-    println!("{:?}", kapsul_rusdi.tahun_dibuka);
-    println!("{:?}", kapsul_rusdi.diserahkan);
+}
+
+fn tukar_posisi<T,U>(kiri: T, kanan: U) -> (U,T){
+    (kanan, kiri)
+}
+
+#[test]
+fn test_tukar_posisi() {
+    let posisi = tukar_posisi(String::from("Rusdiyansah tukar posisi ke kordinat"), 30 );
+    println!("{:?}", posisi);
+}
+
+#[allow(dead_code)]
+enum Value<T> {
+    NONE,
+    VALUE(T)
+}
+
+#[test]
+fn test_value() {
+    let value: Value<i32> = Value::VALUE(30);
+
+    match value {
+        Value::NONE => {
+            println!("NONE")
+        }
+        Value::VALUE(value) => {
+            println!("VALUE = {}", value);
+        }
+    }
+}
+
+enum StatusServer<T, U> {
+    Aman(T),
+    Diserang(U),
+    Maintenance
+}
+
+fn sinyal_server(s: StatusServer<String, i32>) {
+    match s {
+        StatusServer::Aman(teks) => {
+            println!("Status server sangat saat ini {}", teks);
+        }
+        StatusServer::Diserang(ip) => {
+            println!("Status server diserang, ping saat ini {}", ip)
+        }
+        StatusServer::Maintenance => {
+            println!("Sedang maintenance")
+        }
+    }
+}
+
+#[test]
+fn test_status_server() {
+    let status_server: StatusServer<String, i32> = StatusServer::Aman(String::from("Aman"));
+    let status_server2: StatusServer<String, i32> = StatusServer::Diserang(300);
+    let status_server3: StatusServer<String, i32> = StatusServer::Maintenance;
+    sinyal_server(status_server);
+    sinyal_server(status_server2);
+    sinyal_server(status_server3);
+}
+
+struct PaketJaringan<T>{
+    payload: T
+}
+
+impl<T> PaketJaringan<T> {
+    fn baca_payload(&self) -> &T {
+        &self.payload
+    }
+    fn ganti_protokol<U>(self, payload_baru: U) -> PaketJaringan<U> {
+        PaketJaringan {
+            payload: payload_baru
+        }
+    }
+}
+
+#[test]
+fn test_paket_jaringan() {
+    // 1. Paket awal berisi teks (HTTP Request)
+    let paket_awal = PaketJaringan { payload: String::from("GET /admin_panel") };
+    println!("Payload awal: {}", paket_awal.baca_payload());
+
+    // 2. Paket disadap dan diubah wujudnya menjadi kode angka (Enkripsi)
+    // Perhatikan: paket_awal hancur di sini, digantikan oleh paket_enkripsi
+    let paket_enkripsi = paket_awal.ganti_protokol(8080);
+
+    // 3. Cetak payload yang baru (Sekarang tipenya i32)
+    println!("Payload setelah enkripsi: {}", paket_enkripsi.baca_payload());
+}
+
+use std::fmt::*;
+
+fn cetak_yang_tertinggi<T>(sensor_a: T, sensor_b: T)
+    where
+        T: std::fmt::Display + std::cmp::PartialOrd
+    {
+        if sensor_a > sensor_b {
+            println!("Peringatan! nilai tertinggi! {} ", sensor_a)
+        }
+        else {
+            println!("Peringatan! nilai tertinggi {}", sensor_b)
+        }
+
+    }
+
+#[test]
+fn test_sensor_server() {
+    // Tes 1: Menggunakan Angka Bulat (Ping Jaringan)
+    cetak_yang_tertinggi(120, 85);
+
+    // Tes 2: Menggunakan Angka Desimal (Suhu CPU)
+    cetak_yang_tertinggi(75.5, 82.1);
+
+    // Tes 3: Menggunakan Teks (Abjad)
+    // Di Rust, teks juga bisa dibandingkan! (Huruf Z lebih 'besar' dari A)
+    cetak_yang_tertinggi(String::from("Aman"), String::from("Bahaya"));
+}
+
+use crate::smart_home::tombol_pintar;
+use crate::smart_home::Lampu as Lam;
+use crate::smart_home::KipasAngin as Ka;
+
+#[test]
+fn test_smart_home() {
+    let lampu_a =  Lam;
+    let kipas_a = Ka;
+    // let meja_a = smart_home::Meja;
+
+    tombol_pintar(lampu_a);
+    tombol_pintar(kipas_a);
+    // tombol_pintar(meja_a);
+}
+
+use crate::sistem_keamanan::*;
+
+#[test]
+fn test_sistem_pesan() {
+    let sistem = SistemKeamanan;
+
+    let tujuan_email = Email { email: String::from("admin@server.com") };
+    let tujuan_sms = Sms { nomor: String::from("08123456789") };
+
+    // Ajaib! Nama method-nya sama-sama `.kirim()`,
+    // tapi Rust tahu harus mengeksekusi logika yang mana berdasarkan tipe parameternya.
+    sistem.kirim(tujuan_email, String::from("Server CPU 100%!"));
+    sistem.kirim(tujuan_sms, String::from("Koneksi Database Terputus!"));
+}
+
+use crate::penggajian_karyawan::*;
+
+#[test]
+fn test_hitung_gaji() {
+    let gaji_karyawan = GajiHarian { upah: 150_000 };
+    let absen_bulan_ini = HariKerja { hari: 20 };
+
+    // Ajaib! Kita mengalikan dua struct yang berbeda pakai simbol '*'
+    let slip_gaji = gaji_karyawan * absen_bulan_ini;
+
+    // Pastikan hasilnya 3.000.000 (150.000 x 20)
+    assert_eq!(slip_gaji.total, 3_000_000);
+
+    // Karena tidak pakai #[derive(Debug)], kita cetak isinya secara manual
+    println!("Total gaji yang harus dibayar: Rp {}", slip_gaji.total);
+}
+
+fn cari_stok_barang(nama_barang: &str) -> Option<i32> {
+    if nama_barang == "Laptop" {
+        Some(50)
+    } else if nama_barang == "Keyboard" {
+        Some(90)
+    } else {
+        None
+    }
+}
+
+#[test]
+fn test_stok_gudang() {
+    let barang_1 = "Laptop";
+    let pencarian_1 = cari_stok_barang(barang_1);
+
+    match pencarian_1 {
+        Some(barang) => {
+            println!("Stok barang laptop adalah {}", barang);
+        },
+        None => {
+            print!("Tidak ada barang yang dicari");
+        }
+    }
+
+    let barang_2 = "Keyboard";
+    let pencarian_2 = cari_stok_barang(barang_2);
+
+    match pencarian_2 {
+        Some(barang) => {
+            println!("Stok barang laptop adalah {}", barang);
+        },
+        None => {
+            print!("Tidak ada barang yang dicari");
+        }
+    }
+
+    let barang_3 = "Sempak";
+    let pencarian_3 = cari_stok_barang(barang_3);
+
+    match pencarian_3 {
+        Some(barang) => {
+            println!("Stok barang laptop adalah {}", barang);
+        },
+        None => {
+            print!("Tidak ada barang yang dicari");
+        }
+    }
 }
