@@ -4334,3 +4334,239 @@ fn test_firewall() {
     analisis_kode(data_masuk.clone(), deteksi_malware);
 }
 ```
+
+---
+## Koleksi di Rust: Sequence (Koleksi Berurutan) 📚
+
+### Apa itu Collection (Koleksi)?
+Berbeda dengan Array `[T; N]` yang ukurannya tetap dan disimpan di memori **Stack**, **Collection** di Rust adalah struktur data yang disimpan di memori **Heap**. Ini berarti ukuran mereka bisa membesar atau menyusut secara dinamis saat program sedang berjalan (*runtime*).
+
+### Apa itu Sequence?
+**Sequence** adalah jenis koleksi di mana data disimpan dalam urutan linear yang pasti. Setiap elemen memiliki posisinya masing-masing (pertama, kedua, ketiga) dan biasanya dapat diakses menggunakan nomor urut atau indeks (contoh: `sequence[0]`).
+
+Di Rust, dua tipe *Sequence* yang paling sering digunakan adalah **Vector (`Vec`)** dan **Double-Ended Queue (`VecDeque`)**.
+
+---
+
+### 1. Vector (`Vec<T>`)
+Koleksi standar dan paling utama di Rust. Jika kamu butuh menyimpan daftar data, 99% kamu akan menggunakan `Vec`.
+
+*   **Cara Kerjanya:** Menyimpan data secara bersebelahan (*contiguous*) dalam satu blok memori. Ia mencatat penunjuk memori (*pointer*), panjang data saat ini, dan total kapasitas. Saat kapasitas penuh, Rust otomatis menyewa blok memori yang lebih besar, memindahkan datanya, dan menghapus memori yang lama.
+*   **Kapan Digunakan:** Gunakan sebagai pilihan utamamu (opsi *default*). Sangat cepat untuk membaca data menggunakan indeks dan menambah/menghapus data di **bagian belakang** antrean.
+*   **Kelemahan:** Sangat lambat jika kamu mencoba menambah atau menghapus data di **bagian depan** atau **tengah**, karena Rust harus menggeser semua elemen sisanya ke kanan atau kiri untuk memberi ruang.
+
+### 2. Double-Ended Queue (`VecDeque<T>`)
+Versi khusus dari `Vec` yang dioptimalkan untuk operasi di kedua ujungnya.
+
+*   **Cara Kerjanya:** Di balik layar, ia menggunakan sistem **Ring Buffer** (Memori Melingkar). Alih-alih menggeser sisa data saat ada elemen baru masuk di depan, ia secara logika menganggap memorinya berbentuk lingkaran dan hanya memindahkan penunjuk "Kepala" atau "Ekor"-nya saja.
+*   **Kapan Digunakan:** Gunakan saat kamu membangun sistem **Antrean** (FIFO / *First-In, First-Out*), penjadwal tugas (*task scheduler*), atau ketika kamu butuh sering memasukkan/mencabut data dari **bagian depan**.
+*   **Kelemahan:** Sedikit lebih lambat dari `Vec` biasa jika digunakan untuk mengakses elemen secara acak menggunakan indeks, karena CPU kesulitan memprediksi tata letak memorinya.
+
+---
+
+### Contoh Kode Komprehensif
+
+### 1. Operasi Vector (`Vec`)
+Contoh ini menyimulasikan sistem analisis antrean file *malware* (payload).
+
+```rust
+#[test]
+fn latihan_vector() {
+    // Kita menggunakan sintaks Turbofish (::<String>) untuk secara eksplisit 
+    // memberitahu Rust bahwa Vector kosong ini akan menampung data String.
+    let mut antrean_payload = Vec::<String>::new();
+
+    // .push() menambahkan elemen ke bagian BELAKANG Vector. (Operasi O(1) yang sangat cepat)
+    antrean_payload.push(String::from("trojan_1"));
+    antrean_payload.push(String::from("ransomware_x.bin"));
+    antrean_payload.push(String::from("spyware_log.txt"));
+    println!("{:?}", antrean_payload);
+
+    // Mengubah data secara langsung menggunakan indeks. 
+    // Catatan: Cara ini berisiko jika kamu tidak 100% yakin indeks tersebut ada!
+    antrean_payload[1] = String::from("teks_file_bersih.txt");
+    println!("Mengubah index 1 menjadi {:?}", &antrean_payload[1]);
+
+    // .pop() mengambil dan menghapus elemen TERAKHIR di dalam Vector.
+    // Ia mengembalikan tipe Option (Some jika ada isinya, None jika Vector kosong).
+    let antrean_payload_dihapus = antrean_payload.pop(); 
+    println!(
+        "Selesai dianalisis nama file adalah {:?}",
+        antrean_payload_dihapus
+    );
+
+    // .get() adalah cara paling AMAN untuk mengakses data. Ini mencegah program hancur (Crash/Panic)
+    // jika indeks tidak ditemukan. Hasilnya berupa tipe enum Option.
+    match antrean_payload.get(5) {
+        Some(isi_file) => {
+            println!("awas ada file siluman {isi_file}")
+        }
+        None => {
+            println!("Aman index kosong, tidak ada penyusup")
+        }
+    }
+
+    // .len() mengembalikan total jumlah elemen yang ada di dalam Vector saat ini.
+    println!("Jumlah antrean payload {}", antrean_payload.len());
+
+    // Melakukan iterasi/perulangan pada Vector. Kita menggunakan `&` untuk meminjam Vector
+    // agar datanya tidak hangus (moved) dan masih bisa digunakan setelah perulangan selesai.
+    for antrean in &antrean_payload {
+        println!("{antrean}");
+    }
+}
+```
+
+### 2. Operasi VecDeque
+Contoh ini menyimulasikan antrean pada pusat operasi keamanan (SOC), di mana insiden darurat bisa menerobos antrean terdepan.
+
+```rust
+// Kita WAJIB mengimpor VecDeque secara manual dari standar pustaka Rust.
+// Penggunaan kata kunci `as` membuat alias ('vd') agar penulisan kode lebih ringkas.
+use std::collections::VecDeque as vd;
+
+#[test]
+fn security_operations_center() {
+    // Inisialisasi VecDeque kosong menggunakan alias 'vd' yang sudah kita buat.
+    let mut antrean_insiden = vd::<String>::new();
+
+    // .push_back() menambah elemen di UJUNG BELAKANG antrean (Prioritas Normal).
+    antrean_insiden.push_back(String::from("Warning: Gagal login 3x di PC-01"));
+    antrean_insiden.push_back(String::from("Log: Update firewall harian selesai"));
+
+    // .push_front() menambah elemen di PALING DEPAN antrean.
+    // Inilah kekuatan super VecDeque! Insiden kritikal langsung menerobos antrean terdepan.
+    antrean_insiden.push_front(String::from(
+        "KRITIKAL: Injeksi SQL terdeteksi di Database Utama!",
+    ));
+
+    // .pop_back() mencabut dan mengembalikan elemen dari UJUNG BELAKANG antrean.
+    // Kita membatalkan log firewall karena itu tidak penting untuk saat ini.
+    let antrean_dihapus = antrean_insiden.pop_back();
+    println!("Laporan dibatalkan {:?}", antrean_dihapus);
+
+    // .pop_front() mencabut dan mengembalikan elemen dari PALING DEPAN antrean.
+    // Analis keamanan langsung mengambil tugas yang paling mendesak (Injeksi SQL).
+    let antrean_terdepan = antrean_insiden.pop_front();
+    println!("Segera ditangani {:?}", antrean_terdepan);
+
+    // Mengecek sisa jumlah insiden yang masih harus diproses.
+    println!("Sisa insiden adalah {:?}", antrean_insiden.len());
+
+    // Melakukan perulangan untuk mengecek sisa antrean dengan aman (meminjam dengan &).
+    for insiden in &antrean_insiden {
+        println!("insiden yang ada sekarang adalah = {insiden}");
+    }
+}
+```
+
+---
+
+## Koleksi di Rust: Maps (Kunci-Nilai) 🗺️
+
+### Apa itu Maps?
+Jika *Sequence* (seperti `Vec`) menyimpan data secara berbaris dan diakses menggunakan nomor indeks (0, 1, 2), **Maps** menyimpan data menggunakan sistem **Kunci-Nilai (*Key-Value Pair*)**. 
+
+Alih-alih meminta, "Berikan saya barang di urutan ke-5," kamu meminta, "Berikan saya nilai yang dipegang oleh kunci 'John'." Kunci (*Key*) bertindak sebagai pengenal unik (ID), dan Nilai (*Value*) adalah data yang menempel pada kunci tersebut.
+
+Di Rust, dua implementasi utama untuk Map adalah **HashMap** dan **BTreeMap**.
+
+---
+
+### 1. HashMap (`HashMap<K, V>`)
+Map yang paling cepat dan paling sering digunakan di Rust.
+
+*   **Cara Kerjanya:** Menggunakan algoritma *Hashing* matematika untuk melempar Kunci ke lokasi memori tertentu secara instan (seperti melempar barang ke dalam loker acak yang posisinya langsung dihafal oleh mesin).
+*   **Performa:** Sangat cepat kilat (Kompleksitas waktu `O(1)`). Mencari data butuh waktu yang sama persis entah datanya ada 10 atau 10 juta baris.
+*   **Aturan Utama:** Kunci wajib **Unik** dan **Tidak Berurutan (Acak)**. Jika kamu mencetak `HashMap`, urutannya akan berantakan.
+*   **Kapan Digunakan:** Gunakan untuk sistem *cache*, manajemen inventaris/stok, atau kapan pun kamu butuh mencari data secara cepat berdasarkan pengenal unik (*username*, nomor KTP, email) dan kamu tidak peduli dengan urutan datanya.
+
+### 2. BTreeMap (`BTreeMap<K, V>`)
+Saudara dari `HashMap` yang sangat rapi dan terorganisir.
+
+*   **Cara Kerjanya:** Menggunakan struktur data *Balanced Tree* di balik layar. Alih-alih melakukan *hashing*, ia terus-menerus membandingkan dan menyusun kunci secara logis saat data dimasukkan.
+*   **Performa:** Cepat (Kompleksitas waktu `O(log n)`), tapi sedikit lebih lambat dari `HashMap` jika menangani data raksasa.
+*   **Aturan Utama:** Kunci **Selalu Berurutan (*Sorted*)** (abjad A-Z untuk teks, atau kecil ke besar untuk angka).
+*   **Kapan Digunakan:** Gunakan saat urutan data itu mutlak dibutuhkan, misalnya membuat *timeline* riwayat, papan skor (*leaderboard*), atau daftar kontak.
+
+---
+
+### Contoh Kode Komprehensif
+
+### 1. Operasi HashMap (Sistem Stok Gudang)
+```rust
+use std::collections::HashMap;
+
+#[test]
+fn stok_gudang_hashmap() {
+    // Menggunakan sintaks Turbofish untuk secara eksplisit menentukan tipe Kunci (String) dan Nilai (i32).
+    let mut stok_barang = HashMap::<String, i32>::new();
+
+    // .insert() menambahkan pasangan Kunci-Nilai baru ke dalam map.
+    stok_barang.insert(String::from("Beras"), 50);
+    stok_barang.insert(String::from("Gula"), 130);
+
+    // Jika kita melakukan .insert() menggunakan Kunci yang SUDAH ADA, nilai lamanya akan ditimpa!
+    // Stok "Gula" berubah dari 130 menjadi 110.
+    stok_barang.insert(String::from("Gula"), 110);
+
+    // .get() mencari nilai secara aman. Ingat, ia membutuhkan REFERENSI dari kunci (&).
+    // Mengembalikan Option (Some jika ketemu, None jika kuncinya tidak terdaftar).
+    match stok_barang.get(&"Susu".to_string()) {
+        Some(jumlah_barang) => println!("Jumlah barang saat ini {}", jumlah_barang),
+        None => println!("Barang tidak ada sedang kosong"), // Tereksekusi karena Susu belum di-insert
+    }
+    
+    // .remove() menghapus Kunci beserta Nilainya secara permanen dari map.
+    stok_barang.remove("Beras");
+
+    // ENTRY API: Cara paling aman untuk memasukkan data bersyarat.
+    // "Cek apakah 'Teh' sudah ada. Jika belum, masukkan dengan nilai 100."
+    stok_barang.entry("Teh".to_string()).or_insert(100);
+    
+    // "Cek apakah 'Gula' sudah ada. Jika belum, masukkan 999."
+    // Karena 'Gula' SUDAH ADA (110), baris ini diabaikan. Datanya tidak akan tertimpa!
+    stok_barang.entry("Gula".to_string()).or_insert(999);
+
+    // Mencetak seluruh HashMap dengan gaya Pretty Print ({:#?}) agar formatnya rapi ke bawah.
+    // Catatan: Urutan cetakannya akan acak.
+    println!("{:#?}", stok_barang)
+}
+```
+
+### 2. Operasi BTreeMap (Rekap Data Mahasiswa)
+
+```rust
+use std::collections::BTreeMap;
+
+#[test]
+fn rekap_data_mhs() {
+    // Inisialisasi Lanjutan: Menggunakan BTreeMap::from([]) untuk memasukkan banyak 
+    // pasangan Kunci-Nilai (Tuple) secara instan saat pembuatan variabel.
+    // Perhatikan bahwa kita memasukkan NIM secara acak: 304, 301, 303, 302.
+    let mut data_praktikan = BTreeMap::from([
+        (304, String::from("Faisal")),
+        (301, String::from("Andi")),
+        (303, String::from("Citra")),
+        (302, String::from("Budi")), // Typo indeks sebelumnya sudah kamu perbaiki dengan mantap!
+    ]);
+    
+    // .insert() biasa bekerja persis seperti HashMap. 
+    // Ia akan menimpa "Faisal" menjadi "Fahmi" untuk Kunci 304.
+    data_praktikan.insert(304, "Fahmi".to_string());
+
+    // Entry API juga bekerja identik.
+    // 305 belum ada, jadi "Eka" masuk.
+    data_praktikan.entry(305).or_insert("Eka".to_string());
+    // 301 sudah ada ("Andi"), jadi "Joko" diabaikan.
+    data_praktikan.entry(301).or_insert("Joko".to_string());
+
+    // KEAJAIBAN BTREEMAP:
+    // Walaupun data NIM dimasukkan secara berantakan, saat kita melakukan perulangan (loop),
+    // BTreeMap menjamin outputnya akan selalu TERSUSUN RAPI dari Kunci terkecil ke terbesar.
+    // Kita membongkar (destructuring) Tuple menjadi `(nim, nama)` agar bersih dibaca.
+    for (nim, nama) in &data_praktikan {
+        println!("NIM:  {}      |    Nama: {}   ", nim, nama)
+    }
+}
+```

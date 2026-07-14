@@ -2308,3 +2308,47 @@ fn security_operations_center() {
         println!("insiden yang ada sekarang adalah = {insiden}");
     }
 }
+
+use std::collections::HashMap;
+
+#[test]
+fn stok_gudang_hashmap() {
+    let mut stok_barang = HashMap::<String, i32>::new();
+
+    stok_barang.insert(String::from("Beras"), 50);
+
+    stok_barang.insert(String::from("Gula"), 130);
+
+    stok_barang.insert(String::from("Gula"), 110);
+
+    match stok_barang.get(&"Susu".to_string()) {
+        Some(jumlah_barang) => println!("Jumlah barang saat ini {}", jumlah_barang),
+        None => println!("Barang tidak ada sedang kosong"),
+    }
+    stok_barang.remove("Beras");
+
+    stok_barang.entry("Teh".to_string()).or_insert(100);
+    stok_barang.entry("Gula".to_string()).or_insert(999);
+
+    println!("{:#?}", stok_barang)
+}
+
+use std::collections::BTreeMap;
+
+#[test]
+fn rekap_data_mhs() {
+    let mut data_praktikan = BTreeMap::from([
+        (304, String::from("Faisal")),
+        (301, String::from("Andi")),
+        (303, String::from("Citra")),
+        (302, String::from("Budi")),
+    ]);
+    data_praktikan.insert(304, "Fahmi".to_string());
+
+    data_praktikan.entry(305).or_insert("Eka".to_string());
+    data_praktikan.entry(301).or_insert("Joko".to_string());
+
+    for (nim, nama) in &data_praktikan {
+        println!("NIM:  {}      |    Nama: {}   ", nim, nama)
+    }
+}

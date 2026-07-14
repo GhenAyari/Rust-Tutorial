@@ -4336,3 +4336,238 @@ fn test_firewall() {
     analisis_kode(data_masuk.clone(), deteksi_malware);
 }
 ```
+
+---
+## Rust Collections: Sequences 📚
+
+### What is a Collection?
+Unlike Arrays `[T; N]` which have a fixed size and are stored on the **Stack**, **Collections** in Rust are data structures stored on the **Heap**. This means their size can grow or shrink dynamically while the program is running.
+
+### What is a Sequence?
+A **Sequence** is a type of collection where items are stored in a specific, linear order. Elements have a definitive position (first, second, third) and can usually be accessed using an index (e.g., `sequence[0]`). 
+
+In Rust, the two most commonly used sequences are **Vector (`Vec`)** and **Double-Ended Queue (`VecDeque`)**.
+
+---
+
+### 1. Vector (`Vec<T>`)
+The standard, go-to collection in Rust. If you need a list of items, 99% of the time you will use a `Vec`.
+
+*   **How it Works:** It stores data in a contiguous (side-by-side) block of memory. It keeps track of its pointer (memory location), length (current items), and capacity (total space allocated). When the capacity is full, Rust automatically allocates a larger block of memory, moves the data, and deletes the old one.
+*   **When to Use:** Use it as your default choice. It is incredibly fast for reading data by index and appending/removing data at the **back** of the list.
+*   **Limitation:** It is very slow if you try to insert or remove data at the **front** or **middle** of the list, because Rust has to shift all the remaining elements to the right or left to make space.
+
+### 2. Double-Ended Queue (`VecDeque<T>`)
+A specialized version of `Vec` optimized for operations at both ends.
+
+*   **How it Works:** Under the hood, it uses a **Ring Buffer**. Instead of shifting data when you add something to the front, it logically treats the memory block as a circle, simply moving the "Head" or "Tail" pointers.
+*   **When to Use:** Use this when you are building a **Queue** system (First-In, First-Out / FIFO), a task scheduler, or whenever you need to frequently add or remove elements from the **front** of the list.
+*   **Limitation:** It is slightly slower than `Vec` when accessing elements randomly by index because the CPU cannot predict the memory layout as easily.
+
+---
+
+### Comprehensive Code Examples
+
+### 1. Vector Operations
+This example simulates analyzing a queue of malware payloads.
+
+```rust
+#[test]
+fn latihan_vector() {
+    // We use the Turbofish syntax (::<String>) to explicitly tell Rust 
+    // that this empty Vector will hold String data.
+    let mut antrean_payload = Vec::<String>::new();
+
+    // .push() adds elements to the BACK of the Vector. (Fast O(1) operation)
+    antrean_payload.push(String::from("trojan_1"));
+    antrean_payload.push(String::from("ransomware_x.bin"));
+    antrean_payload.push(String::from("spyware_log.txt"));
+    println!("{:?}", antrean_payload);
+
+    // Modifying data directly using an index. 
+    // Note: Doing this is risky if you are not 100% sure the index exists!
+    antrean_payload[1] = String::from("teks_file_bersih.txt");
+    println!("Mengubah index 1 menjadi {:?}", &antrean_payload[1]);
+
+    // .pop() removes and returns the LAST element in the Vector.
+    // It returns an Option (Some if it exists, None if the Vector is empty).
+    let antrean_payload_dihapus = antrean_payload.pop(); 
+    println!(
+        "Selesai dianalisis nama file adalah {:?}",
+        antrean_payload_dihapus
+    );
+
+    // .get() is the SAFE way to access data. It prevents the program from crashing (panicking)
+    // if the index does not exist. It returns an Option enum.
+    match antrean_payload.get(5) {
+        Some(isi_file) => {
+            println!("awas ada file siluman {isi_file}")
+        }
+        None => {
+            println!("Aman index kosong, tidak ada penyusup")
+        }
+    }
+
+    // .len() returns the total number of elements currently inside the Vector.
+    println!("Jumlah antrean payload {}", antrean_payload.len());
+
+    // Iterating over the Vector. We use `&` to borrow the Vector so it doesn't get consumed (moved)
+    // and can still be used after the loop if needed.
+    for antrean in &antrean_payload {
+        println!("{antrean}");
+    }
+}
+```
+
+### 2. VecDeque Operations
+This example simulates a Security Operations Center (SOC) queue where critical alerts can skip the line.
+
+```rust
+// We must explicitly import VecDeque. 
+// Using the `as` keyword creates an alias ('vd') to keep the code concise.
+use std::collections::VecDeque as vd;
+
+#[test]
+fn security_operations_center() {
+    // Initializing an empty VecDeque using our 'vd' alias.
+    let mut antrean_insiden = vd::<String>::new();
+
+    // .push_back() adds elements to the END of the queue (Normal priority).
+    antrean_insiden.push_back(String::from("Warning: Gagal login 3x di PC-01"));
+    antrean_insiden.push_back(String::from("Log: Update firewall harian selesai"));
+
+    // .push_front() adds elements to the VERY FRONT of the queue.
+    // This is the superpower of VecDeque! Critical incidents jump the line instantly.
+    antrean_insiden.push_front(String::from(
+        "KRITIKAL: Injeksi SQL terdeteksi di Database Utama!",
+    ));
+
+    // .pop_back() removes and returns the element at the END of the queue.
+    // We cancel the daily firewall log because it's not important.
+    let antrean_dihapus = antrean_insiden.pop_back();
+    println!("Laporan dibatalkan {:?}", antrean_dihapus);
+
+    // .pop_front() removes and returns the element at the FRONT of the queue.
+    // The analyst takes the most urgent task (the SQL Injection).
+    let antrean_terdepan = antrean_insiden.pop_front();
+    println!("Segera ditangani {:?}", antrean_terdepan);
+
+    // Checking how many incidents are left to process.
+    println!("Sisa insiden adalah {:?}", antrean_insiden.len());
+
+    // Looping through the remaining items in the queue safely by borrowing it.
+    for insiden in &antrean_insiden {
+        println!("insiden yang ada sekarang adalah = {insiden}");
+    }
+}
+```
+
+---
+## Rust Collections: Maps 🗺️
+
+### What is a Map?
+While *Sequences* (like `Vec`) store data in a linear order accessed by a numeric index (0, 1, 2), **Maps** store data using **Key-Value Pairs**. 
+
+Instead of asking, "Give me the 5th item," you ask, "Give me the value associated with the key 'John'." A Key acts as a unique identifier, and the Value is the data attached to it.
+
+In Rust, the two primary Map implementations are **HashMap** and **BTreeMap**.
+
+---
+
+### 1. HashMap (`HashMap<K, V>`)
+The fastest and most commonly used map in Rust.
+
+*   **How it Works:** It uses a mathematical Hashing algorithm to assign keys to specific memory locations (like throwing items into random, but instantly accessible, lockers).
+*   **Performance:** Extremely fast (`O(1)` time complexity). Looking up a value takes the same amount of time whether you have 10 items or 10 million items.
+*   **Rule of Thumb:** Keys must be **Unique** and **Unordered**. If you print a `HashMap`, the order of the items will appear random.
+*   **When to Use:** Use it for caches, inventory systems, or anytime you need lightning-fast lookups based on a unique identifier (like an ID, email, or item name) and you don't care about the sorting order.
+
+### 2. BTreeMap (`BTreeMap<K, V>`)
+The organized sibling of `HashMap`.
+
+*   **How it Works:** It uses a Balanced Tree data structure under the hood. Instead of hashing, it constantly compares keys and organizes them logically.
+*   **Performance:** Fast (`O(log n)` time complexity), but slightly slower than `HashMap` for massive datasets.
+*   **Rule of Thumb:** Keys are **Always Sorted** (alphabetically for text, numerically for numbers). 
+*   **When to Use:** Use it when the order of the data matters, such as rendering a timeline, a leaderboard, or an alphabetical contact list.
+
+---
+
+### Comprehensive Code Examples
+
+### 1. HashMap Operations (Inventory System)
+```rust
+use std::collections::HashMap;
+
+#[test]
+fn stok_gudang_hashmap() {
+    // We use Turbofish syntax to explicitly declare the Key (String) and Value (i32).
+    let mut stok_barang = HashMap::<String, i32>::new();
+
+    // .insert() adds a new Key-Value pair to the map.
+    stok_barang.insert(String::from("Beras"), 50);
+    stok_barang.insert(String::from("Gula"), 130);
+
+    // If we .insert() using a Key that ALREADY EXISTS, the old value is overwritten!
+    // The stock of "Gula" drops from 130 to 110.
+    stok_barang.insert(String::from("Gula"), 110);
+
+    // .get() safely looks up a value. It requires a REFERENCE to the key (&).
+    // It returns an Option (Some if found, None if the key doesn't exist).
+    match stok_barang.get(&"Susu".to_string()) {
+        Some(jumlah_barang) => println!("Jumlah barang saat ini {}", jumlah_barang),
+        None => println!("Barang tidak ada sedang kosong"), // Executes because "Susu" wasn't added
+    }
+    
+    // .remove() deletes the Key and its associated Value from the map.
+    stok_barang.remove("Beras");
+
+    // The ENTRY API: The safest way to insert data conditionally.
+    // "Check if 'Teh' exists. If not, insert it with a value of 100."
+    stok_barang.entry("Teh".to_string()).or_insert(100);
+    
+    // "Check if 'Gula' exists. If not, insert 999."
+    // Because "Gula" ALREADY EXISTS (110), this line is ignored. It won't overwrite!
+    stok_barang.entry("Gula".to_string()).or_insert(999);
+
+    // Print the entire HashMap using Pretty Print ({:#?}) for vertical, readable formatting.
+    // Note: The printed order will be random.
+    println!("{:#?}", stok_barang)
+}
+```
+
+### 2. BTreeMap Operations (Student Records)
+
+```rust
+use std::collections::BTreeMap;
+
+#[test]
+fn rekap_data_mhs() {
+    // Advanced Initialization: Using BTreeMap::from([]) to insert multiple 
+    // Key-Value pairs (tuples) instantly at the time of creation.
+    // Notice how we input the Student IDs (NIM) randomly: 304, 301, 303, 302.
+    let mut data_praktikan = BTreeMap::from([
+        (304, String::from("Faisal")),
+        (301, String::from("Andi")),
+        (303, String::from("Citra")),
+        (302, String::from("Budi")),
+    ]);
+    
+    // Standard .insert() behaves exactly like HashMap. 
+    // It will overwrite "Faisal" with "Fahmi" for Key 304.
+    data_praktikan.insert(304, "Fahmi".to_string());
+
+    // The Entry API also works identically.
+    // 305 doesn't exist, so "Eka" is added.
+    data_praktikan.entry(305).or_insert("Eka".to_string());
+    // 301 already exists ("Andi"), so "Joko" is ignored.
+    data_praktikan.entry(301).or_insert("Joko".to_string());
+
+    // THE MAGIC OF BTREEMAP:
+    // Even though we inserted the IDs randomly, looping through a BTreeMap
+    // guarantees the output is sorted from the smallest Key to the largest Key.
+    // We use destructuring `(nim, nama)` to cleanly unpack the Tuple in the loop.
+    for (nim, nama) in &data_praktikan {
+        println!("NIM:  {}      |    Nama: {}   ", nim, nama)
+    }
+}
+```
