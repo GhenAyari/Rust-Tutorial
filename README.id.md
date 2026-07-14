@@ -4730,3 +4730,98 @@ fn web_novel_btreeset() {
     }
 }
 ```
+
+---
+## Pemrosesan di Rust: Iterator ⚙️
+
+### Apa itu Iterator?
+Jika Collections (`Vec`, `HashMap`, `HashSet`) adalah tempat kamu *menyimpan* data, maka **Iterator** adalah mesin sabuk konveyor (ban berjalan) yang digunakan untuk *memproses* data tersebut.
+
+Di Rust, Iterator bersifat **Lazy (Malas)**. Artinya, membuat sebuah iterator tidak akan melakukan apa-apa sampai kamu benar-benar menyuruhnya mengeksekusi data. Mesinnya sudah disiapkan, tapi ban berjalannya tidak akan berputar sampai kamu menekan tombol "Mulai".
+
+---
+
+### Bagaimana Cara Kerjanya?
+Iterator bekerja dengan mengoper data satu per satu. Dalam pemrograman sehari-hari, kita merangkai beberapa *method* untuk memproses data. *Method* ini dibagi menjadi dua kategori:
+
+1.  **Adapters (Pengaturan Mesin):** Bersifat malas (*lazy*). Mengubah wujud atau menyaring data, tapi tidak melakukan eksekusi.
+    *   `.filter(|x| ...)` : Menyaring data, hanya menyisakan yang memenuhi kondisi `true`.
+    *   `.map(|x| ...)` : Mengubah/Mentransformasi data dari satu bentuk ke bentuk lain.
+    *   `.enumerate()` : Menempelkan nomor urut (indeks) pada setiap data menjadi `(indeks, data)`.
+2.  **Consumers (Tombol Mulai/Eksekusi):** Berada di paling akhir rantai. Memaksa seluruh *Adapters* bekerja dan mengembalikan satu hasil akhir.
+    *   `.collect::<T>()` : Mengumpulkan hasil akhir menjadi Koleksi baru (seperti `Vec`).
+    *   `.count()` : Menghitung jumlah data yang lolos sampai akhir.
+    *   `.sum()` : Menjumlahkan seluruh angka.
+    *   `.find(|x| ...)` : Mencari data pertama yang cocok, lalu **langsung menghentikan** perulangan seketika itu juga.
+
+---
+
+### Kapan Digunakan & Kekuatan Utama
+*   **Kapan Digunakan:** Kapan pun kamu perlu mencari, menyaring, mengubah, atau menghitung data di dalam sebuah *Collection* tanpa harus menulis perulangan `for` manual yang bertingkat-tingkat.
+*   **Kekuatan Super (Zero-Cost Abstraction):** Walaupun rantai kode iterator terlihat canggih dan rumit, saat di-*compile*, Rust mengoptimalkannya menjadi bahasa mesin yang sama cepatnya (bahkan terkadang lebih cepat) dibandingkan jika kamu menulis perulangan `for` secara manual.
+
+### Apa yang TIDAK BISA Dilakukan Iterator
+*   **Berjalan tanpa Consumer:** Menulis `katalog.iter().map(...)` tanpa ada tombol eksekusi di akhirnya tidak akan menghasilkan apa-apa (dan akan memicu peringatan dari *compiler*).
+*   **Mengubah Ukuran Koleksi Saat Berjalan:** Aturan ketat memori Rust melarangmu menambah atau menghapus isi daftar (seperti `Vec`) saat iterator sedang aktif melakukan perulangan di atasnya.
+
+---
+
+### Contoh Kode Komprehensif (Analitik E-Commerce)
+
+Kode ini mendemonstrasikan penggunaan Iterator dari tingkat dasar hingga ahli menggunakan **Closure** (`| |`), yaitu fungsi tanpa nama yang menyuntikkan logika ke dalam iterator.
+
+```rust
+#[derive(Debug)]
+struct ProdukCommerce {
+    nama: String,
+    harga: u32,
+    stok: u32,
+}
+
+#[test]
+fn analitik_ecommerce() {
+    let katalog = vec![
+        ProdukCommerce { nama: String::from("Mouse Wireless"), harga: 150_000, stok: 10 },
+        ProdukCommerce { nama: String::from("Keyboard Mekanikal"), harga: 450_000, stok: 0 },
+        ProdukCommerce { nama: String::from("Flashdisk 64GB"), harga: 80_000, stok: 25 },
+        ProdukCommerce { nama: String::from("Monitor 24 Inch"), harga: 2_000_000, stok: 5 },
+        ProdukCommerce { nama: String::from("Kabel HDMI"), harga: 50_000, stok: 0 },
+    ];
+
+    println!("======= Tingkat Dasar! =======");
+    // 1. ENUMERATE: Menambahkan nomor indeks pada setiap barang yang lewat.
+    let iterator_katalog = katalog.iter();
+    for (index, produk) in iterator_katalog.enumerate() {
+        println!("Barang ke {}: {:?} - Rp {}", index, produk, produk.harga)
+    }
+
+    println!("======= Tingkat Menengah! =======");
+    // 2. FILTER & COUNT
+    // Adapter: .filter() menggunakan Closure |barang| untuk mengecek apakah stok tepat 0.
+    // Consumer: .count() memicu proses berjalan dan menghitung jumlah barang yang lolos filter.
+    let tampil_daftar = katalog.iter().filter(|barang| barang.stok == 0).count();
+    println!("Daftar barang yang habis stoknya ada {tampil_daftar}");
+
+    println!("======= Tingkat Expert! =======");
+    // 3. METHOD CHAINING (Rantai: Filter -> Map -> Sum)
+    // Kita secara eksplisit memberi tahu Rust bahwa hasil akhirnya harus bertipe `u32`.
+    let total_aset: u32 = katalog
+        .iter()
+        .filter(|stok| stok.stok > 0) // Hanya loloskan barang yang stoknya lebih dari 0
+        .map(|hasil| hasil.harga * hasil.stok) // Ubah wujud Struct menjadi total harga (Harga * Stok)
+        .sum(); // Consumer: Langsung menjumlahkan semua angka hasil wujud baru tadi.
+    println!("Total aset yang tersedia: Rp {}", total_aset);
+
+    println!("======= Pencarian Instan! =======");
+    // 4. FIND (Pencarian Kilat)
+    // .find() akan langsung menghentikan Iterator detik itu juga saat barang pertama ditemukan.
+    // Mengembalikan enum Option (Some jika ketemu, None jika tidak ada).
+    match katalog
+        .iter()
+        .find(|barang| barang.nama == "Flashdisk 64GB") 
+    {
+        Some(barang) => println!("Flashdisk 64GB ditemukan: Rp {}", barang.harga),
+        None => println!("Flashdisk 64GB tidak tersedia"),
+    }
+}
+```

@@ -4731,3 +4731,98 @@ fn web_novel_btreeset() {
     }
 }
 ```
+
+---
+## Rust Processing: Iterators ⚙️
+
+### What is an Iterator?
+If Collections (`Vec`, `HashMap`, `HashSet`) are where you *store* your data, **Iterators** are the factory conveyor belts used to *process* that data.
+
+In Rust, Iterators are **Lazy**. This means creating an iterator does absolutely nothing until you explicitly tell it to start processing. It sets up the machine, but the conveyor belt won't move until you press the "Start" button.
+
+---
+
+### How Does It Work?
+Iterators work by passing items one by one using a method called `.next()`. In everyday programming, we chain methods together to process data. These methods are divided into two categories:
+
+1.  **Adapters (The Machine Setup):** These are lazy. They modify or filter the data, but don't execute anything.
+    *   `.filter(|x| ...)` : Keeps only the items that match a `true` condition.
+    *   `.map(|x| ...)` : Transforms an item from one form to another.
+    *   `.enumerate()` : Attaches an index number to each item `(index, item)`.
+2.  **Consumers (The Start Button):** These sit at the end of the chain. They force the adapters to run and return a final value.
+    *   `.collect::<T>()` : Gathers the results into a new Collection (like `Vec`).
+    *   `.count()` : Counts how many items made it through.
+    *   `.sum()` : Adds all the numbers together.
+    *   `.find(|x| ...)` : Finds the first matching item and stops the machine immediately.
+
+---
+
+### When to Use & Superpowers
+*   **When to Use:** Whenever you need to search, filter, transform, or calculate data inside a Collection without writing manual, nested `for` loops.
+*   **Superpower (Zero-Cost Abstraction):** Even though iterator chains look high-level and complex, the Rust compiler optimizes them into machine code that is just as fast—or sometimes even faster—than writing manual `for` loops.
+
+### What Iterators CANNOT Do
+*   **Run without a Consumer:** Writing `my_vec.iter().map(...)` without a consumer at the end will do absolutely nothing and trigger a compiler warning.
+*   **Modify Collection Size During Iteration:** Rust's strict ownership rules prevent you from adding or removing items from a Collection while an iterator is actively looping through it (preventing memory crashes).
+
+---
+
+### Comprehensive Code Example (E-Commerce Analytics)
+
+This code demonstrates how to use Iterators from basic to expert levels using **Closures** (`| |`), which are anonymous, inline functions that inject logic into the iterator.
+
+```rust
+#[derive(Debug)]
+struct ProdukCommerce {
+    nama: String,
+    harga: u32,
+    stok: u32,
+}
+
+#[test]
+fn analitik_ecommerce() {
+    let katalog = vec![
+        ProdukCommerce { nama: String::from("Mouse Wireless"), harga: 150_000, stok: 10 },
+        ProdukCommerce { nama: String::from("Keyboard Mekanikal"), harga: 450_000, stok: 0 },
+        ProdukCommerce { nama: String::from("Flashdisk 64GB"), harga: 80_000, stok: 25 },
+        ProdukCommerce { nama: String::from("Monitor 24 Inch"), harga: 2_000_000, stok: 5 },
+        ProdukCommerce { nama: String::from("Kabel HDMI"), harga: 50_000, stok: 0 },
+    ];
+
+    println!("======= Tingkat Dasar! =======");
+    // 1. ENUMERATE: Adds an index number to each item passing through.
+    let iterator_katalog = katalog.iter();
+    for (index, produk) in iterator_katalog.enumerate() {
+        println!("Barang ke {}: {:?} - Rp {}", index, produk, produk.harga)
+    }
+
+    println!("======= Tingkat Menengah! =======");
+    // 2. FILTER & COUNT
+    // Adapter: .filter() uses a Closure |barang| to check if the stock is exactly 0.
+    // Consumer: .count() triggers the process and counts how many items passed the filter.
+    let tampil_daftar = katalog.iter().filter(|barang| barang.stok == 0).count();
+    println!("Daftar barang yang habis stoknya ada {tampil_daftar}");
+
+    println!("======= Tingkat Expert! =======");
+    // 3. METHOD CHAINING (Filter -> Map -> Sum)
+    // We explicitly tell Rust the final expected type is a `u32`.
+    let total_aset: u32 = katalog
+        .iter()
+        .filter(|stok| stok.stok > 0) // Keep only items with stock greater than 0
+        .map(|hasil| hasil.harga * hasil.stok) // Transform the Struct into a Total Price (Price * Stock)
+        .sum(); // Consumer: Sums up all the transformed values instantly.
+    println!("Total aset yang tersedia: Rp {}", total_aset);
+
+    println!("======= Pencarian Instan! =======");
+    // 4. FIND (Instant Search)
+    // .find() stops the iterator the moment it finds the first match.
+    // It returns an Option (Some if found, None if it doesn't exist).
+    match katalog
+        .iter()
+        .find(|barang| barang.nama == "Flashdisk 64GB") 
+    {
+        Some(barang) => println!("Flashdisk 64GB ditemukan: Rp {}", barang.harga),
+        None => println!("Flashdisk 64GB tidak tersedia"),
+    }
+}
+```

@@ -2419,3 +2419,69 @@ fn web_novel_btreeset() {
         println!("bacaan terakhir = {}", bab_spesifik)
     }
 }
+
+#[derive(Debug)]
+struct ProdukCommerce {
+    nama: String,
+    harga: u32,
+    stok: u32,
+}
+
+#[test]
+fn analitik_ecommerce() {
+    let katalog = vec![
+        ProdukCommerce {
+            nama: String::from("Mouse Wireless"),
+            harga: 150_000,
+            stok: 10,
+        },
+        ProdukCommerce {
+            nama: String::from("Keyboard Mekanikal"),
+            harga: 450_000,
+            stok: 0,
+        },
+        ProdukCommerce {
+            nama: String::from("Flashdisk 64GB"),
+            harga: 80_000,
+            stok: 25,
+        },
+        ProdukCommerce {
+            nama: String::from("Monitor 24 Inch"),
+            harga: 2_000_000,
+            stok: 5,
+        },
+        ProdukCommerce {
+            nama: String::from("Kabel HDMI"),
+            harga: 50_000,
+            stok: 0,
+        },
+    ];
+
+    println!("=======Tingkat Dasar!=======");
+    let iterator_katalog = katalog.iter();
+
+    for (index, produk) in iterator_katalog.enumerate() {
+        println!("Barang ke {}: {:?} -Rp {}", index, produk, produk.harga)
+    }
+
+    println!("=======Tingkat Menengah!=======");
+    let tampil_daftar = katalog.iter().filter(|barang| barang.stok == 0).count();
+    println!("Daftar barang yang habis stoknya ada {tampil_daftar}");
+
+    println!("=======Tingkat Expert!=======");
+    let total_aset: u32 = katalog
+        .iter()
+        .filter(|stok| stok.stok > 0)
+        .map(|hasil| &hasil.harga * &hasil.stok)
+        .sum();
+    println!("Total aset yang tersedia: Rp {}", total_aset);
+
+    println!("=======Pencarian Instan!=======");
+    match katalog
+        .iter()
+        .find(|barang| barang.nama == "Flashdisk 64GB".to_string())
+    {
+        Some(barang) => println!("Flashdisk 64GB ditemukan: Rp {}", barang.harga),
+        None => println!("Flashdisk 64GB tidak tersedia"),
+    }
+}
