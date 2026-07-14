@@ -2261,7 +2261,7 @@ fn latihan_vector() {
     antrean_payload[1] = String::from("teks_file_bersih.txt");
     println!("Mengubah index 1 menjadi {:?}", &antrean_payload[1]);
 
-    let antrean_payload_dihapus = antrean_payload.pop();
+    let antrean_payload_dihapus = antrean_payload.pop(); // menghapus index terakhir
     println!(
         "Selesai dianalisis nama file adalah {:?}",
         antrean_payload_dihapus
@@ -2277,4 +2277,34 @@ fn latihan_vector() {
     }
 
     println!("Jumlah antrean payload {}", antrean_payload.len());
+
+    for antrean in &antrean_payload {
+        println!("{antrean}");
+    }
+}
+
+use std::collections::VecDeque as vd;
+
+#[test]
+fn security_operations_center() {
+    let mut antrean_insiden = vd::<String>::new();
+
+    antrean_insiden.push_back(String::from("Warning: Gagal login 3x di PC-01"));
+    antrean_insiden.push_back(String::from("Log: Update firewall harian selesai"));
+
+    antrean_insiden.push_front(String::from(
+        "KRITIKAL: Injeksi SQL terdeteksi di Database Utama!",
+    ));
+
+    let antrean_dihapus = antrean_insiden.pop_back();
+    println!("Laporan dibatalkan {:?}", antrean_dihapus);
+
+    let antrean_terdepan = antrean_insiden.pop_front();
+    println!("Segera ditangani {:?}", antrean_terdepan);
+
+    println!("Sisa insiden adalah {:?}", antrean_insiden.len());
+
+    for insiden in &antrean_insiden {
+        println!("insiden yang ada sekarang adalah = {insiden}");
+    }
 }
