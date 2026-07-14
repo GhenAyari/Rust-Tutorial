@@ -1,4 +1,4 @@
-# This is my repository for learn Rust programming, written on 29 july 2026, by GhenAyari.
+# Ini adalah repositori saya untuk belajar pemrograman Rust, oleh GhenAyari.
 
 🇬🇧 English | [🇮🇩 Bahasa Indonesia](README.id.md)
 
@@ -4173,5 +4173,164 @@ fn test_monster() {
     // Menggunakan `{:?}` akan memanggil trait Debug manual yang kita buat.
     // Output: Monster { Monster: "Goblin", Memiliki HP: 30, Nama user bersifat rahasia: "RAHASIA" }
     println!("{:?}", monster);
+}
+```
+
+---
+## Closure di Rust 🚀
+
+### Apa itu Closure?
+Di Rust, **Closure** adalah fungsi tanpa nama (*anonymous function*) yang bisa disimpan ke dalam sebuah variabel atau dilemparkan sebagai parameter ke fungsi lain. Berbeda dengan fungsi biasa (`fn`), closure memiliki "kekuatan super": mereka bisa **menangkap (mengingat/mengakses) variabel dari lingkungan di luar lingkupnya**. 
+
+Alih-alih menggunakan tanda kurung biasa `()` untuk menampung parameter, closure menggunakan tanda pipa `| |`.
+
+### Bagaimana Cara Kerjanya?
+Saat kamu membuat sebuah closure, *compiler* Rust secara otomatis menebak (*infer*) tipe data parameter dan tipe kembaliannya (*return type*) berdasarkan cara kamu menggunakannya. Di belakang layar, jika sebuah closure menangkap variabel dari lingkungan sekitarnya, *compiler* akan membuat sebuah `struct` rahasia untuk menyimpan variabel-variabel tersebut.
+
+### 3 Jenis Closure (Trait)
+Tergantung pada bagaimana sebuah closure berinteraksi dengan variabel yang ditangkapnya, Rust secara otomatis memberikan salah satu dari tiga sifat (Trait) berikut:
+1.  **`Fn`**: Hanya meminjam variabel untuk dibaca (`&T`). Tidak memodifikasi data sama sekali. Ini adalah trait yang paling umum dan sering dipakai.
+2.  **`FnMut`**: Meminjam variabel dan dapat mengubah isinya (*mutable borrow* `&mut T`).
+3.  **`FnOnce`**: Mengambil alih kepemilikan penuh (*ownership* `T`) atas variabel tersebut. Karena datanya "ditelan" (dikonsumsi), closure jenis ini **hanya bisa dieksekusi satu kali saja**.
+
+### Apa yang BISA Dilakukan Closure ✅
+*   **Menangkap variabel sekitar:** Bisa membaca atau mengubah variabel yang dideklarasikan di luar tubuh closure itu sendiri.
+*   **Mendeteksi Tipe Data Otomatis (*Type Inference*):** Kamu jarang sekali perlu menulis tipe parameter (`x: i32`) secara manual; Rust cukup pintar untuk menebaknya.
+*   **Menjadi Parameter Fungsi:** Kamu bisa menyuntikkan logika yang dinamis ke dalam fungsi lain menggunakan sintaks `impl Fn(...) -> ...`.
+*   **Sintaks Sangat Ringkas:** Closure yang logikanya hanya satu baris bahkan tidak membutuhkan kurung kurawal `{}`.
+
+### Apa yang TIDAK BISA Dilakukan Closure 🚫
+*   **Mengubah Tipe Data yang Sudah Ditebak:** Sekali Rust menebak tipe data closure pada pemakaian pertamanya (misal: angka), kamu tidak bisa memasukkan tipe data lain (misal: teks) pada pemakaian berikutnya.
+*   **Berjalan Berkali-kali Jika Berstatus `FnOnce`:** Jika closure mengambil alih kepemilikan variabel yang tidak memiliki trait `Copy`, Rust akan memblokir eksekusi kedua untuk mencegah *error* memori.
+*   **Di-return dengan Mudah:** Karena setiap closure memiliki tipe datanya sendiri yang unik dan dirahasiakan oleh *compiler*, mengembalikan closure dari sebuah fungsi butuh perlakuan khusus seperti `impl Trait` atau membungkusnya dengan `Box<dyn Fn>`.
+
+---
+
+### Contoh Kode Komprehensif
+
+Di bawah ini adalah implementasi lengkap yang mencakup sintaks dasar, studi kasus nyata, dan cara menjadikan closure sebagai parameter fungsi.
+
+```rust
+#[test]
+fn test_closure() {
+    // ==========================================
+    // 1. CLOSURE DASAR (Tanpa parameter)
+    // ==========================================
+    let panggil_closure = || println!("Halo calon programmer");
+    panggil_closure();
+
+    // ==========================================
+    // 2. CLOSURE SATU BARIS (Dengan parameter)
+    // Type inference beraksi: Rust tahu 'x' adalah angka berdasarkan cara pakainya.
+    // ==========================================
+    let perkalian_closure = |x| x * x;
+    println!("Hasil perkalian: {}", perkalian_closure(15)); // 15 x 15 = 225
+
+    // ==========================================
+    // 3. CLOSURE MULTI-BARIS (Wajib pakai kurung kurawal {})
+    // ==========================================
+    let hitung_diskon = |harga_awal| {
+        let potongan = harga_awal * 10 / 100;
+        harga_awal - potongan // Tanpa titik koma di akhir berarti ini adalah nilai Return
+    };
+    println!("Harga setelah diskon = {}", hitung_diskon(30000));
+
+    // ==========================================
+    // 4. EVOLUSI SINTAKS CLOSURE
+    // Dari yang paling eksplisit sampai yang paling ringkas.
+    // ==========================================
+    // WUJUD 1: Sangat lengkap (Mirip fungsi biasa, sebut tipe data dan return)
+    let tambah_satu_v1 = |x: i32| -> i32 { x + 1 };
+
+    // WUJUD 2: Hapus panah Return (Rust bisa tebak hasil akhirnya)
+    let tambah_satu_v2 = |x: i32| x + 1;
+
+    // WUJUD 3: Hapus tipe data input (Rust bisa tebak dari cara pemakaiannya)
+    let tambah_satu_v3 = |x| x + 1;
+
+    // WUJUD 4: Hapus kurung kurawal karena cuma satu baris
+    let tambah_satu_v4 = |x| x + 1;
+
+    println!("{}", tambah_satu_v1(3));
+    println!("{}", tambah_satu_v2(3));
+    println!("{}", tambah_satu_v3(3));
+    println!("{}", tambah_satu_v4(3));
+}
+
+#[test]
+fn statistik_web_novel() {
+    // Closure satu baris dengan penulisan tipe data (i32) secara manual agar lebih jelas
+    let estimasi_baca = |jumlah_kata: i32| jumlah_kata / 200;
+    println!(
+        "waktu membaca sekarang berdasarkan jumlah kata adalah {} menit",
+        estimasi_baca(3300)
+    );
+
+    // Closure multi-baris yang langsung mengeksekusi cetakan (println!) tanpa me-return nilai
+    let cek_siap_publish = |jumlah_kata: u32| {
+        if jumlah_kata >= 1500 {
+            println!("Web novel siap dipublish")
+        } else {
+            println!("lanjutkan menulis karena masih kurang dari 1500")
+        }
+    };
+    cek_siap_publish(1100);
+}
+
+// ==========================================
+// CLOSURE SEBAGAI PARAMETER (TRAIT BOUNDS)
+// ==========================================
+// Fungsi ini menerima String dan sebuah Closure (`aturan_hasing`).
+// `impl Fn(String) -> String` dibaca: "Terima closure apapun yang masukannya String dan keluarannya String."
+fn proses_password(pasword: String, aturan_hasing: impl Fn(String) -> String) {
+    let password_baru = aturan_hasing(pasword);
+    println!("hasil password: {}", password_baru);
+}
+
+#[test]
+fn latihan_closure_parameter() {
+    let pass_asli = String::from("Admin123");
+    println!("password adalah {pass_asli}");
+
+    // Closure 1: Menggunakan makro format! untuk merakit dan me-return String baru
+    let tambah_salt = |teks: String| format!("{}_xyz29", teks);
+
+    // Closure 2: Menggunakan method replace untuk memanipulasi dan me-return String
+    let ganti_simbol = |teks: String| teks.replace("Admin", "Ambacong");
+
+    // SANGAT PENTING: Kita menggunakan `.clone()` di sini agar variabel `pass_asli` tidak hangus
+    // ditelan (consumed) oleh pemanggilan fungsi pertama. Ini mencegah Error Ownership/Moved!
+    proses_password(pass_asli.clone(), tambah_salt);
+    proses_password(pass_asli.clone(), ganti_simbol);
+}
+
+// Contoh lain menyuntikkan logika dinamis (Closure) ke dalam fungsi inti.
+fn analisis_kode(payload: String, aturan_scan: impl Fn(String) -> String) {
+    let hasil = aturan_scan(payload);
+    println!("hasil analisis: {}", hasil);
+}
+
+#[test]
+fn test_firewall() {
+    let data_masuk: String = String::from("GET /download HTTP/1.1 - payload_ransomware_stage1.bin");
+
+    // Aturan eksekusi cepat
+    let blokir_ip = |teks: String| format!("{} [TINDAKAN: IP DIBLOKIR]", teks);
+
+    // Aturan analisis mendalam dengan percabangan logika
+    let deteksi_malware = |teks: String| {
+        // Catatan Bug Logika: `to_lowercase()` membuat semua huruf menjadi kecil. 
+        // Mencari kata "Ransomware" (dengan huruf R besar) di sini akan selalu menghasilkan 'false'!
+        // Cara perbaikannya: gunakan `.contains("ransomware")` dengan huruf kecil semua.
+        if teks.to_lowercase().contains("Ransomware") {
+            String::from("SIAGA 1: Siklus Malware Terdeteksi!")
+        } else {
+            String::from("Tidak ada indikasi Malware, aman!")
+        }
+    };
+
+    // Mengeksekusi fungsi inti yang sama namun dengan aturan yang benar-benar berbeda
+    analisis_kode(data_masuk.clone(), blokir_ip);
+    analisis_kode(data_masuk.clone(), deteksi_malware);
 }
 ```

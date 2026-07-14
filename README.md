@@ -1,4 +1,4 @@
-# This is my repository for learn Rust programming, written on 29 july 2026, by GhenAyari.
+# This is my repository for learn Rust programming, by GhenAyari.
 
 🇬🇧 English | [🇮🇩 Bahasa Indonesia](README.id.md)
 
@@ -4174,5 +4174,165 @@ fn test_monster() {
     // Uses `{:?}` to trigger the Debug trait.
     // Output: Monster { Monster: "Goblin", Has HP: 30, User name is secret: "SECRET" }
     println!("{:?}", monster);
+}
+```
+
+---
+
+## Rust Closures  🚀
+
+### What is a Closure?
+In Rust, a **Closure** is an anonymous function (a function without a name) that can be saved in a variable or passed as an argument to other functions. Unlike regular functions (`fn`), closures have a "superpower": they can **capture variables from their surrounding environment**. 
+
+Instead of using parentheses `()` for parameters, closures use pipes `| |`.
+
+### How Does It Work?
+When you define a closure, Rust's compiler automatically infers the parameter types and the return type based on how you use it. Behind the scenes, if a closure captures variables from its environment, the compiler generates a secret, anonymous `struct` to store those captured variables.
+
+#### The 3 Types of Closures (Traits)
+Depending on how a closure interacts with the captured variables, Rust automatically assigns it one of these three traits:
+1.  **`Fn`**: Borrows variables by reference (`&T`). It only reads the data and doesn't modify it. This is the most common trait.
+2.  **`FnMut`**: Borrows variables mutably (`&mut T`). It can change the captured data.
+3.  **`FnOnce`**: Takes full ownership of the variables (`T`). It consumes the data, meaning this closure can only be executed **once**.
+
+### What Closures CAN Do ✅
+*   **Capture the environment:** They can read or modify variables declared outside of their scope.
+*   **Type Inference:** You rarely need to specify parameter types (`x: i32`) or return types; Rust figures it out automatically.
+*   **Be Passed as Parameters:** You can inject dynamic logic into other functions using `impl Fn(...) -> ...`.
+*   **Concise Syntax:** Single-line closures don't even need curly braces `{}`.
+
+### What Closures CANNOT Do 🚫
+*   **Change Inferred Types:** Once a closure's parameter type is inferred on its first use, you cannot pass a different data type to it later.
+*   **Run Multiple Times if `FnOnce`:** If a closure takes ownership of a non-Copy variable, Rust will prevent you from calling it a second time to avoid memory errors.
+*   **Be Returned Easily:** Because every closure has a unique, compiler-generated type, returning a closure from a function requires special syntax like `impl Trait` or `Box<dyn Fn>`.
+
+---
+
+### Comprehensive Code Examples
+
+Below is the implementation covering basic syntax, practical use cases, and passing closures as parameters.
+
+```rust
+#[test]
+fn test_closure() {
+    // ==========================================
+    // 1. BASIC CLOSURE (No parameters)
+    // ==========================================
+    let panggil_closure = || println!("Halo calon programmer");
+    panggil_closure();
+
+    // ==========================================
+    // 2. SINGLE-LINE CLOSURE (With parameters)
+    // Type inference at work: Rust knows 'x' is an integer based on usage.
+    // ==========================================
+    let perkalian_closure = |x| x * x;
+    println!("Hasil perkalian: {}", perkalian_closure(15)); // 15 x 15 = 225
+
+    // ==========================================
+    // 3. MULTI-LINE CLOSURE (Requires curly braces {})
+    // ==========================================
+    let hitung_diskon = |harga_awal| {
+        let potongan = harga_awal * 10 / 100;
+        harga_awal - potongan // No semicolon means this is the return value
+    };
+    println!("Harga setelah diskon = {}", hitung_diskon(30000));
+
+    // ==========================================
+    // 4. CLOSURE SYNTAX EVOLUTION
+    // From fully explicit to highly concise.
+    // ==========================================
+    // FORM 1: Explicit (Similar to a normal function, defines types and return)
+    let tambah_satu_v1 = |x: i32| -> i32 { x + 1 };
+
+    // FORM 2: Remove Return arrow (Rust infers the return type)
+    let tambah_satu_v2 = |x: i32| { x + 1 };
+
+    // FORM 3: Remove input data type (Rust infers it from usage)
+    let tambah_satu_v3 = |x| { x + 1 };
+
+    // FORM 4: Remove curly braces (Because it's only one line of code)
+    let tambah_satu_v4 = |x| x + 1;
+
+    println!("{}", tambah_satu_v1(3));
+    println!("{}", tambah_satu_v2(3));
+    println!("{}", tambah_satu_v3(3));
+    println!("{}", tambah_satu_v4(3));
+}
+
+#[test]
+fn statistik_web_novel() {
+    // A single-line closure with an explicit type (i32) for clarity
+    let estimasi_baca = |jumlah_kata: i32| jumlah_kata / 200;
+    println!(
+        "waktu membaca sekarang berdasarkan jumlah kata adalah {} menit",
+        estimasi_baca(3300)
+    );
+
+    // A multi-line closure that executes side-effects (println!) instead of returning a value
+    let cek_siap_publish = |jumlah_kata: u32| {
+        if jumlah_kata >= 1500 {
+            println!("Web novel siap dipublish")
+        } else {
+            println!("lanjutkan menulis karena masih kurang dari 1500")
+        }
+    };
+    cek_siap_publish(1100);
+}
+
+// ==========================================
+// PASSING CLOSURES AS PARAMETERS (TRAIT BOUNDS)
+// ==========================================
+// This function takes a String and a Closure (`aturan_hasing`).
+// `impl Fn(String) -> String` means: "Accept any closure that takes a String and returns a String."
+fn proses_password(pasword: String, aturan_hasing: impl Fn(String) -> String) {
+    let password_baru = aturan_hasing(pasword);
+    println!("hasil password: {}", password_baru);
+}
+
+#[test]
+fn latihan_closure_parameter() {
+    let pass_asli = String::from("Admin123");
+    println!("password adalah {pass_asli}");
+
+    // Closure 1: Uses the format! macro to return a new String
+    let tambah_salt = |teks: String| format!("{}_xyz29", teks);
+
+    // Closure 2: Uses the replace method to return a manipulated String
+    let ganti_simbol = |teks: String| teks.replace("Admin", "Ambacong");
+
+    // CRITICAL: We use `.clone()` here so `pass_asli` is not permanently moved (consumed) 
+    // by the first function call. This prevents an Ownership/Moved Error!
+    proses_password(pass_asli.clone(), tambah_salt);
+    proses_password(pass_asli.clone(), ganti_simbol);
+}
+
+// Another example of injecting dynamic logic (Closure) into a core function.
+fn analisis_kode(payload: String, aturan_scan: impl Fn(String) -> String) {
+    let hasil = aturan_scan(payload);
+    println!("hasil analisis: {}", hasil);
+}
+
+#[test]
+fn test_firewall() {
+    let data_masuk: String = String::from("GET /download HTTP/1.1 - payload_ransomware_stage1.bin");
+
+    // Quick action closure
+    let blokir_ip = |teks: String| format!("{} [TINDAKAN: IP DIBLOKIR]", teks);
+
+    // Deep analysis closure with logical branching
+    let deteksi_malware = |teks: String| {
+        // Note on Logic Bug: `to_lowercase()` makes all letters small. 
+        // Searching for "Ransomware" (with capital R) will always return false here!
+        // To fix: use `.contains("ransomware")` instead.
+        if teks.to_lowercase().contains("Ransomware") {
+            String::from("SIAGA 1: Siklus Malware Terdeteksi!")
+        } else {
+            String::from("Tidak ada indikasi Malware, aman!")
+        }
+    };
+
+    // Executing the same core function with completely different rules
+    analisis_kode(data_masuk.clone(), blokir_ip);
+    analisis_kode(data_masuk.clone(), deteksi_malware);
 }
 ```
