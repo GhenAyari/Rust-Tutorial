@@ -2397,3 +2397,25 @@ fn audit_kehadiran() {
         .collect::<Vec<_>>();
     println!("Ini adalah daftar penyusup: {:#?}", penyusup);
 }
+
+#[test]
+fn web_novel_btreeset() {
+    let mut bab_terpublikasi = BTreeSet::from([(6), (5), (2), (1), (3), (4)]);
+
+    let status_upload = bab_terpublikasi.insert(6);
+    if status_upload {
+        println!("Bab 6 berhasil dipublikasikan");
+    } else {
+        println!("Bab 6 sudah dipublikasikan");
+    }
+
+    println!("\n--- DAFTAR ISI NOVEL ---");
+    for daftar_isi in &bab_terpublikasi {
+        println!("bab {}", daftar_isi)
+    }
+
+    println!("\n--- MARATON BACA ---");
+    for bab_spesifik in bab_terpublikasi.range(3..=6) {
+        println!("bacaan terakhir = {}", bab_spesifik)
+    }
+}

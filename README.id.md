@@ -4570,3 +4570,163 @@ fn rekap_data_mhs() {
     }
 }
 ```
+
+---
+## Koleksi di Rust: Sets (Himpunan) 🛡️
+
+### Apa itu Set?
+**Set** (Himpunan) adalah jenis koleksi yang menjamin **keunikan data**. Pada dasarnya, Set adalah sebuah *Map* yang hanya memiliki Kunci (*Key*), tanpa Nilai (*Value*) yang menempel padanya. Jika kamu mencoba memasukkan data yang sudah ada di dalam Set, data baru tersebut akan diabaikan oleh sistem.
+
+Di Rust, dua implementasi Set yang utama adalah **HashSet** dan **BTreeSet**.
+
+---
+
+### 1. HashSet (`HashSet<T>`)
+Penjaga gerbang datamu. Ia menggunakan *hashing* untuk mengecek keberadaan data secara instan.
+
+*   **Cara Kerjanya:** Menggunakan algoritma *Hashing* matematika yang sama persis dengan `HashMap` untuk menyimpan dan mencari lokasi data dalam sekejap mata.
+*   **Performa:** Sangat cepat (Kompleksitas waktu `O(1)`). 
+*   **Aturan Utama:** Data wajib Unik dan **Tidak Berurutan** (urutannya acak).
+*   **Kapan Digunakan:** 
+    *   Saat kamu butuh menghapus data ganda/duplikat dari sebuah daftar (*list*) secara instan.
+    *   Saat kamu butuh mengecek apakah sebuah data sudah ada (contoh: "Apakah *username* ini sudah dipakai?") dengan sangat cepat.
+    *   Saat kamu butuh melakukan Operasi Himpunan matematika seperti Gabungan (*Union*), Irisan (*Intersection*), atau Selisih (*Difference*).
+
+### 2. BTreeSet (`BTreeSet<T>`)
+Pustakawan datamu. Ia menjamin keunikan sekaligus keteraturan data yang sempurna.
+
+*   **Cara Kerjanya:** Menggunakan struktur data *Balanced Tree*, identik dengan `BTreeMap`.
+*   **Performa:** Cepat (Kompleksitas waktu `O(log n)`).
+*   **Aturan Utama:** Data wajib Unik dan **Selalu Urut / Rapi** (sesuai abjad A-Z atau angka kecil ke besar).
+*   **Kapan Digunakan:** 
+    *   Saat kamu butuh data unik yang wajib ditampilkan secara berurutan (misal: daftar tag novel yang urut abjad, atau daftar bab novel).
+    *   Saat kamu butuh mengambil potongan data spesifik menggunakan **Rentang / *Range*** (misal: mengambil data dari abjad A sampai F, atau angka 1 sampai 10).
+
+---
+
+### Apa yang BISA Dilakukan oleh Sets
+*   **Deduplikasi Otomatis:** Secara alami menolak data yang masuk dua kali.
+*   **Operasi Himpunan (HashSet):** Kamu bisa membandingkan dua *set* untuk mencari data yang sama-sama ada di keduanya (`intersection`), menggabungkannya tanpa duplikat (`union`), atau mencari selisih perbedaannya (`difference`).
+*   **Pencarian Rentang (BTreeSet):** Mengambil potongan porsi spesifik dari data yang sudah berurutan (`range`).
+
+### Apa yang TIDAK BISA Dilakukan oleh Sets
+*   **Menyimpan Duplikat:** Sesuai hukum definisinya, Set tidak bisa menampung dua item yang identik.
+*   **Akses Menggunakan Indeks:** Kamu tidak bisa melakukan pemanggilan seperti `my_set[0]`. Karena data di-*hash* (acak) atau disimpan dalam bentuk *tree*, tidak ada nomor urut/indeks angka. Kamu harus menggunakan `.contains()` untuk mengecek data, atau melakukan perulangan (iterasi) untuk membacanya.
+
+---
+
+###Contoh Kode Komprehensif
+
+### 1. BTreeMap (Sebagai Penyegar / Pengingat)
+```rust
+use std::collections::BTreeMap;
+
+#[test]
+fn rekap_data_mhs() {
+    // Membuat BTreeMap langsung dari kumpulan Tuple.
+    // Walaupun NIM dimasukkan secara acak, BTreeMap akan otomatis mengurutkannya.
+    let mut data_praktikan = BTreeMap::from([
+        (304, String::from("Faisal")),
+        (301, String::from("Andi")),
+        (303, String::from("Citra")),
+        (302, String::from("Budi")),
+    ]);
+    
+    // .insert() biasa akan MENIMPA (overwrite) data lama jika kunci (304) sudah ada.
+    data_praktikan.insert(304, "Fahmi".to_string());
+
+    // .entry().or_insert() HANYA memasukkan data JIKA kuncinya belum ada.
+    // 305 masuk karena belum ada. 301 diabaikan karena sudah ada "Andi".
+    data_praktikan.entry(305).or_insert("Eka".to_string());
+    data_praktikan.entry(301).or_insert("Joko".to_string());
+
+    // Saat di-looping, output PASTI berurutan dari NIM terkecil ke terbesar.
+    for (nim, nama) in &data_praktikan {
+        println!("NIM:  {}      |    Nama: {}   ", nim, nama)
+    }
+}
+```
+
+### 2. Operasi HashSet (Deduplikasi & Operasi Himpunan)
+```rust
+use std::collections::*;
+
+#[test]
+fn audit_kehadiran() {
+    // Inisialisasi Vector awal yang penuh dengan data duplikat (NIM_101 dan NIM_103 berulang).
+    let log_absen_mentah = Vec::<&str>::from([
+        ("NIM_101"), ("NIM_102"), ("NIM_103"), ("NIM_101"), 
+        ("NIM_104"), ("NIM_103"), ("NIM_101"), ("NIM_103"),
+    ]);
+    println!("Ini adalah data mentah: {:#?}", log_absen_mentah);
+
+    // TINGKAT AHLI: Mengubah Vector menjadi HashSet dalam satu baris.
+    // Proses .collect() secara otomatis menyapu bersih semua data yang ganda!
+    let mut daftar_hadir_unik: HashSet<&str> = log_absen_mentah.into_iter().collect();
+    println!("Data bersih menggunakan HashSet {:#?}", daftar_hadir_unik);
+
+    daftar_hadir_unik.insert("NIM_001");
+
+    // .insert() mengembalikan nilai Boolean (true jika data baru, false jika data duplikat).
+    // Ini sangat efisien untuk mengecek sekaligus memasukkan data!
+    let sukses_masuk = daftar_hadir_unik.insert("NIM_002");
+    if sukses_masuk {
+        println!("NIM_002 sudah melakukan tap kartu");
+    } else {
+        println!("NIM_002 belum melakukan tap kartu"); // Catatan: secara logika ini berarti data duplikat ditolak
+    }
+
+    let peserta_terdaftar = HashSet::<&str>::from([
+        "NIM_102", "NIM_102", "NIM_103", "NIM_001", "NIM_999"
+    ]);
+
+    // OPERASI HIMPUNAN: .intersection()
+    // Mencari data yang SAMA-SAMA ADA di daftar_hadir_unik dan peserta_terdaftar.
+    // Lalu dikonversi kembali menjadi Vector menggunakan sintaks turbofish ::<Vec<_>>.
+    let peserta_sah = daftar_hadir_unik
+        .intersection(&peserta_terdaftar)
+        .collect::<Vec<_>>();
+    println!("Ini adalah daftar orang yang memang memiliki tiket: {:#?}", peserta_sah);
+    
+    // OPERASI HIMPUNAN: .difference()
+    // Mencari data yang ada di daftar_hadir_unik, TAPI TIDAK ADA di peserta_terdaftar (Penyusup).
+    let penyusup = daftar_hadir_unik
+        .difference(&peserta_terdaftar)
+        .collect::<Vec<_>>();
+    println!("Ini adalah daftar penyusup: {:#?}", penyusup);
+}
+```
+
+### 3. Operasi BTreeSet (Set Berurutan & Pencarian Rentang)
+```rust
+use std::collections::*; // BTreeSet sudah termasuk dalam import ini
+
+#[test]
+fn web_novel_btreeset() {
+    // Memasukkan bab secara acak. 
+    // BTreeSet akan otomatis mengabaikan duplikat dan mengurutkannya!
+    let mut bab_terpublikasi = BTreeSet::from([(6), (5), (2), (1), (3), (4)]);
+
+    // Mencegah Double Upload menggunakan hasil kembalian boolean dari .insert().
+    // Karena 6 sudah ada, status_upload akan bernilai 'false'.
+    let status_upload = bab_terpublikasi.insert(6);
+    if status_upload {
+        println!("Bab 6 berhasil dipublikasikan");
+    } else {
+        println!("Bab 6 sudah dipublikasikan");
+    }
+
+    println!("\n--- DAFTAR ISI NOVEL ---");
+    // Iterasi BTreeSet PASTI berurutan dari angka terkecil (1) ke terbesar (6).
+    for daftar_isi in &bab_terpublikasi {
+        println!("bab {}", daftar_isi)
+    }
+
+    println!("\n--- MARATON BACA ---");
+    // KEKUATAN SUPER BTREESET: .range()
+    // Mengambil data spesifik dari angka 3 sampai 6 (inklusif, karena pakai simbol =).
+    for bab_spesifik in bab_terpublikasi.range(3..=6) {
+        println!("bacaan terakhir = {}", bab_spesifik)
+    }
+}
+```
