@@ -3830,7 +3830,7 @@ let pencarian_1 = cari_stok_barang(barang_1);
 
 ---
 
-## Rust Comparison (Equality & Ordering) ⚖️
+## Rust Comparison (Equality & Ordering) 
 
 ### What is Comparison?
 Comparison in Rust is the process of evaluating two values to see if they are identical, or if one is greater or lesser than the other.
@@ -4005,5 +4005,174 @@ fn string_manipulation() {
     println!("   - Word 1: {}", words[0]); // Ghendida
     println!("   - Word 2: {}", words[1]); // Rust
     println!("   - Word 3: {}", words[2]); // Developer
+}
+```
+
+---
+
+## Rust Formatting 
+
+### What is Formatting?
+In Rust, **Formatting** is the mechanism used to construct, arrange, and display data as strings. It is heavily powered by the `std::fmt` module and is most commonly executed using macros like `println!()` (for printing to the terminal), `print!()` (printing without a new line), and `format!()` (returning a formatted `String` instead of printing it).
+
+Instead of concatenating strings with `+` signs, Rust uses curly braces `{}` as safe placeholders for variables and data.
+
+### When to Use It?
+You will use formatting constantly during software development for:
+*   **Terminal/CLI Outputs:** Displaying information, tables, or statuses to the end-user.
+*   **String Building:** Assembling complex strings dynamically (e.g., building a dynamic URL or a database query).
+*   **Logging & Debugging:** Printing the internal state of structs, network payloads, or variables to track down bugs.
+*   **Data Masking:** Hiding sensitive information (like passwords or usernames) from system logs using custom formatters.
+
+### How Does it Work & Types of Formatting
+Rust relies on **Traits** to determine how a data type should be formatted. The two most important types are:
+
+1.  **`Display` (`{}`):** Intended for the end-user. It produces clean, readable text. Primitive types (like `i32`, `String`) implement this automatically. Custom structs do not, so you must implement it manually.
+2.  **`Debug` (`{:?}`):** Intended for the developer. It prints the data structure exactly as it looks in the code (e.g., adding quotes around strings). You can use `#[derive(Debug)]` for automatic implementation, or implement it manually to customize or hide certain fields.
+
+---
+
+### Comprehensive Code Examples
+
+Below is the complete implementation covering basic formatting, positional arguments, number bases, alignment, and manual Trait implementations for custom structs.
+
+```rust
+use std::fmt;
+
+#[test]
+fn test_formatting() {
+    // ==========================================
+    // 1. BASIC DISPLAY & DEBUG
+    // ==========================================
+    let nama = "Fuad";
+    
+    // Display uses {}. The output is clean and user-friendly.
+    println!("Display Output : Hello, {}!", nama); // Hello, Fuad!
+    
+    // Debug uses {:?}. It shows the internal representation (includes quotes for strings).
+    println!("Debug Output   : Hello, {:?}!", nama); // Hello, "Fuad"!
+
+    // ==========================================
+    // 2. POSITIONAL & NAMED ARGUMENTS
+    // Extremely useful when a single variable is used multiple times in a string.
+    // ==========================================
+
+    // Positional (Uses indexes, starting from 0)
+    println!(
+        "{0} likes to eat {1}, and {0} also likes to drink {2}",
+        "Rusdi", "Sate", "Coffee"
+    );
+
+    // Named (Assigns specific variable names directly inside the macro)
+    println!(
+        "{attacker} hacked the {target} server",
+        attacker = "Anon",
+        target = "NASA"
+    );
+
+    // Modern Rust (Captured Identifiers - directly calling local variables inside curly braces)
+    let skor = 100;
+    println!("Current score: {skor}");
+
+    // ==========================================
+    // 3. NUMBER FORMATTING (Bases & Decimals)
+    // ==========================================
+    let angka = 255;
+    println!("Decimal       : {}", angka);
+    println!("Binary        : {:b}", angka); // 11111111 
+    println!("Hexa Lowercase: {:x}", angka); // ff 
+    println!("Hexa Uppercase: {:X}", angka); // FF
+
+    let pi = 3.1415926535;
+    // {:.2} limits the float to 2 decimal places.
+    println!("Pi Value (2 decimals): {:.2}", pi); // 3.14
+
+    // ==========================================
+    // 4. ALIGNMENT & PADDING
+    // Ideal for generating neat tables or fixed-width logs in the terminal.
+    // ==========================================
+    let id_karyawan = 42;
+
+    // Padding: Fills the left side (>) with '0' until the total width is 5 characters.
+    println!("Employee ID   : {:0>5}", id_karyawan); // 00042
+
+    let status = "OK";
+    // Left Align (Total width: 10 spaces)
+    println!("Left Align    : |{:<10}|", status); // |OK        |
+    // Right Align (Total width: 10 spaces)
+    println!("Right Align   : |{:>10}|", status); // |        OK|
+    // Center Align (Total width: 10 spaces, remaining empty spaces filled with '-')
+    println!("Center Align  : |{:-^10}|", status); // |----OK----|
+}
+
+// ==========================================
+// 5. MANUAL DISPLAY IMPLEMENTATION
+// ==========================================
+// Structs do not have a default display format. We must teach Rust how to print it.
+struct Paket {
+    status_pengiriman: String,
+    berat: f32,
+}
+
+// Implementing the `fmt::Display` trait allows us to use `{}` on the `Paket` struct.
+impl fmt::Display for Paket {
+    fn fmt(&self, format: &mut fmt::Formatter) -> fmt::Result {
+        // write! works like println!, but instead of printing to the terminal, 
+        // it writes the formatted string into the `format` buffer.
+        write!(
+            format,
+            "Status {} and weight {} ",
+            self.status_pengiriman, self.berat
+        )
+    }
+}
+
+#[test]
+fn test_latihan_level_1() {
+    let paket = Paket {
+        status_pengiriman: String::from("Terkirim"),
+        berat: 5.5,
+    };
+
+    // Because we implemented Display above, this will compile successfully.
+    // Output: Status Terkirim and weight 5.5 Kg
+    println!("{paket}Kg");
+}
+
+// ==========================================
+// 6. MANUAL DEBUG IMPLEMENTATION (DATA MASKING)
+// ==========================================
+struct Monster {
+    nama: String,
+    hp: i32,
+    nama_user: String, // Sensitive data!
+}
+
+// We implement `fmt::Debug` manually instead of using `#[derive(Debug)]`.
+// This is a great cybersecurity practice to prevent sensitive data (like user names or passwords) 
+// from leaking into system logs.
+impl fmt::Debug for Monster {
+    fn fmt(&self, format: &mut fmt::Formatter<'_>) -> fmt::Result {
+        format
+            .debug_struct("Monster") // 1. Define the struct name wrapper
+            .field("Monster", &self.nama) // 2. Add safe fields
+            .field("Has HP", &self.hp)
+            // 3. Mask the sensitive field by hardcoding a literal string instead of referencing self.nama_user
+            .field("User name is secret", &"SECRET") 
+            .finish() // 4. Close and build the struct output
+    }
+}
+
+#[test]
+fn test_monster() {
+    let monster = Monster {
+        nama: String::from("Goblin"),
+        hp: 30,
+        nama_user: String::from("Alden"),
+    };
+    
+    // Uses `{:?}` to trigger the Debug trait.
+    // Output: Monster { Monster: "Goblin", Has HP: 30, User name is secret: "SECRET" }
+    println!("{:?}", monster);
 }
 ```

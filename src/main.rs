@@ -6,10 +6,10 @@ mod dapur;
 mod game_hero;
 mod guild_petualang;
 mod kendaraan_misteri;
-mod sccanner;
-mod smart_home;
-mod sistem_keamanan;
 mod penggajian_karyawan;
+mod sccanner;
+mod sistem_keamanan;
+mod smart_home;
 
 use dapur::masak_ayam;
 use dapur::masak_nasi;
@@ -1716,10 +1716,10 @@ fn show_akademi_sihir() {
 
 #[derive(Debug)]
 #[allow(dead_code)]
-struct KapsulWaktu <T, Ttahun, Tstatus> {
+struct KapsulWaktu<T, Ttahun, Tstatus> {
     isi: T,
     tahun_dibuka: Ttahun,
-    diserahkan: Tstatus
+    diserahkan: Tstatus,
 }
 
 #[test]
@@ -1727,25 +1727,25 @@ fn test_kapsul_waktu() {
     let kapsul_rusdi = KapsulWaktu {
         isi: String::from("Uget uget boyolali"),
         tahun_dibuka: 2026,
-        diserahkan: "Y"
+        diserahkan: "Y",
     };
     println!("{:?}", kapsul_rusdi);
 }
 
-fn tukar_posisi<T,U>(kiri: T, kanan: U) -> (U,T){
+fn tukar_posisi<T, U>(kiri: T, kanan: U) -> (U, T) {
     (kanan, kiri)
 }
 
 #[test]
 fn test_tukar_posisi() {
-    let posisi = tukar_posisi(String::from("Rusdiyansah tukar posisi ke kordinat"), 30 );
+    let posisi = tukar_posisi(String::from("Rusdiyansah tukar posisi ke kordinat"), 30);
     println!("{:?}", posisi);
 }
 
 #[allow(dead_code)]
 enum Value<T> {
     NONE,
-    VALUE(T)
+    VALUE(T),
 }
 
 #[test]
@@ -1765,7 +1765,7 @@ fn test_value() {
 enum StatusServer<T, U> {
     Aman(T),
     Diserang(U),
-    Maintenance
+    Maintenance,
 }
 
 fn sinyal_server(s: StatusServer<String, i32>) {
@@ -1792,8 +1792,8 @@ fn test_status_server() {
     sinyal_server(status_server3);
 }
 
-struct PaketJaringan<T>{
-    payload: T
+struct PaketJaringan<T> {
+    payload: T,
 }
 
 impl<T> PaketJaringan<T> {
@@ -1802,7 +1802,7 @@ impl<T> PaketJaringan<T> {
     }
     fn ganti_protokol<U>(self, payload_baru: U) -> PaketJaringan<U> {
         PaketJaringan {
-            payload: payload_baru
+            payload: payload_baru,
         }
     }
 }
@@ -1810,7 +1810,9 @@ impl<T> PaketJaringan<T> {
 #[test]
 fn test_paket_jaringan() {
     // 1. Paket awal berisi teks (HTTP Request)
-    let paket_awal = PaketJaringan { payload: String::from("GET /admin_panel") };
+    let paket_awal = PaketJaringan {
+        payload: String::from("GET /admin_panel"),
+    };
     println!("Payload awal: {}", paket_awal.baca_payload());
 
     // 2. Paket disadap dan diubah wujudnya menjadi kode angka (Enkripsi)
@@ -1818,23 +1820,24 @@ fn test_paket_jaringan() {
     let paket_enkripsi = paket_awal.ganti_protokol(8080);
 
     // 3. Cetak payload yang baru (Sekarang tipenya i32)
-    println!("Payload setelah enkripsi: {}", paket_enkripsi.baca_payload());
+    println!(
+        "Payload setelah enkripsi: {}",
+        paket_enkripsi.baca_payload()
+    );
 }
 
 use std::fmt::*;
 
 fn cetak_yang_tertinggi<T>(sensor_a: T, sensor_b: T)
-    where
-        T: std::fmt::Display + std::cmp::PartialOrd
-    {
-        if sensor_a > sensor_b {
-            println!("Peringatan! nilai tertinggi! {} ", sensor_a)
-        }
-        else {
-            println!("Peringatan! nilai tertinggi {}", sensor_b)
-        }
-
+where
+    T: std::fmt::Display + std::cmp::PartialOrd,
+{
+    if sensor_a > sensor_b {
+        println!("Peringatan! nilai tertinggi! {} ", sensor_a)
+    } else {
+        println!("Peringatan! nilai tertinggi {}", sensor_b)
     }
+}
 
 #[test]
 fn test_sensor_server() {
@@ -1849,19 +1852,18 @@ fn test_sensor_server() {
     cetak_yang_tertinggi(String::from("Aman"), String::from("Bahaya"));
 }
 
-use crate::smart_home::tombol_pintar;
-use crate::smart_home::Lampu as Lam;
 use crate::smart_home::KipasAngin as Ka;
+use crate::smart_home::Lampu as Lam;
+use crate::smart_home::tombol_pintar;
 
 #[test]
 fn test_smart_home() {
-    let lampu_a =  Lam;
+    let lampu_a = Lam;
     let kipas_a = Ka;
     // let meja_a = smart_home::Meja;
 
     tombol_pintar(lampu_a);
     tombol_pintar(kipas_a);
-    // tombol_pintar(meja_a);
 }
 
 use crate::sistem_keamanan::*;
@@ -1870,8 +1872,12 @@ use crate::sistem_keamanan::*;
 fn test_sistem_pesan() {
     let sistem = SistemKeamanan;
 
-    let tujuan_email = Email { email: String::from("admin@server.com") };
-    let tujuan_sms = Sms { nomor: String::from("08123456789") };
+    let tujuan_email = Email {
+        email: String::from("admin@server.com"),
+    };
+    let tujuan_sms = Sms {
+        nomor: String::from("08123456789"),
+    };
 
     // Ajaib! Nama method-nya sama-sama `.kirim()`,
     // tapi Rust tahu harus mengeksekusi logika yang mana berdasarkan tipe parameternya.
@@ -1914,7 +1920,7 @@ fn test_stok_gudang() {
     match pencarian_1 {
         Some(barang) => {
             println!("Stok barang laptop adalah {}", barang);
-        },
+        }
         None => {
             print!("Tidak ada barang yang dicari");
         }
@@ -1926,7 +1932,7 @@ fn test_stok_gudang() {
     match pencarian_2 {
         Some(barang) => {
             println!("Stok barang laptop adalah {}", barang);
-        },
+        }
         None => {
             print!("Tidak ada barang yang dicari");
         }
@@ -1938,7 +1944,7 @@ fn test_stok_gudang() {
     match pencarian_3 {
         Some(barang) => {
             println!("Stok barang laptop adalah {}", barang);
-        },
+        }
         None => {
             print!("Tidak ada barang yang dicari");
         }
@@ -1948,19 +1954,28 @@ fn test_stok_gudang() {
 #[derive(PartialEq, PartialOrd, Debug)]
 struct Produk {
     rating: i32,
-    terjual: i32
+    terjual: i32,
 }
 
 #[test]
 fn test_rekomendasi_produk() {
-    let produk_a = Produk {rating: 50, terjual: 90};
-    let produk_b = Produk {rating: 3, terjual: 30};
-    let produk_c = Produk {rating: 4, terjual: 190};
+    let produk_a = Produk {
+        rating: 50,
+        terjual: 90,
+    };
+    let produk_b = Produk {
+        rating: 3,
+        terjual: 30,
+    };
+    let produk_c = Produk {
+        rating: 4,
+        terjual: 190,
+    };
 
     if produk_a == produk_b {
         println!("Produk identik")
     }
-    if produk_b > produk_c{
+    if produk_b > produk_c {
         println!("Produk b masih kalah")
     } else {
         println!("produk c masih kalah");
@@ -2011,7 +2026,7 @@ fn string_manipulation() {
     // Kita buat salinan mutable dari `name` agar teks aslinya tidak rusak.
     // ==========================================
     let mut nama_lengkap = name.clone();
-    nama_lengkap.push(' ');               // push() untuk 1 karakter (petik tunggal)
+    nama_lengkap.push(' '); // push() untuk 1 karakter (petik tunggal)
     nama_lengkap.push_str("Rust Developer"); // push_str() untuk kata/kalimat (petik ganda)
     println!("6. Appending (Ditambah teks): {}", nama_lengkap);
 
@@ -2042,10 +2057,17 @@ fn test_formatting() {
     // ==========================================
 
     // Positional (Memakai indeks, dimulai dari 0)
-    println!("{0} suka makan {1}, dan {0} juga suka minum {2}", "Rusdi", "Sate", "Kopi");
+    println!(
+        "{0} suka makan {1}, dan {0} juga suka minum {2}",
+        "Rusdi", "Sate", "Kopi"
+    );
 
     // Named (Memakai nama variabel langsung)
-    println!("{pelaku} meretas server {target}", pelaku="Anon", target="NASA");
+    println!(
+        "{pelaku} meretas server {target}",
+        pelaku = "Anon",
+        target = "NASA"
+    );
 
     // Rust modern (Bisa langsung panggil variabel di dalam kurung kurawal)
     let skor = 100;
@@ -2073,23 +2095,27 @@ fn test_formatting() {
 
     let status = "OK";
     // Rata Kiri (Lebar 10)
-    println!("Status Kiri      : |{:<10}|", status);    // |OK        |
+    println!("Status Kiri      : |{:<10}|", status); // |OK        |
     // Rata Kanan (Lebar 10)
-    println!("Status Kanan     : |{:>10}|", status);    // |        OK|
+    println!("Status Kanan     : |{:>10}|", status); // |        OK|
     // Rata Tengah (Lebar 10, sisa spasi diisi karakter '-')
-    println!("Status Tengah    : |{:-^10}|", status);   // |----OK----|
+    println!("Status Tengah    : |{:-^10}|", status); // |----OK----|
 }
 
 use std::fmt;
 
 struct Paket {
     status_pengiriman: String,
-    berat: f32
+    berat: f32,
 }
 
 impl fmt::Display for Paket {
     fn fmt(&self, format: &mut fmt::Formatter) -> fmt::Result {
-        write!(format, "Status {} dan berat {} ", self.status_pengiriman, self.berat)
+        write!(
+            format,
+            "Status {} dan berat {} ",
+            self.status_pengiriman, self.berat
+        )
     }
 }
 
@@ -2108,15 +2134,16 @@ fn test_latihan_level_1() {
 struct Monster {
     nama: String,
     hp: i32,
-    nama_user: String
+    nama_user: String,
 }
 
 impl fmt::Debug for Monster {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("Monster")
-            .field("Monster", &self.nama)
+    fn fmt(&self, format: &mut fmt::Formatter<'_>) -> fmt::Result {
+        format
+            .debug_struct("Monster")
+            .field("Monser", &self.nama)
             .field("Memiliki HP", &self.hp)
-            .field("Nama user dirahasiakan", &"SENSOR")
+            .field("Nama user bersifat rahasia", &"RAHASIA")
             .finish()
     }
 }
@@ -2126,7 +2153,98 @@ fn test_monster() {
     let monster = Monster {
         nama: String::from("Goblin"),
         hp: 30,
-        nama_user: String::from("Alden")
+        nama_user: String::from("Alden"),
     };
-    println!("{:?}", monster)
+    println!("{:?}", monster);
+}
+
+#[test]
+fn test_closure() {
+    let panggil_closure = || println!("Halo calon programmer");
+    panggil_closure();
+
+    let perkalian_closure = |x| x * x;
+    println!("Hasil perkalian: {}", perkalian_closure(15)); // 15 x 15 = 225
+
+    let hitung_diskon = |harga_awal| {
+        let potongan = harga_awal * 10 / 100;
+        harga_awal - potongan
+    };
+    println!("Harga setelah diskon = {}", hitung_diskon(30000));
+
+    // WUJUD 1: Sangat lengkap (Mirip fungsi biasa, sebut tipe data dan return)
+    let tambah_satu_v1 = |x: i32| -> i32 { x + 1 };
+
+    // WUJUD 2: Hapus panah Return (Rust bisa tebak hasil akhirnya)
+    let tambah_satu_v2 = |x: i32| x + 1;
+
+    // WUJUD 3: Hapus tipe data input (Rust bisa tebak dari cara pemakaiannya)
+    let tambah_satu_v3 = |x| x + 1;
+
+    // WUJUD 4: Hapus kurung kurawal karena cuma satu baris
+    let tambah_satu_v4 = |x| x + 1;
+
+    println!("{}", tambah_satu_v1(3));
+    println!("{}", tambah_satu_v2(3));
+    println!("{}", tambah_satu_v3(3));
+    println!("{}", tambah_satu_v4(3));
+}
+
+#[test]
+fn statistik_web_novel() {
+    let estimasi_baca = |jumlah_kata: i32| jumlah_kata / 200;
+    println!(
+        "waktu membaca sekarang berdasarkan jumlah kata adalah {} menit",
+        estimasi_baca(3300)
+    );
+
+    let cek_siap_publish = |jumlah_kata: u32| {
+        if jumlah_kata >= 1500 {
+            println!("Web novel siap dipublish")
+        } else {
+            println!("lanjutkan menulis karena masih kurang dari 1500")
+        }
+    };
+    cek_siap_publish(1100);
+}
+
+fn proses_password(pasword: String, aturan_hasing: impl Fn(String) -> String) {
+    let password_baru = aturan_hasing(pasword);
+    println!("hasil password: {}", password_baru);
+}
+
+#[test]
+fn latihan_closure_parameter() {
+    let pass_asli = String::from("Admin123");
+    println!("password adalah {pass_asli}");
+
+    let tambah_salt = |teks: String| format!("{}_xyz29", teks);
+
+    let ganti_simbol = |teks: String| teks.replace("Admin", "Ambacong");
+
+    proses_password(pass_asli.clone(), tambah_salt);
+    proses_password(pass_asli.clone(), ganti_simbol);
+}
+
+fn analisis_kode(payload: String, aturan_scan: impl Fn(String) -> String) {
+    let hasil = aturan_scan(payload);
+    println!("hasil analisis: {}", hasil);
+}
+
+#[test]
+fn test_firewall() {
+    let data_masuk: String = String::from("GET /download HTTP/1.1 - payload_ransomware_stage1.bin");
+
+    let blokir_ip = |teks: String| format!("{} [TINDAKAN: IP DIBLOKIR]", teks);
+
+    let deteksi_malware = |teks: String| {
+        if teks.to_lowercase().contains("Ransomware") {
+            String::from("SIAGA 1: Siklus Malware Terdeteksi!")
+        } else {
+            String::from("Tidak ada indikasi Malware, aman!")
+        }
+    };
+
+    analisis_kode(data_masuk.clone(), blokir_ip);
+    analisis_kode(data_masuk.clone(), deteksi_malware);
 }
