@@ -2248,3 +2248,33 @@ fn test_firewall() {
     analisis_kode(data_masuk.clone(), blokir_ip);
     analisis_kode(data_masuk.clone(), deteksi_malware);
 }
+
+#[test]
+fn latihan_vector() {
+    let mut antrean_payload = Vec::<String>::new();
+
+    antrean_payload.push(String::from("trojan_1"));
+    antrean_payload.push(String::from("ransomware_x.bin"));
+    antrean_payload.push(String::from("spyware_log.txt"));
+    println!("{:?}", antrean_payload);
+
+    antrean_payload[1] = String::from("teks_file_bersih.txt");
+    println!("Mengubah index 1 menjadi {:?}", &antrean_payload[1]);
+
+    let antrean_payload_dihapus = antrean_payload.pop();
+    println!(
+        "Selesai dianalisis nama file adalah {:?}",
+        antrean_payload_dihapus
+    );
+
+    match antrean_payload.get(5) {
+        Some(isi_file) => {
+            println!("awas ada file siluman {isi_file}")
+        }
+        None => {
+            println!("Aman index kosong, tidak ada penyusup")
+        }
+    }
+
+    println!("Jumlah antrean payload {}", antrean_payload.len());
+}
