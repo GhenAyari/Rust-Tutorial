@@ -2352,3 +2352,48 @@ fn rekap_data_mhs() {
         println!("NIM:  {}      |    Nama: {}   ", nim, nama)
     }
 }
+
+use std::collections::*;
+
+#[test]
+fn audit_kehadiran() {
+    let log_absen_mentah = Vec::<&str>::from([
+        ("NIM_101"),
+        ("NIM_102"),
+        ("NIM_103"),
+        ("NIM_101"),
+        ("NIM_104"),
+        ("NIM_103"),
+        ("NIM_101"),
+        ("NIM_103"),
+    ]);
+
+    println!("Ini adalah data mentah: {:#?}", log_absen_mentah);
+
+    let mut daftar_hadir_unik: HashSet<&str> = log_absen_mentah.into_iter().collect();
+    println!("Data bersih menggunakan HashSet {:#?}", daftar_hadir_unik);
+
+    daftar_hadir_unik.insert("NIM_001");
+
+    let sukses_masuk = daftar_hadir_unik.insert("NIM_002");
+    if sukses_masuk {
+        println!("NIM_002 sudah melakukan tap kartu");
+    } else {
+        println!("NIM_002 belum melakukan tap kartu");
+    }
+
+    let peserta_terdaftar =
+        HashSet::<&str>::from(["NIM_102", "NIM_102", "NIM_103", "NIM_001", "NIM_999"]);
+
+    let peserta_sah = daftar_hadir_unik
+        .intersection(&peserta_terdaftar)
+        .collect::<Vec<_>>();
+    println!(
+        "Ini adalah daftar orang yang memang memiliki tiket: {:#?}",
+        peserta_sah
+    );
+    let penyusup = daftar_hadir_unik
+        .difference(&peserta_terdaftar)
+        .collect::<Vec<_>>();
+    println!("Ini adalah daftar penyusup: {:#?}", penyusup);
+}
