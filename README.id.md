@@ -4825,3 +4825,142 @@ fn analitik_ecommerce() {
     }
 }
 ```
+
+---
+## Penanganan Error (Error Handling) 🛡️
+
+### Apa itu Error Handling?
+**Error Handling** (Penanganan Masalah) adalah cara kita mengajari program bagaimana harus bersikap ketika sesuatu yang buruk terjadi. Alih-alih mati mendadak (crash) secara tidak terduga saat file hilang atau pengguna memasukkan huruf padahal diminta angka, program yang ditangani dengan baik akan menangkap masalah tersebut, melaporkannya dengan aman, dan memilih untuk memulihkan diri atau berhenti dengan terkendali.
+
+### Mengapa Rust Berbeda (Tanpa `try-catch`)
+Di sebagian besar bahasa pemrograman (seperti Java, Python, atau JS), error diperlakukan sebagai "Pengecualian" (Exception) tak terlihat yang meledak saat program berjalan menggunakan blok `try-catch`. Jika kamu lupa "menangkapnya" (catch), programmu akan hancur.
+
+Rust **tidak** memiliki Exception. Sebaliknya, Rust memperlakukan error sebagai **Data**. Sebuah fungsi yang berisiko gagal akan secara jujur mengembalikan Enum khusus bernama `Result`. *Compiler* (mesin Rust) akan *memaksa* kamu menangani error tersebut sebelum kode bisa dijalankan.
+
+### Jenis Error di Rust
+Rust mengategorikan masalah menjadi dua jenis yang sangat berbeda:
+
+### 1. Unrecoverable Error (Error Kiamat / Kritis)
+*   **Apa itu:** Situasi fatal di mana program tidak punya alasan logis untuk terus berjalan (contoh: database utama hilang, atau terdeteksi kebocoran memori).
+*   **Cara kerjanya:** Menggunakan macro `panic!()`. Ini akan langsung menghentikan eksekusi, membersihkan memori dengan aman, dan mematikan program untuk mencegah kerusakan data atau celah keamanan.
+
+### 2. Recoverable Error (`Result<T, E>`)
+*   **Apa itu:** Masalah operasional sehari-hari yang wajar terjadi (contoh: gagal koneksi internet, teks gagal diubah jadi angka, atau file tidak ditemukan).
+*   **Cara kerjanya:** Fungsi akan mengembalikan Enum `Result`:
+    *   `Ok(T)`: Sukses! Ini datamu dengan tipe `T`.
+    *   `Err(E)`: Gagal! Ini detail masalahnya dengan tipe `E`.
+*   Kamu menggunakan `match`, `.unwrap_or()`, atau operator `?` untuk membongkar kotak tersebut dan menangani isinya tanpa membuat program mati.
+
+---
+
+### Contoh Kode Komprehensif
+
+### Bagian 1: Unrecoverable Errors (`panic!`)
+
+```rust
+use std::net::Ipv4Addr;
+
+#[test]
+fn tugas_1_cek_firewall() {
+    let firewall_aktif = false;
+
+    // TINGKAT DASAR: Explicit Panic
+    // Menggunakan tanda seru (!) untuk mengecek nilai false (NOT).
+    // Karena firewall mati adalah isu kritikal, kita secara sadar 
+    // menggunakan panic!() untuk mematikan sistem (server gagal booting).
+    if !firewall_aktif {
+        panic!("SISTEM BERHENTI: Firewall terdeteksi mati!");
+    } else {
+        println!("Firewall berjalan normal.");
+    }
+}
+
+// Atribut #[should_panic] memberi tahu mesin pengetes: 
+// "Tes ini dianggap BERHASIL jika programnya meledak/crash".
+#[test]
+#[should_panic(expected = "index out of bounds")]
+fn tugas_2_akses_ilegal() {
+    // TINGKAT MENENGAH: Implicit Panic (Keamanan Memori)
+    let daftar_port_terbuka = vec![80, 443, 22]; // Hanya ada indeks 0, 1, 2
+    
+    // Kita memaksa meminta data ke-99. 
+    // Daripada membocorkan memori acak, Rust akan otomatis memicu PANIC 
+    // dan mematikan program secara aman (mencegah eksploitasi keamanan).
+    let port_rahasia = daftar_port_terbuka[99];
+    println!("port tahasia: {}", port_rahasia);
+}
+
+#[test]
+#[should_panic(expected = "Tipe user ini belum didefinisikan!")]
+fn tugas_3_konfigurasi_expert() {
+    // TINGKAT AHLI (A): Defensive Programming dengan .expect()
+    let teks_ip = "127.0.0.1";
+    
+    // .expect() mirip seperti pembongkar paksa. 
+    // Karena kita meng-hardcode teks "127.0.0.1", kita YAKIN 100% ini valid.
+    // Jika sampai gagal parse, itu murni kebodohan programmer, jadi kita panggil panic 
+    // dengan pesan yang sangat jelas.
+    let ip_server: Ipv4Addr = teks_ip
+        .parse()
+        .expect("BUG PROGRAMMER: IP Address hardcode salah format!");
+
+    println!("Server berjalan di IP: {:?}", ip_server);
+
+    // TINGKAT AHLI (B): Defensive Programming dengan unreachable!()
+    let peran_user = "Hacker";
+
+    match peran_user {
+        "Admin" => println!("Memiliki akses penuh"),
+        "Guest" => println!("Hanya memiliki akses baca"),
+        _ => {
+            // unreachable!() digunakan untuk jalur logika yang SECARA TEORI MUSTAHIL terjadi.
+            // Berguna jika ada manipulasi dari luar yang lolos dari validasi awal.
+            unreachable!("Tipe user ini belum didefinisikan!")
+        }
+    }
+}
+```
+
+### Recoverable Errors (Result & ?)
+
+```rust
+use std::num::ParseIntError;
+
+#[test]
+fn tugas_fallback() {
+    let absen = "absen";
+
+    // JURUS FALLBACK: .unwrap_or()
+    // Teks "absen" tidak mungkin bisa diubah jadi angka.
+    // Daripada menggunakan blok match yang panjang, kita pakai .unwrap_or(0).
+    // Artinya: "Kalau sukses, ambil angkanya. Kalau gagal, berikan saya angka 0."
+    let nilai = absen.parse::<u32>().unwrap_or(0);
+    println!("absen: {}", nilai) // Output: absen: 0
+}
+
+// FUNGSI BERBAHAYA: Mengembalikan kotak Result
+fn hitung_total_akses(semester_1: &str, semester_2: &str) -> Result<u32, ParseIntError> {
+    // JURUS PAMUNGKAS: Operator Tanda Tanya (?)
+    // Tanda ? akan mencoba mengekstrak angka jika parsing sukses.
+    // TAPI, jika parsing gagal, tanda ? akan LANGSUNG HENTIKAN fungsi ini 
+    // dan melempar status Err() ke luar fungsi (kepada pemanggilnya).
+    // Rangkaian kode ini dieksekusi dalam satu baris dengan sangat rapi!
+    let semester = semester_1.parse::<u32>()? + semester_2.parse::<u32>()?;
+    
+    // Jika semua proses di atas sukses tanpa dilempar keluar, 
+    // kita bungkus hasil akhirnya dalam kotak Ok().
+    Ok(semester)
+}
+
+#[test]
+fn test_hitung_total_akses() {
+    // MENANGANI HASIL: Membongkar kotak Result
+    // Kita memasukkan teks "keren" yang akan memicu error di dalam fungsi di atas.
+    match hitung_total_akses("31", "keren") {
+        Ok(total_akses) => println!("total = {}", total_akses),
+        // Kita menggunakan Err(_) karena kita tidak butuh membaca detail error-nya,
+        // cukup jalankan fallback logika ketika terjadi kegagalan.
+        Err(_) => println!("Error masukkan angka"), // Ini yang akan dieksekusi
+    }
+}
+```

@@ -1826,8 +1826,6 @@ fn test_paket_jaringan() {
     );
 }
 
-use std::fmt::*;
-
 fn cetak_yang_tertinggi<T>(sensor_a: T, sensor_b: T)
 where
     T: std::fmt::Display + std::cmp::PartialOrd,
@@ -2483,5 +2481,75 @@ fn analitik_ecommerce() {
     {
         Some(barang) => println!("Flashdisk 64GB ditemukan: Rp {}", barang.harga),
         None => println!("Flashdisk 64GB tidak tersedia"),
+    }
+}
+
+use std::net::Ipv4Addr;
+
+#[test]
+fn tugas_1_cek_firewall() {
+    let firewall_aktif = false;
+
+    if !firewall_aktif {
+        panic!("SISTEM BERHENTI: Firewall terdeteksi mati!");
+    } else {
+        println!("Firewall berjalan normal.");
+    }
+}
+
+#[test]
+#[should_panic(expected = "index out of bounds")]
+fn tugas_2_akses_ilegal() {
+    let daftar_port_terbuka = vec![80, 443, 22]; // Hanya ada 3 data (index 0, 1, 2)
+    let port_rahasia = daftar_port_terbuka[99];
+    println!("port tahasia: {}", port_rahasia);
+}
+
+#[test]
+#[should_panic(expected = "Tipe user ini belum didefinisikan!")]
+fn tugas_3_konfigurasi_expert() {
+    // TUGAS A: Gunakan .expect()
+    let teks_ip = "127.0.0.1";
+    // Lakukan parsing teks_ip menjadi tipe data Ipv4Addr.
+    // Gunakan .parse().expect("...") dan isi pesan expect-nya dengan:
+    // "BUG PROGRAMMER: IP Address hardcode salah format!"
+    let ip_server: Ipv4Addr = teks_ip
+        .parse()
+        .expect("BUG PROGRAMMER: IP Address hardcode salah format!");
+
+    println!("Server berjalan di IP: {:?}", ip_server);
+
+    let peran_user = "Hacker";
+
+    match peran_user {
+        "Admin" => println!("Memiliki akses penuh"),
+        "Guest" => println!("Hanya memiliki akses baca"),
+        _ => {
+            unreachable!("Tipe user ini belum didefinisikan!")
+        }
+    }
+}
+
+use std::num::ParseIntError;
+
+#[test]
+fn tugas_fallback() {
+    let absen = "absen";
+
+    // let nilai = absen.parse::<u32>();
+    let nilai = absen.parse::<u32>().unwrap_or(0);
+    println!("absen: {}", nilai)
+}
+
+fn hitung_total_akses(semester_1: &str, semester_2: &str) -> Result<u32, ParseIntError> {
+    let semester = semester_1.parse::<u32>()? + semester_2.parse::<u32>()?;
+    Ok(semester)
+}
+
+#[test]
+fn test_hitung_total_akses() {
+    match hitung_total_akses("31", "keren") {
+        Ok(total_akses) => println!("total = {}", total_akses),
+        Err(_) => println!("Error masukkan angka"),
     }
 }
