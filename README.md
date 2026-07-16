@@ -5187,3 +5187,155 @@ fn jalankan_sistem_keamanan() {
     // The Borrow Checker strictly guarantees `laporan` will not outlive `database_log`.
 }
 ```
+
+---
+
+## Rust Smart Pointers Guide
+
+Welcome to the ultimate guide on **Smart Pointers** in Rust. 
+
+In Rust, normal pointers (like `&` and `&mut`) only borrow data and have strict rules enforced by the Borrow Checker. Smart Pointers, on the other hand, are data structures that act like pointers but have additional metadata and capabilities. Most importantly, they own the data they point to and automatically clean up memory using the `Drop` trait.
+
+This explain covers the big three: `Box<T>`, `Rc<T>`, and `RefCell<T>`.
+
+---
+
+### 🗺️ Smart Pointers Cheat Sheet
+
+Here is your quick reference guide to choosing the right Smart Pointer for your architecture:
+
+| Smart Pointer | Analogy | Number of Owners | Access Type | Primary Use Case |
+|---|---|---|---|---|
+| **`Box<T>`** | Box in a Warehouse | Exactly 1 | Read & Write | Storing massive data on the Heap; Creating recursive data structures (e.g., Trees). |
+| **`Rc<T>`** | Shared TV in a Living Room | Multiple | **Read-Only** | Sharing a single piece of data across multiple Structs without cloning the actual data. |
+| **`RefCell<T>`** | Secret Safe | Exactly 1 | Read & Write | Bypassing the compiler's mutability rules (Interior Mutability) to edit "immutable" data. |
+
+---
+
+### 1. `Box<T>`: Moving Data to the Heap
+
+By default, Rust allocates data on the Stack. `Box<T>` forces data to be allocated on the Heap, leaving only a fixed-size pointer (the "key" to the box) on the Stack.
+
+**Best for:** Recursive types where the compiler cannot determine the size at compile-time.
+
+```rust
+// ==========================================
+// EXAMPLE: RECURSIVE DATA STRUCTURE WITH BOX
+// ==========================================
+
+// If we don't use Box, Rust will throw an "infinite size" error.
+// By wrapping `Folder` inside a Box, Rust knows the exact size of the pointer.
+struct Folder {
+    name: String,
+    // A Folder can contain another Folder. 
+    // Option is used because a folder might be empty (None).
+    child_folder: Option<Box<Folder>>, 
+}
+
+fn main() {
+    // Creating a nested folder structure
+    let my_directory = Folder {
+        name: String::from("Root Directory"),
+        child_folder: Some(Box::new(Folder {
+            name: String::from("Sub Folder 1"),
+            child_folder: None, // End of the chain
+        })),
+    };
+
+    println!("Successfully created a recursive structure: {}", my_directory.name);
+    
+} // <-- Memory is automatically cleaned up here (Drop trait is called)
+```
+
+### 2. Rc<T>: Reference Counted (Shared Ownership)
+Rc<T> breaks the rule of "One Data, One Owner". It allows multiple variables to own the exact same data on the Heap. It keeps track of the number of owners. When the count reaches zero, the data is deleted.
+
+Important: Rc<T> only provides Read-Only access.
+
+```rust
+use std::rc::Rc;
+
+// ==========================================
+// EXAMPLE: MULTIPLE OWNERSHIP WITH Rc
+// ==========================================
+
+struct Character {
+    name: String,
+    current_location: Rc<String>, // Shared ownership of the location
+}
+
+fn main() {
+    // 1. Create the data on the Heap. The reference count is now 1.
+    let shared_city = Rc::new(String::from("Cyberpunk City"));
+    println!("Initial count: {}", Rc::strong_count(&shared_city)); // Output: 1
+
+    // 2. Character 1 takes ownership
+    // Rc::clone DOES NOT copy the string. It only increments the counter (+1).
+    let player_one = Character {
+        name: String::from("Alice"),
+        current_location: Rc::clone(&shared_city),
+    };
+    println!("Count after Alice: {}", Rc::strong_count(&shared_city)); // Output: 2
+
+    // 3. Character 2 takes ownership of the EXACT SAME data
+    let player_two = Character {
+        name: String::from("Bob"),
+        current_location: Rc::clone(&shared_city),
+    };
+    println!("Count after Bob: {}", Rc::strong_count(&shared_city)); // Output: 3
+
+    // Both players can read the same location memory
+    println!("{} is in {}", player_one.name, player_one.current_location);
+    println!("{} is in {}", player_two.name, player_two.current_location);
+
+} // <-- Bob drops (count: 2). Alice drops (count: 1). shared_city drops (count: 0 -> Memory cleared!)
+```
+
+### 3. The Megazord: Rc<RefCell<T>>
+RefCell<T> allows Interior Mutability—the ability to mutate data even if the variable itself is immutable.
+
+When combined with Rc, you get the ultimate data structure: A single piece of data that can be owned by multiple structs AND mutated by any of them.
+
+```rust
+use std::rc::Rc;
+use std::cell::RefCell;
+
+// ==========================================
+// EXAMPLE: MUTATING SHARED DATA 
+// ==========================================
+
+struct Character {
+    name: String,
+    // Rc allows multiple owners.
+    // RefCell allows mutability.
+    current_location: Rc<RefCell<String>>, 
+}
+
+fn main() {
+    // 1. Create a shared, mutable state
+    let shared_city = Rc::new(RefCell::new(String::from("Cyberpunk City")));
+
+    let player_one = Character {
+        name: String::from("Alice"),
+        current_location: Rc::clone(&shared_city),
+    };
+
+    let player_two = Character {
+        name: String::from("Bob"),
+        current_location: Rc::clone(&shared_city),
+    };
+
+    // 2. Alice mutates the shared data!
+    // We use .borrow_mut() to gain write-access to the inner value at runtime.
+    player_one.current_location.borrow_mut().push_str(" - Under Attack!");
+
+    // 3. Bob's view of the city is automatically updated!
+    // We use .borrow() to gain read-access to the inner value.
+    println!("Alice's screen: {}", player_one.current_location.borrow());
+    println!("Bob's screen:   {}", player_two.current_location.borrow());
+    
+    // Output for both will be: "Cyberpunk City - Under Attack!"
+}
+```
+A Warning on RefCell
+RefCell enforces Rust's borrowing rules at runtime instead of compile-time. If you try to call .borrow_mut() twice in the same scope without dropping the first one, your program will compile fine but will PANIC (crash) while running. Use with caution!

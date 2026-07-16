@@ -2735,3 +2735,23 @@ fn jalankan_sistem_keamanan() {
     // database_log tidak pernah di-.clone(). Memori kita tetap hemat.
     // Rust menjamin `laporan` tidak akan hidup lebih lama dari `database_log`.
 }
+
+#[test]
+fn box_dasar() {
+    let angka = 16; // angka disimpan di stack
+    let angka_heap = Box::new(angka); // angka_heap disimpan di heap
+
+    let hasil = angka + *angka_heap;
+    println!("Hasil: {}", hasil);
+
+    let box_angka = Box::new(10);
+    println!("{box_angka}")
+}
+
+#[test]
+fn test_dereference() {
+    let angka = Box::new(15);
+    let angka2 = Box::new(15);
+    let result = *angka + *angka2;
+    println!("Hasil: {} + {} = {}", angka, angka2, result);
+}

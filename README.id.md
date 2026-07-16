@@ -5211,3 +5211,152 @@ fn jalankan_sistem_keamanan() {
     // Satpam Borrow Checker menjamin `laporan` tidak akan hidup lebih lama dari `database_log`.
 }
 ```
+
+---
+## 🦀 Panduan Smart Pointer Rust
+
+Selamat datang di panduan lengkap tentang **Smart Pointer** di Rust. 
+
+Di Rust, *pointer* normal (seperti `&` dan `&mut`) hanya bertugas meminjam data dan diatur secara ketat oleh *Borrow Checker*. *Smart Pointer*, di sisi lain, adalah struktur data yang bertindak seperti *pointer* tetapi memiliki metadata dan kemampuan tambahan. Yang paling penting, mereka **memiliki** (*own*) data yang mereka tunjuk dan secara otomatis membersihkan memori menggunakan *trait* `Drop`.
+
+Repositori ini membahas tiga *Smart Pointer* paling utama: `Box<T>`, `Rc<T>`, dan `RefCell<T>`.
+
+---
+
+### 🗺️ Peta Panduan Smart Pointer
+
+Berikut adalah contekan ringkas untuk membantumu memilih *Smart Pointer* yang tepat sesuai dengan arsitektur aplikasimu:
+
+| Smart Pointer | Analogi | Jumlah Pemilik | Sifat Akses | Kegunaan Utama |
+|---|---|---|---|---|
+| **`Box<T>`** | Kardus di Gudang | Tepat 1 | Read & Write | Menyimpan data raksasa di *Heap*; Membuat struktur data rekursif (misalnya struktur Folder / *Tree*). |
+| **`Rc<T>`** | TV Bersama di Ruang Tengah | Banyak | **Read-Only** | Membagikan satu keping data memori ke banyak `Struct` tanpa menyalin (*clone*) data aslinya. |
+| **`RefCell<T>`** | Brankas Rahasia | Tepat 1 | Read & Write | Memanipulasi aturan *Compiler* (*Interior Mutability*) agar bisa mengubah data yang secara teknis berlabel *Immutable*. |
+
+---
+
+### 📦 1. `Box<T>`: Memindahkan Data ke Heap
+
+Secara *default*, Rust menyimpan data di meja kerja yang sempit (*Stack*). `Box<T>` memaksa data tersebut dipindahkan ke gudang memori yang luas (*Heap*), dan hanya meninggalkan *pointer* berukuran kecil (sebagai "kunci" kardusnya) di *Stack*.
+
+**Sangat cocok untuk:** Tipe data rekursif (berulang) di mana *Compiler* tidak bisa menebak ukuran datanya.
+
+```rust
+// ==========================================
+// CONTOH: STRUKTUR DATA REKURSIF DENGAN BOX
+// ==========================================
+
+// Jika kita TIDAK menggunakan Box, Rust akan error "infinite size" (ukuran tak terhingga).
+// Dengan membungkus `Folder` di dalam Box, Rust jadi tahu ukuran pasti dari "kunci" pointer tersebut.
+struct Folder {
+    nama: String,
+    // Sebuah Folder bisa berisi Folder lain. 
+    // Option digunakan karena sebuah folder bisa saja kosong (None).
+    folder_anak: Option<Box<Folder>>, 
+}
+
+fn main() {
+    // Membuat struktur folder bersarang
+    let direktori_utama = Folder {
+        nama: String::from("Direktori Utama"),
+        folder_anak: Some(Box::new(Folder {
+            nama: String::from("Sub Folder 1"),
+            folder_anak: None, // Ujung dari sistem folder
+        })),
+    };
+
+    println!("Berhasil membuat struktur rekursif: {}", direktori_utama.nama);
+    
+} // <-- Memori otomatis dibersihkan secara tuntas di sini (Trait Drop dipanggil)
+```
+
+### 2. Rc<T>: Reference Counted (Kepemilikan Bersama)
+Rc<T> mendobrak aturan "Satu Data, Satu Pemilik". Ia mengizinkan banyak variabel berbeda untuk memiliki data yang persis sama di Heap. Ia bekerja dengan melacak jumlah pemiliknya. Saat jumlah pemiliknya menyentuh angka nol, datanya baru akan dihapus.
+
+Penting: Rc<T> HANYA memberikan akses Read-Only (hanya bisa dibaca, dilarang diubah).
+```rust
+use std::rc::Rc;
+
+// ==========================================
+// CONTOH: KEPEMILIKAN BERSAMA DENGAN Rc
+// ==========================================
+
+struct Karakter {
+    nama: String,
+    lokasi_sekarang: Rc<String>, // Kepemilikan bersama atas lokasi
+}
+
+fn main() {
+    // 1. Membuat data di Heap. Jumlah referensi (pemegang remote) sekarang 1.
+    let kota_bersama = Rc::new(String::from("Kota Cyberpunk"));
+    println!("Jumlah awal: {}", Rc::strong_count(&kota_bersama)); // Output: 1
+
+    // 2. Karakter 1 mengambil kepemilikan
+    // Rc::clone TIDAK menyalin teksnya. Ia HANYA menambah angka penghitung (+1).
+    let pemain_satu = Karakter {
+        nama: String::from("Alice"),
+        lokasi_sekarang: Rc::clone(&kota_bersama),
+    };
+    println!("Jumlah setelah Alice masuk: {}", Rc::strong_count(&kota_bersama)); // Output: 2
+
+    // 3. Karakter 2 mengambil kepemilikan dari data yang PERSIS SAMA
+    let pemain_dua = Karakter {
+        nama: String::from("Bob"),
+        lokasi_sekarang: Rc::clone(&kota_bersama),
+    };
+    println!("Jumlah setelah Bob masuk: {}", Rc::strong_count(&kota_bersama)); // Output: 3
+
+    // Kedua pemain membaca memori lokasi yang sama
+    println!("{} sedang berada di {}", pemain_satu.nama, pemain_satu.lokasi_sekarang);
+    println!("{} sedang berada di {}", pemain_dua.nama, pemain_dua.lokasi_sekarang);
+
+} // <-- Bob hancur (jumlah: 2). Alice hancur (jumlah: 1). kota_bersama hancur (jumlah: 0 -> Memori dihapus!)
+```
+
+### 3. Megazord: Rc<RefCell<T>>
+RefCell<T> mengizinkan Interior Mutability — kemampuan untuk mengubah isi data meskipun variabel luarnya bersifat Immutable.
+
+Saat digabungkan dengan Rc, kamu akan mendapatkan struktur data pamungkas: Satu buah data yang bisa dimiliki oleh BANYAK Struct, DAN bisa DIEDIT oleh siapapun.
+```rust
+use std::rc::Rc;
+use std::cell::RefCell;
+
+// ==========================================
+// CONTOH: MENGUBAH DATA YANG DIBAGIKAN BERSAMA
+// ==========================================
+
+struct Karakter {
+    nama: String,
+    // Rc mengizinkan banyak pemilik.
+    // RefCell mengizinkan perubahan (mutabilitas).
+    lokasi_sekarang: Rc<RefCell<String>>, 
+}
+
+fn main() {
+    // 1. Membuat satu data bersama yang bisa diubah
+    let kota_bersama = Rc::new(RefCell::new(String::from("Kota Cyberpunk")));
+
+    let pemain_satu = Karakter {
+        nama: String::from("Alice"),
+        lokasi_sekarang: Rc::clone(&kota_bersama),
+    };
+
+    let pemain_dua = Karakter {
+        nama: String::from("Bob"),
+        lokasi_sekarang: Rc::clone(&kota_bersama),
+    };
+
+    // 2. Alice mengubah data bersama tersebut!
+    // Kita menggunakan .borrow_mut() untuk mendapatkan akses 'Tulis' pada saat aplikasi berjalan.
+    pemain_satu.lokasi_sekarang.borrow_mut().push_str(" - Sedang Diserang!");
+
+    // 3. Layar Bob otomatis ter-update mengikuti perubahan dari Alice!
+    // Kita menggunakan .borrow() untuk mendapatkan akses 'Baca'.
+    println!("Layar Alice: {}", pemain_satu.lokasi_sekarang.borrow());
+    println!("Layar Bob:   {}", pemain_dua.lokasi_sekarang.borrow());
+    
+    // Output untuk keduanya adalah: "Kota Cyberpunk - Sedang Diserang!"
+}
+```
+Peringatan tentang RefCell
+RefCell menegakkan aturan peminjaman (Borrow Checker) pada saat aplikasi berjalan (Run-Time), bukan saat Compile-Time. Jika kamu secara tidak sengaja memanggil .borrow_mut() dua kali dalam waktu yang bersamaan tanpa menutup brankas yang pertama, programmu tidak akan error saat di-compile, tetapi akan PANIC (CRASH) saat dieksekusi. Gunakan dengan sangat hati-hati!
