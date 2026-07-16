@@ -2553,3 +2553,185 @@ fn test_hitung_total_akses() {
         Err(_) => println!("Error masukkan angka"),
     }
 }
+
+// // ❌ ERROR KOMPILASI!
+// // Mesin Rust protes: "Expected named lifetime parameter"
+// fn cari_log_terpanjang(log_1: &str, log_2: &str) -> &str {
+//     if log_1.len() > log_2.len() {
+//         log_1
+//     } else {
+//         log_2
+//     }
+// }
+
+// #[test]
+// fn test_cari_log_terpanjang() {
+//     let log_1 = "log 1";
+//     let log_2 = "log 2";
+//     let terpanjang = cari_log_terpanjang(log_1, log_2);
+//     assert_eq!(terpanjang, log_1);
+// }
+
+// ✅ BERHASIL!
+// Kita mendeklarasikan <'a> yaitu annotation atau memakai lifetima annotation lalu menempelkannya ke semua parameter dan output.
+fn cari_log_terpanjang<'a>(log_1: &'a str, log_2: &'a str) -> &'a str {
+    if log_1.len() > log_2.len() {
+        log_1
+    } else {
+        log_2
+    }
+}
+
+#[test]
+fn test_log_terpanjang() {
+    let log_1 = "Ambatuda";
+    let log_2 = "Ambarusdi";
+    let terpanjang = cari_log_terpanjang(log_1, log_2);
+    println!("{terpanjang}")
+}
+
+#[test]
+fn test_log_keamanan() {
+    let log_injeksi = String::from("SQL_INJECTION_ATTACK_DETECTED");
+    let log_bruteforce = String::from("BRUTEFORCE");
+
+    let hasil = cari_log_terpanjang(&log_injeksi, &log_bruteforce);
+    println!("Log terpanjang untuk dianalisis: {}", hasil);
+}
+// ✅ BERHASIL!
+// Kita memberi label <'a> pada Struct, dan memasangkannya ke tipe datanya.
+struct KutipanBab<'a> {
+    teks_highlight: &'a str,
+}
+
+#[test]
+fn test_kutipan_novel() {
+    let bab_utama = String::from("Angin berhembus kencang membawa rahasia masa lalu.");
+
+    // Struct ini hanya meminjam sebagian teks dari bab_utama
+    let kutipan_hari_ini = KutipanBab {
+        teks_highlight: &bab_utama[0..20],
+    };
+
+    println!("Kutipan: {}", kutipan_hari_ini.teks_highlight);
+}
+
+use std::fmt::Debug;
+
+// ==========================================
+// 1. TRAIT (Dengan Lifetime & Generic)
+// Trait ini memaksa siapa pun yang menggunakannya untuk mengembalikan
+// Vector yang isinya HANYA PINJAMAN (referensi) dari data aslinya.
+// ==========================================
+trait AlatPenyaring<'a, T> {
+    fn saring(&self, data_mentah: &'a [T]) -> Vec<&'a T>;
+}
+
+// ==========================================
+// 2. STRUCT (Dengan Lifetime & Generic)
+// Struct ini akan menyimpan hasil saringan.
+// Karena dia menyimpan referensi ('a) dan tipe datanya bebas (T),
+// 'a wajib ditulis mendahului T.
+// ==========================================
+#[derive(Debug)]
+struct LaporanDeteksi<'a, T> {
+    kategori_ancaman: &'a str,
+    data_terdeteksi: Vec<&'a T>, // Hemat memori: Hanya menyimpan alamat, bukan copy data!
+}
+
+// ==========================================
+// 3. METHOD / IMPL (Dengan Lifetime & Generic)
+// Karena Struct-nya punya <'a, T>, kepala Impl WAJIB mendeklarasikannya juga.
+// Trait bound `T: Debug` hanya agar datanya bisa di-print menggunakan {:?}.
+// ==========================================
+impl<'a, T: Debug> LaporanDeteksi<'a, T> {
+    // Method ini otomatis mewarisi 'a dan T dari atasnya
+    fn cetak_laporan(&self) {
+        println!("=== LAPORAN: {} ===", self.kategori_ancaman);
+        for item in &self.data_terdeteksi {
+            println!(" 🚨 Terdeteksi: {:?}", item);
+        }
+    }
+}
+
+// ---------------------------------------------------------
+// --- MARI KITA APLIKASIKAN FRAMEWORK DI ATAS KE LOG SERVER ---
+// ---------------------------------------------------------
+
+// Ini data asli yang akan kita analisis
+#[derive(Debug)]
+struct LogServer {
+    ip: String,
+    pesan: String,
+    level_bahaya: u8,
+}
+
+// Struct kosong yang akan bertugas sebagai "Mesin Filter"
+struct FilterBahayaTinggi;
+
+// Menerapkan Trait AlatPenyaring ke mesin filter kita.
+// Kita mengganti T dengan tipe data nyata yaitu `LogServer`.
+impl<'a> AlatPenyaring<'a, LogServer> for FilterBahayaTinggi {
+    fn saring(&self, data_mentah: &'a [LogServer]) -> Vec<&'a LogServer> {
+        data_mentah
+            .iter() // Ingat materi Iterator?
+            .filter(|log| log.level_bahaya >= 8) // Ambil yang bahayanya 8 ke atas
+            .collect() // Kumpulkan pointer-nya
+    }
+}
+
+// ==========================================
+// 4. FUNCTION (Standalone dengan Lifetime & Generic)
+// Fungsi ini menerima mesin filter (F) dan data mentah (T),
+// lalu merakitnya menjadi LaporanDeteksi.
+// ==========================================
+fn proses_analisis<'a, T, F>(nama: &'a str, data: &'a [T], mesin: &F) -> LaporanDeteksi<'a, T>
+where
+    F: AlatPenyaring<'a, T>, // Mesin F wajib memiliki trait AlatPenyaring
+{
+    // Jalankan mesinnya
+    let hasil_saringan = mesin.saring(data);
+
+    // Kembalikan dalam bentuk Struct Laporan
+    LaporanDeteksi {
+        kategori_ancaman: nama,
+        data_terdeteksi: hasil_saringan,
+    }
+}
+
+// ==========================================
+// 5. TEST EKSEKUSI (Pembuktian Zero-Cost)
+// ==========================================
+#[test]
+fn jalankan_sistem_keamanan() {
+    // 1. Kita buat data berat di Heap (Pemilik Data Asli)
+    let database_log = vec![
+        LogServer {
+            ip: "192.168.1.1".to_string(),
+            pesan: "Login sukses".to_string(),
+            level_bahaya: 1,
+        },
+        LogServer {
+            ip: "10.0.0.5".to_string(),
+            pesan: "SQL INJECTION".to_string(),
+            level_bahaya: 10,
+        },
+        LogServer {
+            ip: "10.0.0.9".to_string(),
+            pesan: "DDoS ATTACK".to_string(),
+            level_bahaya: 9,
+        },
+    ];
+
+    let mesin_filter = FilterBahayaTinggi;
+
+    // 2. Kita masukkan REFERENSI database_log ke dalam fungsi
+    let laporan = proses_analisis("Ancaman Kritis (Level 8+)", &database_log, &mesin_filter);
+
+    // 3. Cetak hasilnya
+    laporan.cetak_laporan();
+
+    // BUKTI KEHEBATAN:
+    // database_log tidak pernah di-.clone(). Memori kita tetap hemat.
+    // Rust menjamin `laporan` tidak akan hidup lebih lama dari `database_log`.
+}
